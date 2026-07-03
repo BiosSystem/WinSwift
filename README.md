@@ -1,8 +1,6 @@
-# WinSwift
+# WinSwift (Classic Branch)
 
-[![GitHub Release](https://img.shields.io/github/v/release/Raphire/WinSwift?style=for-the-badge&label=Latest%20release)](https://github.com/Raphire/WinSwift/releases/latest)
-[![Join the Discussion](https://img.shields.io/badge/Join-the%20Discussion-2D9F2D?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Raphire/WinSwift/discussions)
-[![Static Badge](https://img.shields.io/badge/Documentation-_?style=for-the-badge&logo=bookstack&color=grey)](https://github.com/Raphire/WinSwift/wiki/)
+> **Notice:** This is the `classic` branch of WinSwift. It is a rebranded fork of the excellent open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). All original credits and core architecture concepts in this branch belong to the Raphire team. This branch serves as our baseline legacy reference.
 
  WinSwift is a lightweight, easy to use PowerShell script that allows you to quickly declutter and customize your Windows experience, no installation required! You can use it to remove pre-installed apps, disable telemetry, remove intrusive interface elements and much more. No need to painstakingly go through all the settings yourself or remove apps one by one. WinSwift makes the process quick and easy!
 
