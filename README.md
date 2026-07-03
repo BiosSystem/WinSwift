@@ -1,18 +1,21 @@
 # WinSwift
 
-[![GitHub Release](https://img.shields.io/github/v/release/Raphire/WinSwift?style=for-the-badge&label=Latest%20release)](https://github.com/Raphire/WinSwift/releases/latest)
-[![Join the Discussion](https://img.shields.io/badge/Join-the%20Discussion-2D9F2D?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Raphire/WinSwift/discussions)
-[![Static Badge](https://img.shields.io/badge/Documentation-_?style=for-the-badge&logo=bookstack&color=grey)](https://github.com/Raphire/WinSwift/wiki/)
+# WinSwift
 
- WinSwift is a lightweight, easy to use PowerShell script that allows you to quickly declutter and customize your Windows experience, no installation required! You can use it to remove pre-installed apps, disable telemetry, remove intrusive interface elements and much more. No need to painstakingly go through all the settings yourself or remove apps one by one. WinSwift makes the process quick and easy!
+> **Notice:** WinSwift is a private, rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). All original credits and core architecture concepts belong to the Raphire team. We have implemented our own unified build system and UI adjustments to suit our organizational needs.
 
-The script also includes many features that system administrators and power users will enjoy. Such as a powerful command-line interface, support for Windows Audit mode and the ability to make changes to other Windows users. You can also easily export & import your preferred settings, allowing you to quickly apply the same settings on all your systems. Please refer to our [wiki](https://github.com/Raphire/WinSwift/wiki) for more details.
+WinSwift is a lightweight, easy to use PowerShell script that allows you to quickly declutter and customize your Windows experience, no installation required! You can use it to remove pre-installed apps, disable telemetry, remove intrusive interface elements and much more. No need to painstakingly go through all the settings yourself or remove apps one by one. WinSwift makes the process quick and easy!
+
+The script also includes many features that system administrators and power users will enjoy. Such as a powerful command-line interface, support for Windows Audit mode and the ability to make changes to other Windows users. You can also easily export & import your preferred settings, allowing you to quickly apply the same settings on all your systems.
+
+## Project Structure & Branches
+
+This repository is maintained across three core branches:
+- **`master`**: The production-ready branch. Once code is tested and verified, it is merged here for deployment.
+- **`dev`**: The active development branch. All new tweaks, build script modifications, and test features are committed here.
+- **`classic`**: The baseline legacy branch. This contains the raw, rebranded fork of the original project before any major structural changes (like our single-file bundler) were added.
 
 ![WinSwift Menu](/Assets/Images/menu.png)
-
-#### Did this script help you? Please consider buying me a cup of coffee to support my work
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M5C6UPC)
 
 ## Usage
 
