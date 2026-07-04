@@ -438,8 +438,7 @@ function Show-MainWindow {
         $highlightBrush = $window.Resources["SearchHighlightColor"]
         $col0 = $window.FindName('Column0Panel')
         $col1 = $window.FindName('Column1Panel')
-        $col2 = $window.FindName('Column2Panel')
-        $columns = @($col0, $col1, $col2) | Where-Object { $_ -ne $null }
+        $columns = @($col0, $col1) | Where-Object { $_ -ne $null }
 
         foreach ($column in $columns) {
             foreach ($card in $column.Children) {
