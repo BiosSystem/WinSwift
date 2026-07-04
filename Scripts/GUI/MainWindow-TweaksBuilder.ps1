@@ -16,8 +16,7 @@ function Build-DynamicTweaks {
     # Column containers
     $col0 = $Window.FindName('Column0Panel')
     $col1 = $Window.FindName('Column1Panel')
-    $col2 = $Window.FindName('Column2Panel')
-    $columns = @($col0, $col1, $col2) | Where-Object { $_ -ne $null }
+    $columns = @($col0, $col1) | Where-Object { $_ -ne $null }
 
     # Clear all columns for fully dynamic panel creation
     foreach ($col in $columns) {
@@ -474,51 +473,40 @@ function Update-TweaksResponsiveColumns {
     $tweaksGrid = $Window.FindName('TweaksGrid')
     $col0 = $Window.FindName('Column0Panel')
     $col1 = $Window.FindName('Column1Panel')
-    $col2 = $Window.FindName('Column2Panel')
 
-    if (-not $tweaksGrid -or -not $col0 -or -not $col1 -or -not $col2) { return }
-    if ($tweaksGrid.ColumnDefinitions.Count -lt 3) { return }
-    if ($null -eq $script:TweaksCardsMovedFromCol2) { $script:TweaksCardsMovedFromCol2 = @() }
+    if (-not $tweaksGrid -or -not $col0 -or -not $col1) { return }
+    if ($tweaksGrid.ColumnDefinitions.Count -lt 2) { return }
 
-    $useTwoColumns = $Window.ActualWidth -lt 1200
-    if ($script:TweaksCompactMode -eq $useTwoColumns) { return }
-    $script:TweaksCompactMode = $useTwoColumns
+    $useOneColumn = $Window.ActualWidth -lt 900
+    if ($script:TweaksCompactMode -eq $useOneColumn) { return }
+    $script:TweaksCompactMode = $useOneColumn
 
-    if ($useTwoColumns) {
+    if ($useOneColumn) {
         $tweaksGrid.ColumnDefinitions[0].Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-        $tweaksGrid.ColumnDefinitions[1].Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-        $tweaksGrid.ColumnDefinitions[2].Width = [System.Windows.GridLength]::new(0)
-        $col2.Visibility = 'Collapsed'
+        $tweaksGrid.ColumnDefinitions[1].Width = [System.Windows.GridLength]::new(0)
+        $col1.Visibility = 'Collapsed'
 
-        # Move third-column cards once when entering compact mode.
-        $cardsToMove = @($col2.Children) | Where-Object { $_ -is [System.Windows.UIElement] }
-        $script:TweaksCardsMovedFromCol2 = @($cardsToMove)
-        $col2.Children.Clear()
-        $targetColumns = @($col0, $col1)
+        # Move second-column cards once when entering compact mode.
+        $cardsToMove = @($col1.Children) | Where-Object { $_ -is [System.Windows.UIElement] }
+        $script:TweaksCardsMovedFromCol1 = @($cardsToMove)
+        $col1.Children.Clear()
         foreach ($card in $cardsToMove) {
-            $target = $targetColumns |
-                Sort-Object @{Expression = { $_.Children.Count }; Ascending = $true }, @{Expression = { $targetColumns.IndexOf($_) }; Ascending = $true } |
-                Select-Object -First 1
-            $target.Children.Add($card) | Out-Null
+            $col0.Children.Add($card) | Out-Null
         }
         return
     }
 
     $tweaksGrid.ColumnDefinitions[0].Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
     $tweaksGrid.ColumnDefinitions[1].Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-    $tweaksGrid.ColumnDefinitions[2].Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-    $col2.Visibility = 'Visible'
+    $col1.Visibility = 'Visible'
 
-    foreach ($card in (@($script:TweaksCardsMovedFromCol2) | Where-Object { $_ -is [System.Windows.UIElement] })) {
+    foreach ($card in (@($script:TweaksCardsMovedFromCol1) | Where-Object { $_ -is [System.Windows.UIElement] })) {
         if ($col0.Children.Contains($card)) {
             $col0.Children.Remove($card) | Out-Null
         }
-        elseif ($col1.Children.Contains($card)) {
-            $col1.Children.Remove($card) | Out-Null
-        }
-        $col2.Children.Add($card) | Out-Null
+        $col1.Children.Add($card) | Out-Null
     }
-    $script:TweaksCardsMovedFromCol2 = @()
+    $script:TweaksCardsMovedFromCol1 = @()
 }
 
 function Clear-TweakSelections {
@@ -543,8 +531,7 @@ function Clear-TweakHighlights {
 
     $col0 = $Window.FindName('Column0Panel')
     $col1 = $Window.FindName('Column1Panel')
-    $col2 = $Window.FindName('Column2Panel')
-    $columns = @($col0, $col1, $col2) | Where-Object { $_ -ne $null }
+    $columns = @($col0, $col1) | Where-Object { $_ -ne $null }
     foreach ($column in $columns) {
         foreach ($card in $column.Children) {
             if ($card -is [System.Windows.Controls.Border] -and $card.Child -is [System.Windows.Controls.StackPanel]) {

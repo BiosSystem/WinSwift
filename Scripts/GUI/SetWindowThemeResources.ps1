@@ -65,11 +65,11 @@ function SetWindowThemeResources {
         }
 
         ComboBox = @{
-            BgColor           = @{ Light = '#ffffff'; Dark = '#373737' }
-            HoverColor        = @{ Light = '#f8f8f8'; Dark = '#434343' }
-            ItemBgColor       = @{ Light = '#f9f9f9'; Dark = '#2c2c2c' }
-            ItemHoverColor    = @{ Light = '#f0f0f0'; Dark = '#383838' }
-            ItemSelectedColor = @{ Light = '#f3f3f3'; Dark = '#343434' }
+            BgColor           = @{ Light = '#ffffff'; Dark = '#2b2b2b' }
+            HoverColor        = @{ Light = '#f2f2f2'; Dark = '#3b3b3b' }
+            ItemBgColor       = @{ Light = '#ffffff'; Dark = '#1f1f1f' }
+            ItemHoverColor    = @{ Light = '#e5e5e5'; Dark = '#383838' }
+            ItemSelectedColor = @{ Light = '#dcdcdc'; Dark = '#444444' }
         }
 
         TextBox = @{

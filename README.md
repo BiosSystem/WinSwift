@@ -13,7 +13,11 @@ The script also includes many features that system administrators and power user
 This repository is maintained across three core branches:
 - **`master`**: The production-ready branch. Once code is tested and verified, it is merged here for deployment.
 - **`dev`**: The active development branch. All new tweaks, build script modifications, and test features are committed here.
-- **`classic`**: The baseline legacy branch. This contains the raw, rebranded fork of the original project before any major structural changes (like our single-file bundler) were added.
+- **`classic`**: The baseline legacy branch. This contains the raw, rebranded fork of the original project before any major structural changes (like our single-file bundler and new UI) were added.
+
+## What's New
+- **Responsive UI Redesign**: Redesigned the core UI to use a 2-column layout to drastically reduce vertical scrolling and maximize screen space.
+- **Improved Code Modularization**: Separated the core logic out of `WinSwift.ps1` for better code organization.
 
 ![WinSwift Menu](/Assets/Images/menu.png)
 
