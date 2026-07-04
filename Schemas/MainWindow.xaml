@@ -50,16 +50,16 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="Background" Value="{DynamicResource CardBgColor}"/>
-            <Setter Property="Padding" Value="16,13,16,4"/>
-            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Padding" Value="12,8,12,4"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
         </Style>
 
         <!-- Category header text style -->
         <Style x:Key="CategoryHeaderTextBlock" TargetType="TextBlock">
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="LineHeight" Value="20"/>
-            <Setter Property="Margin" Value="0,0,0,16"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
             <Setter Property="Foreground" Value="{DynamicResource AppFgColor}"/>
         </Style>
 
@@ -846,17 +846,13 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
                                     <!-- Column 1: Dynamically populated -->
                                     <StackPanel Grid.Column="0" x:Name="Column0Panel" Margin="0,0,15,0"/>
 
                                     <!-- Column 2: Dynamically populated -->
-                                    <StackPanel Grid.Column="1" x:Name="Column1Panel" Margin="0,0,15,0"/>
-
-                                    <!-- Column 3: Dynamically populated -->
-                                    <StackPanel Grid.Column="2" x:Name="Column2Panel"/>
+                                    <StackPanel Grid.Column="1" x:Name="Column1Panel"/>
                                 </Grid>
                             </ScrollViewer>
                             <!-- Top fade gradient -->
