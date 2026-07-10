@@ -1,18 +1,19 @@
 # Define script-level variables & paths
 $script:Version = "2026.06.24"
-$configPath = Join-Path $PSScriptRoot 'Config'
-$logsPath = Join-Path $PSScriptRoot 'Logs'
-$schemasPath = Join-Path $PSScriptRoot 'Schemas'
-$scriptsPath = Join-Path $PSScriptRoot 'Scripts'
+$rootDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$configPath = Join-Path $rootDir 'Config'
+$logsPath = Join-Path $rootDir 'Logs'
+$schemasPath = Join-Path $rootDir 'Schemas'
+$scriptsPath = Join-Path $rootDir 'Scripts'
 
 $script:AppsListFilePath = Join-Path $configPath 'Apps.json'
 $script:DefaultSettingsFilePath = Join-Path $configPath 'DefaultSettings.json'
 $script:FeaturesFilePath = Join-Path $configPath 'Features.json'
 $script:SavedSettingsFilePath = Join-Path $configPath 'LastUsedSettings.json'
 $script:DefaultLogPath = Join-Path $logsPath 'WinSwift.log'
-$script:RegfilesPath = Join-Path $PSScriptRoot 'Regfiles'
-$script:RegistryBackupsPath = Join-Path $PSScriptRoot 'Backups'
-$script:AssetsPath = Join-Path $PSScriptRoot 'Assets'
+$script:RegfilesPath = Join-Path $rootDir 'Regfiles'
+$script:RegistryBackupsPath = Join-Path $rootDir 'Backups'
+$script:AssetsPath = Join-Path $rootDir 'Assets'
 $script:AppSelectionSchema = Join-Path $schemasPath 'AppSelectionWindow.xaml'
 $script:MainWindowSchema = Join-Path $schemasPath 'MainWindow.xaml'
 $script:MessageBoxSchema = Join-Path $schemasPath 'MessageBox.xaml'
