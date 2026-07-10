@@ -402,7 +402,7 @@ function Show-RestoreBackupDialog {
 
     $nonRevertibleWikiLink.Add_MouseLeftButtonUp({
         try {
-            Start-Process 'https://github.com/Raphire/WinSwift/wiki/Reverting-Changes' | Out-Null
+            Start-Process 'https://github.com/BiosSystem/WinSwift/wiki/Reverting-Changes' | Out-Null
         }
         catch { }
     })
@@ -472,3 +472,4 @@ function Show-RestoreBackupDialog {
 
     return $window.Tag
 }
+

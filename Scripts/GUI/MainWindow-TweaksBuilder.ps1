@@ -96,14 +96,14 @@ function Build-DynamicTweaks {
     }
 
     function GetWikiUrlForCategory($category) {
-        if (-not $category) { return 'https://github.com/Raphire/WinSwift/wiki/Features' }
+        if (-not $category) { return 'https://github.com/BiosSystem/WinSwift/wiki/Features' }
 
         $slug = $category.ToLowerInvariant()
         $slug = $slug -replace '&', ''
         $slug = $slug -replace '[^a-z0-9\s-]', ''
         $slug = $slug -replace '\s', '-'
 
-        return "https://github.com/Raphire/WinSwift/wiki/Features#$slug"
+        return "https://github.com/BiosSystem/WinSwift/wiki/Features#$slug"
     }
 
     function GetOrCreateCategoryCard($categoryObj) {
@@ -555,3 +555,4 @@ function Test-ComboBoxContainsMatch {
     }
     return $false
 }
+

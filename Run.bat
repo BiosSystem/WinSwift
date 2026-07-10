@@ -35,7 +35,7 @@ if defined wtPath (
 
 echo.
 echo If you need further assistance, please open an issue at:
-echo https://github.com/Raphire/WinSwift/issues
+echo https://github.com/BiosSystem/WinSwift/issues
 goto :EOF
 
 :: Logging Function
@@ -48,3 +48,4 @@ echo ERROR: %*
 echo Logged in %logFile%
 pause
 goto :EOF
+
