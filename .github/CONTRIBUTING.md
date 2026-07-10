@@ -2,15 +2,15 @@
 
 We welcome contributions from the community. You can contribute to WinSwift by:
 
-- Reporting issues and bugs [here](https://github.com/Raphire/WinSwift/issues/new?template=bug_report.yml)
-- Submitting feature requests [here](https://github.com/Raphire/WinSwift/issues/new?template=feature_request.yml)
+- Reporting issues and bugs [here](https://github.com/BiosSystem/WinSwift/issues/new?template=bug_report.yml)
+- Submitting feature requests [here](https://github.com/BiosSystem/WinSwift/issues/new?template=feature_request.yml)
 - Testing WinSwift
 - Creating a pull request
 - Improving the documentation
 
 # Testing WinSwift
 
-You can help us test the latest changes and additions to the script. If you encounter any issues, please report them [here](https://github.com/Raphire/WinSwift/issues/new?template=bug_report.yml).
+You can help us test the latest changes and additions to the script. If you encounter any issues, please report them [here](https://github.com/BiosSystem/WinSwift/issues/new?template=bug_report.yml).
 
 > [!WARNING]
 > The prerelease version of WinSwift is meant for developers to test the script. Don't use this in production environments!
@@ -18,7 +18,7 @@ You can help us test the latest changes and additions to the script. If you enco
 You can launch the prerelease version of WinSwift by running this command:
 
 ```ps1
-& ([scriptblock]::Create((irm "https://debloat.raphi.re/"))) -Dev
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1"))) -Dev
 ```
 
 # Contributing Code
@@ -380,6 +380,7 @@ UI Groups allow features to be grouped together in the GUI with a combobox (drop
 
 If you have questions about contributing, feel free to:
 
-- Open a [discussion](https://github.com/Raphire/WinSwift/discussions)
+- Open a [discussion](https://github.com/BiosSystem/WinSwift/discussions)
 - Comment on an existing issue
 - Ask in your pull request
+

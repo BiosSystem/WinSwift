@@ -211,9 +211,9 @@ function Show-ApplyModal {
 
     $applyKofiBtn.Add_Click({
         if ($script:ApplyModalInErrorState) {
-            Start-Process "https://github.com/Raphire/WinSwift/issues/new"
+            Start-Process "https://github.com/BiosSystem/WinSwift/issues/new"
         } else {
-            Start-Process "https://ko-fi.com/raphire"
+            Start-Process "https://ko-fi.com/BiosSystem"
         }
     })
 
@@ -241,3 +241,4 @@ function Show-ApplyModal {
         }
     }
 }
+

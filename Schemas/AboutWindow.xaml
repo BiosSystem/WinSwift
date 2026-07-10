@@ -60,7 +60,7 @@
                             Text="Author:"
                             Style="{DynamicResource ModalInfoLabelTextStyle}"/>
                     <TextBlock Grid.Row="1" Grid.Column="1"
-                            Text="Raphire"
+                            Text="BiosSystem"
                             Style="{DynamicResource ModalInfoValueTextStyle}"/>
                     
                     <!-- Project Link -->
@@ -70,7 +70,7 @@
                             Margin="0,0,16,0"/>
                     <TextBlock x:Name="ProjectLink"
                             Grid.Row="2" Grid.Column="1"
-                            Text="https://github.com/Raphire/WinSwift" 
+                            Text="https://github.com/BiosSystem/WinSwift" 
                             FontSize="13"
                             Style="{DynamicResource HyperlinkStyle}"
                             Margin="0,0,0,0"/>
@@ -139,3 +139,4 @@
         </Grid>
     </Border>
 </Window>
+
