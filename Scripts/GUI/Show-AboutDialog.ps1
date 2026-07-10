@@ -61,12 +61,12 @@ function Show-AboutDialog {
     
     # Project link click handler
     $projectLink.Add_MouseLeftButtonDown({
-        Start-Process "https://github.com/Raphire/WinSwift"
+        Start-Process "https://github.com/BiosSystem/WinSwift"
     })
     
     # Ko-fi link click handler
     $kofiLink.Add_MouseLeftButtonDown({
-        Start-Process "https://ko-fi.com/raphire"
+        Start-Process "https://ko-fi.com/BiosSystem"
     })
     
     # Close button handler
@@ -96,3 +96,4 @@ function Show-AboutDialog {
         }
     }
 }
+

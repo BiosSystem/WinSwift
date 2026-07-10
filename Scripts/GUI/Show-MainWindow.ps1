@@ -76,7 +76,7 @@ function Show-MainWindow {
     })
 
     # ---- Menu/button event wiring ----
-    $kofiBtn.Add_Click({ Start-Process "https://ko-fi.com/raphire" })
+    $kofiBtn.Add_Click({ Start-Process "https://ko-fi.com/BiosSystem" })
 
     $menuBtn.Add_Click({
         $menuBtn.ContextMenu.PlacementTarget = $menuBtn
@@ -84,8 +84,8 @@ function Show-MainWindow {
         $menuBtn.ContextMenu.IsOpen = $true
     })
 
-    $menuDocumentation.Add_Click({ Start-Process "https://github.com/Raphire/WinSwift/wiki" })
-    $menuReportBug.Add_Click({ Start-Process "https://github.com/Raphire/WinSwift/issues" })
+    $menuDocumentation.Add_Click({ Start-Process "https://github.com/BiosSystem/WinSwift/wiki" })
+    $menuReportBug.Add_Click({ Start-Process "https://github.com/BiosSystem/WinSwift/issues" })
 
     $menuLogs.Add_Click({
         $logsFolder = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'Logs'
@@ -892,3 +892,4 @@ function Show-MainWindow {
     [System.Windows.Threading.Dispatcher]::PushFrame($frame)
     return $null
 }
+

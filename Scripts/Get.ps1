@@ -124,9 +124,9 @@ Write-Output "> Downloading WinSwift..."
 # Download WinSwift from GitHub as a zip archive.
 try {
     if ($Dev) {
-        $sourceUri = "https://github.com/Raphire/WinSwift/archive/refs/heads/master.zip"
+        $sourceUri = "https://github.com/BiosSystem/WinSwift/archive/refs/heads/master.zip"
     } else {
-        $sourceUri = (Invoke-RestMethod https://api.github.com/repos/Raphire/WinSwift/releases/latest).zipball_url
+        $sourceUri = (Invoke-RestMethod https://api.github.com/repos/BiosSystem/WinSwift/releases/latest).zipball_url
     }
     Invoke-RestMethod $sourceUri -OutFile $tempArchivePath
 }
@@ -236,3 +236,4 @@ if (Test-Path $tempWorkPath) {
 }
 
 Write-Output ""
+
