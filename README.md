@@ -49,7 +49,14 @@ graph TD
 - **Responsive UI Redesign**: Redesigned the core UI to use a 2-column layout to drastically reduce vertical scrolling and maximize screen space.
 - **Improved Code Modularization**: Separated the core logic out of `WinSwift.ps1` for better code organization and maintainability.
 
-![WinSwift Menu](/Assets/Images/menu.png)
+<p align="center">
+  <img src="Assets/Images/welcome.png" width="48%" />
+  <img src="Assets/Images/menu.png" width="48%" />
+</p>
+<p align="center">
+  <img src="Assets/Images/apps.png" width="48%" />
+  <img src="Assets/Images/deploy.png" width="48%" />
+</p>
 
 ## 🚀 Usage
 
