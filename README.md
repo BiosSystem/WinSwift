@@ -46,9 +46,12 @@ graph TD
     K --> L
 ```
 
-## ✨ What's New
-- **Responsive UI Redesign**: Redesigned the core UI to use a 2-column layout to drastically reduce vertical scrolling and maximize screen space.
-- **Improved Code Modularization**: Separated the core logic out of `WinSwift.ps1` for better code organization and maintainability.
+## ✨ What's New in v2.2.0
+- **Competitive Gaming Mode** - MMCSS tuning, timer resolution, BCD tweaks, Ultimate Performance plan, CPU unparking
+- **Settings App Ad Killer** - 17 new 25H2-specific ad/suggestion registry targets
+- **Widgets Deep Disable** - Policy lock survives Windows Update reinstalls
+- **Auto-Update Check** - Shows banner at launch when a new WinSwift version is available
+- **v2.1.0**: Gaming Mode, Performance Tweaks, Security Hardening, Extended AI Purge, Kill Windows Ads, fixed quick-run one-liner
 
 <p align="center">
   <img src="Assets/Images/welcome.png" width="48%" />
@@ -194,7 +197,35 @@ This method supports command-line parameters to customize the behaviour of the s
 - Disable **Advertising ID** for app targeting.
 - Disable tailored experiences and device-usage personalization.
 
+### 🎯 Competitive Gaming Mode (`-EnableCompetitiveGaming`)
+For esports and competitive players who need every millisecond.
+- Enable hidden **Ultimate Performance** power plan (unlocks more CPU/GPU headroom than High Performance).
+- Force **high-precision system timer** resolution via `GlobalTimerResolutionRequests` (0.5ms vs Windows default 15.6ms).
+- BCD boot tweaks: `useplatformtick=yes`, `disabledynamictick=yes` for consistent kernel timing.
+- **MMCSS tuning**: `NetworkThrottlingIndex=0xFFFFFFFF` (removes artificial network latency cap), `SystemResponsiveness=0`.
+- **MMCSS Games task**: `GPU Priority=8`, `Priority=6`, `Scheduling Category=High`, `SFIO Priority=High`.
+- Disable **CPU core parking** (prevents latency spikes from parked cores waking mid-game).
+- Add `-DisableMemoryIntegrity` to also disable VBS/HVCI for a **5-10% FPS boost** (opt-in, shows security warning).
+
+### 📢 Kill Settings App Ads (`-DisableSettingsAds`)
+For Windows 11 25H2 - targets new ad vectors Microsoft injected into the Settings app itself.
+- Suppress all **Settings app suggestions and personalized tips** (17 ContentDeliveryManager keys).
+- Disable **post-OOBE "Get more out of Windows"** nag screen.
+- Block **silent Microsoft app installs** (`SilentInstalledAppsEnabled=0`).
+- Disable **Windows Backup nudge** introduced in 25H2.
+- Kill **Microsoft Teams reinstall suggestions**.
+- Master kill switch: `ContentDeliveryAllowed=0`.
+
+### 📌 Widgets Deep Disable (`-DisableWidgetsDeep`)
+The 25H2 update stopped Widgets opening on hover - but data collection continued in the background.
+- Remove `MicrosoftWindows.Client.WebExperience` and runtime packages entirely.
+- Set **Group Policy lock** (`AllowNewsAndInterests=0`) that **survives Windows Update** package reinstalls.
+- Kill all related background processes before removal.
+- Disable Widgets button in taskbar.
+
 ## 🤝 Contributing
+
+We welcome contributions of all kinds! Please see our [Contributing Guidelines](https://github.com/BiosSystem/WinSwift/blob/master/.github/CONTRIBUTING.md) for detailed instructions on how to get started.
 
 We welcome contributions of all kinds! Please see our [Contributing Guidelines](https://github.com/BiosSystem/WinSwift/blob/master/.github/CONTRIBUTING.md) for detailed instructions on how to get started.
 
