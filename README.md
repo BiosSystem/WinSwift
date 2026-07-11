@@ -46,12 +46,13 @@ graph TD
     K --> L
 ```
 
-## ✨ What's New in v2.2.0
-- **Competitive Gaming Mode** - MMCSS tuning, timer resolution, BCD tweaks, Ultimate Performance plan, CPU unparking
-- **Settings App Ad Killer** - 17 new 25H2-specific ad/suggestion registry targets
-- **Widgets Deep Disable** - Policy lock survives Windows Update reinstalls
-- **Auto-Update Check** - Shows banner at launch when a new WinSwift version is available
-- **v2.1.0**: Gaming Mode, Performance Tweaks, Security Hardening, Extended AI Purge, Kill Windows Ads, fixed quick-run one-liner
+## ✨ What's New in v2.4.0
+- **`autounattend.xml` Generator** - Offline OOBE bypass generator for new installations.
+- **Software Installer** - Automated Winget deployment of essential apps.
+- **Preset Profiles** - Shareable JSON configurations for 1-click setups.
+- **Dry-Run Mode** - Preview all changes safely before applying.
+- **v2.2.0**: Competitive Gaming Mode, Settings App Ad Killer, Widgets Deep Disable, Auto-Update Check
+- **v2.1.0**: Gaming Mode, Performance Tweaks, Security Hardening, Extended AI Purge, Kill Windows Ads
 
 <p align="center">
   <img src="Assets/Images/welcome.png" width="48%" />
@@ -222,6 +223,28 @@ The 25H2 update stopped Widgets opening on hover - but data collection continued
 - Set **Group Policy lock** (`AllowNewsAndInterests=0`) that **survives Windows Update** package reinstalls.
 - Kill all related background processes before removal.
 - Disable Widgets button in taskbar.
+
+### 📦 Software Installer (`-InstallSoftware`)
+Fully automated installation of essential utilities using Winget.
+- **Curated List**: 7-Zip, Brave Browser, VLC, Notepad++, PowerToys, Git, Visual Studio Code.
+- Provide a custom list via `-SoftwareList "7zip.7zip", "VideoLAN.VLC"`.
+- Silently accepts all EULAs and package agreements.
+
+### ⚙️ Community Preset Profiles (`-Preset <path.json>`)
+Create and share JSON configurations to quickly deploy standard setups.
+- **Example Usage**: `.\WinSwift.ps1 -Preset .\Config\Presets\gaming-rig.json`
+- Supports all WinSwift switches mapped in the `Switches` JSON array.
+
+### 🛡️ OOBE Bypass XML Generator (`-GenerateUnattend`)
+Instantly generate an `autounattend.xml` file for a fresh offline Windows 11 install.
+- Bypasses the mandatory Microsoft Account requirement (adds `BypassNRO` registry tweak).
+- Suppresses online account screens, EULA, and Wi-Fi setup prompts.
+- Outputs directly to `C:\autounattend.xml` (or custom `-UnattendOutPath`).
+
+### 🔎 Dry-Run Mode (`-DryRun`)
+Safely simulate all registry modifications and service changes without applying them.
+- Leverages PowerShell's native `$WhatIfPreference`.
+- Provides a detailed CLI preview of exactly what actions WinSwift would take.
 
 ## 🤝 Contributing
 
