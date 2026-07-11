@@ -6,7 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [2.1.0] - 2026-07-11
+## [2.2.0] - 2026-07-11
+
+### Added
+- **Competitive Gaming Mode** (`-EnableCompetitiveGaming`): Ultimate Performance power plan, high-precision timer resolution (`GlobalTimerResolutionRequests`), BCD `useplatformtick`/`disabledynamictick`, MMCSS `NetworkThrottlingIndex=0xFFFFFFFF` and `SystemResponsiveness=0`, MMCSS Games task `GPU Priority=8`/`Priority=6`/`Scheduling=High`, CPU core parking disable, optional Memory Integrity/VBS disable (`-DisableMemoryIntegrity`).
+- **Settings App Ads Kill** (`-DisableSettingsAds`): Suppress all 25H2 Settings suggestions, personalized tips, post-OOBE nags (`ScoobeSystemSettingEnabled`), Windows Backup nudge, Teams reinstall prompts, and silent app installs by Microsoft.
+- **Widgets Deep Disable** (`-DisableWidgetsDeep`): Remove `MicrosoftWindows.Client.WebExperience` package, kill data collection process, set Group Policy `AllowNewsAndInterests=0` (survives Windows Update), disable taskbar widget button.
+- **Auto-Update Check**: On every launch, WinSwift silently queries the GitHub releases API and displays a banner if a newer version is available. Pass `-SkipUpdateCheck` to suppress.
+- **Bios-System attribution signatures** in all four new modules.
+
+---
+
+
 
 ### Added
 - **Gaming Mode** (`-EnableGamingMode`): High Performance power plan, Nagle disable, raw mouse input, HAGS, maintenance disable, startup delay removal.
