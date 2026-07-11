@@ -72,7 +72,10 @@ Run the script directly from our raw GitHub repository using PowerShell.
 2. Copy and paste the command below into PowerShell:
 
 ```PowerShell
-irm https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1 | iex
+$f = New-TemporaryFile | Rename-Item -NewName { $_.Name + '.ps1' } -PassThru
+irm https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1 -OutFile $f
+& $f
+Remove-Item $f -Force
 ```
 *(Alternatively, you can download the script and run it manually)*
 
@@ -147,6 +150,49 @@ This method supports command-line parameters to customize the behaviour of the s
 ### Advanced Multi-tasking
 - Enable Windows Sandbox, a lightweight desktop environment for safely running applications in isolation.
 - Enable Windows Subsystem for Linux (WSL).
+
+### 🎮 Gaming Mode (`-EnableGamingMode`)
+- Switch to **High Performance** power plan automatically.
+- Disable Nagle's Algorithm for lower network latency in multiplayer games.
+- Disable Mouse Acceleration for true raw input.
+- Disable Sticky Keys (no more accidental Shift interruptions).
+- Disable Xbox Game Bar and DVR capture overhead.
+- Enable Hardware Accelerated GPU Scheduling (HAGS).
+- Disable automatic maintenance tasks during gaming hours.
+- Remove Windows startup delay.
+
+### ⚡ Performance Tweaks (`-EnablePerformanceTweaks`)
+- Disable **Superfetch (SysMain)** - unnecessary background RAM prefetching on SSD systems.
+- Disable **Windows Search indexing** - reduces disk I/O.
+- Disable **Hibernate** and free the `hiberfil.sys` file (often 8-32 GB).
+- Disable Windows Error Reporting dialog popups.
+- Disable Print Spooler on non-printer systems.
+- Disable Aero Shake (shake-to-minimize).
+- Set **NumLock ON** at every startup.
+- Show **seconds in the system clock**.
+
+### 🛡️ Security Hardening (`-EnableSecurityHardening`)
+- Disable **SMBv1** (EternalBlue/WannaCry ransomware vector).
+- Disable **Remote Desktop (RDP)** inbound access.
+- Disable **AutoRun** on all drive types (USB malware prevention).
+- Disable legacy **TLS 1.0 and 1.1** protocols.
+- Block common attack ports: **135, 139, 445** inbound.
+- Disable **Windows Script Host** (.vbs/.js malware protection).
+
+### 🤖 Extended AI Purge (24H2/25H2) (`-EnableExtendedAIPurge`)
+- Fully disable **Windows Recall** snapshots and AI indexing.
+- Deep-disable **Phone Link** via registry.
+- Disable **Windows Ink Workspace** AI suggestions.
+- Kill **Sluggishness Telemetry** scheduled tasks (CloudExperienceHost).
+- Suppress **OneDrive silent sign-in** from Microsoft account.
+- Disable **cross-device Cloud Clipboard sync**.
+
+### 🚫 Kill Windows Ads (`-DisableWindowsAds`)
+- Disable **Start menu promoted and suggested apps**.
+- Disable **Lock screen Spotlight ads**.
+- Remove **File Explorer promotional banners**.
+- Disable **Advertising ID** for app targeting.
+- Disable tailored experiences and device-usage personalization.
 
 ## 🤝 Contributing
 

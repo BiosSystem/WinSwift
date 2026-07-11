@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.1.0] - 2026-07-11
+
+### Added
+- **Gaming Mode** (`-EnableGamingMode`): High Performance power plan, Nagle disable, raw mouse input, HAGS, maintenance disable, startup delay removal.
+- **Performance Tweaks** (`-EnablePerformanceTweaks`): Disable SysMain/Superfetch, WSearch indexing, Hibernate (frees hiberfil.sys), Aero Shake, WER. NumLock ON, seconds in clock.
+- **Security Hardening** (`-EnableSecurityHardening`): Disable SMBv1, RDP, AutoRun, TLS 1.0/1.1. Block ports 135/139/445. Disable Windows Script Host.
+- **Extended AI Purge** (`-EnableExtendedAIPurge`): 24H2/25H2 targets - Recall snapshots, Phone Link deep-disable, Windows Ink AI, Sluggishness Telemetry tasks, OneDrive silent sign-in, Cloud Clipboard.
+- **Kill Windows Ads** (`-DisableWindowsAds`): Lock screen Spotlight, File Explorer banners, Start menu suggested apps, Advertising ID, device-usage personalization, Windows Spotlight.
+- **Bios-System attribution signatures** embedded in all new feature modules for fork attribution.
+
+### Fixed
+- Quick-run one-liner (`irm ... | iex`) broken due to `[CmdletBinding()]` at top level. Replaced with correct `irm -OutFile + & ` pattern in README.
+
+---
+
+
 ## [2.0.0] - 2026-07-11
 
 ### Added

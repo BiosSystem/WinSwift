@@ -1,0 +1,37 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260710190226
+Username: PC\Matan
+RunAs User: PC\Matan
+Configuration Name: 
+Machine: PC (Microsoft Windows NT 10.0.26200.0)
+Host Application: PowerShell -NoProfile -ExecutionPolicy Bypass -File D:\Antigravity_Projects\WinSwift\WinSwift.ps1
+Process ID: 37420
+PSVersion: 5.1.26100.8457
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8457
+BuildVersion: 10.0.26100.8457
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+D:\Antigravity_Projects\WinSwift\WinSwift.ps1 : WinSwift is unable to find required files, please ensure all script 
+files are present
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,WinSwift.ps1
+D:\Antigravity_Projects\WinSwift\WinSwift.ps1 : WinSwift is unable to find required files, please ensure all script
+files are present
+    + CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+    + FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,WinSwift.ps1
+
+
+Press any key to exit...
+**********************
+Command start time: 20260710190254
+**********************
+PS>TerminatingError(): "System error."
+**********************
+Windows PowerShell transcript end
+End time: 20260710190254
+**********************
