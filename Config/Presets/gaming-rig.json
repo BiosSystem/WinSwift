@@ -1,0 +1,16 @@
+{
+  "PresetName": "Gaming Rig Ultimate",
+  "Author": "Bios-System",
+  "Description": "Maximum performance preset for esports and competitive gaming.",
+  "Switches": [
+    "EnableGamingMode",
+    "EnableCompetitiveGaming",
+    "EnablePerformanceTweaks",
+    "DisableTelemetry",
+    "DisableWindowsAds",
+    "DisableSettingsAds",
+    "DisableWidgetsDeep",
+    "EnableExtendedAIPurge",
+    "RemoveGamingApps"
+  ]
+}

@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [2.4.0] - 2026-07-11
+
+### Added
+- **`autounattend.xml` Generator** (`-GenerateUnattend`): Generates an offline Windows installation answer file (at `C:\autounattend.xml` or custom `-UnattendOutPath`) that skips the Microsoft Account requirement, disables OOBE telemetry prompts, and bypasses Windows 11 setup limitations. 
+
+---
+
+## [2.3.0] - 2026-07-11
+
+### Added
+- **Software Installer** (`-InstallSoftware`): Winget-powered installer for a curated list of essential software (7-Zip, Brave, VLC, Notepad++, PowerToys, Git, VS Code). Accepts a custom list via `-SoftwareList`.
+- **Community Preset Profiles** (`-Preset <path.json>`): Load JSON files containing an array of switches to apply instantly, allowing users to share "Gaming Rig" or "Privacy First" configurations.
+- **Dry-Run Mode** (`-DryRun`): Simulates changes without applying them (sets `$WhatIfPreference = $true`), allowing you to preview exactly what registry keys and services will be affected.
+
+---
+
 ## [2.2.0] - 2026-07-11
 
 ### Added
