@@ -46,8 +46,11 @@ graph TD
     K --> L
 ```
 
-## ✨ What's New in v2.4.0
-- **`autounattend.xml` Generator** - Offline OOBE bypass generator for new installations.
+## ✨ What's New in v3.0.0
+- **Update Watchdog** - Automatically monitors for Windows Updates and warns you if Microsoft re-enables telemetry or bloatware.
+- **Telemetry Firewall Block** - Hardcoded Windows Defender Firewall outbound rules to block Microsoft telemetry domains permanently.
+- **Defender Gaming Exclusions** - Automatically exempts Steam, Epic, and GOG libraries from real-time scans to reduce stutter during gaming.
+- **v2.4.0**: `autounattend.xml` Generator, Software Installer, Preset Profiles, Dry-Run Mode.
 - **Software Installer** - Automated Winget deployment of essential apps.
 - **Preset Profiles** - Shareable JSON configurations for 1-click setups.
 - **Dry-Run Mode** - Preview all changes safely before applying.
@@ -139,6 +142,10 @@ This method supports command-line parameters to customize the behaviour of the s
 - Prevent the AI service (`WSAIFabricSvc`) from starting automatically.
 - Disable baked-in AI Features in Edge, Paint, and Notepad.
 
+### Persistence & Watchdog (`-EnableUpdateWatchdog`, `-EnableFirewallTelemetryBlock`)
+- **Update Watchdog**: Installs a lightweight scheduled task that alerts you if a Windows Update secretly re-enables your disabled telemetry or reinstalls bloatware.
+- **Telemetry Firewall**: Hardcoded outbound firewall block on `vortex.data.microsoft.com` and other tracking domains that survive Windows Updates.
+
 ### UI & System Tweaks
 - Restore the classic Windows 10 style context menu.
 - Disable transparency, animations, and visual effects for max performance.
@@ -164,6 +171,7 @@ This method supports command-line parameters to customize the behaviour of the s
 - Enable Hardware Accelerated GPU Scheduling (HAGS).
 - Disable automatic maintenance tasks during gaming hours.
 - Remove Windows startup delay.
+- **Auto-exclude game libraries (Steam/Epic/GOG) from Windows Defender real-time scanning** (via `-AddDefenderGamingExclusions`) to prevent disk I/O stutter.
 
 ### ⚡ Performance Tweaks (`-EnablePerformanceTweaks`)
 - Disable **Superfetch (SysMain)** - unnecessary background RAM prefetching on SSD systems.

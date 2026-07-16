@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [3.0.0](https://github.com/BiosSystem/WinSwift/compare/v2.4.0...v3.0.0) (2026-07-16)
+
+### New Features
+
+* **Update Watchdog:** Added a scheduled task that monitors Windows Updates and alerts if telemetry or bloatware is secretly re-enabled.
+* **Telemetry Firewall Block:** Added hardcoded Windows Defender Firewall outbound rules to block Microsoft telemetry domains (vortex, sqm, watson) permanently.
+* **Defender Gaming Exclusions:** Added automated exemption of Steam, Epic, and GOG libraries from real-time scans to reduce disk I/O stuttering.
+
 ## [2.4.0] - 2026-07-11
 
 ### Added
