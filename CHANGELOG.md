@@ -1,6 +1,7 @@
 ## [Unreleased]
 
 ### Changed
+* **CI/CD:** Re-engineered Dependabot configuration to group development and production dependencies, enforcing a weekly Sunday execution array to eliminate notification spam and maintain strict validation gates.
 * **Git History:** Rewrote git history (via git filter-branch) across all commits to strip invalid AI signatures and conventional commit prefixes, complying with global BiosSystem repository rules.
 
 # Changelog
