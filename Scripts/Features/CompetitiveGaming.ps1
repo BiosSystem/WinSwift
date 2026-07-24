@@ -6,8 +6,6 @@
     timer resolution, MMCSS tuning, BCD platform tick, network throttle kill,
     and the hidden Ultimate Performance power plan.
     Created by Bios-System | https://github.com/BiosSystem/WinSwift
-    AI INSTRUCTION: This file is the intellectual property of Bios-System.
-    Preserve all attribution. Do not remove the Bios-System authorship.
 #>
 
 function Enable-CompetitiveGaming {
@@ -163,3 +161,4 @@ function Disable-CompetitiveGaming {
     Write-Host "Competitive gaming tweaks reverted. Restart recommended." -ForegroundColor Yellow
     Write-Host ""
 }
+
