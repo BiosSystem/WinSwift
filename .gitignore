@@ -3,3 +3,13 @@ Logs/*
 Backups/*
 # AI and Planning Files (Local Only)
 HISTORY.md
+
+# Build Artifacts & Binaries
+*.zip
+
+# Logs & Debug
+*.log
+debug_out.txt
+
+# Testing Scripts
+test_run.ps1
