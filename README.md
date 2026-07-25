@@ -122,6 +122,12 @@ This method supports command-line parameters to customize the behaviour of the s
   ```
 </details>
 
+## 📚 Developer Wiki & Technical Deep-Dive
+
+Are you a developer, sysadmin, or power user? We have created a comprehensive, open-source technical Wiki detailing the exact registry keys, services, and execution flows used by WinSwift.
+
+👉 **[Read the Developer Wiki & Documentation Here](docs/Home.md)**
+
 ## 🛠️ Feature Overview
 
 > [!TIP]
