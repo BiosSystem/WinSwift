@@ -1,8 +1,20 @@
 ## [Unreleased]
 
+### Added
+* **Modern Bloatware and AI Purge:** Added 24H2/25H2 AI purge targets (Photos Generative Fill, Clipboard AI, M365 silent install block, Outlook Copilot, Narrator AI).
+* **Telemetry:** Refreshed telemetry block list with dual-method Firewall and HOSTS fallback. Expanded scheduled tasks purge from 8 to 24 critical tasks.
+* **Privacy Hardening:** Added service-level telemetry disabling (DiagTrack, WerSvc, DPS).
+* **Advertising ID:** Added explicit disable for Microsoft Advertising ID.
+* **Voice Activation:** Added disable for voice activation wakeword listeners.
+* **Windows Update Hardening:** Added blocks for Windows Update driver search and feature version upgrades.
+* **Pester Tests:** Added structural unit tests for Features.json, Apps.json, and all registry files via GitHub Actions.
+* **Run Summary:** Added ExportRunSummary.ps1 to generate a timestamped JSON report of all applied changes and removed apps.
+* **Unattend Generator:** Rewrote UnattendGenerator.ps1 to embed WinSwift first-boot execution, local admin creation, and computer name.
+
 ### Changed
 * **CI/CD:** Re-engineered Dependabot configuration to group development and production dependencies, enforcing a weekly Sunday execution array to eliminate notification spam and maintain strict validation gates.
 * **Git History:** Rewrote git history (via git filter-branch) across all commits to strip invalid AI signatures and conventional commit prefixes, complying with global BiosSystem repository rules.
+* **Modernization:** Completed full architectural audit and competitive gap analysis against WinUtil and SophiaScript. Added WINSWIFT_MODERNIZATION_PLAN.md as the master execution ledger and completed execution of Track 1, Track 2, and Track 3.
 
 # Changelog
 

@@ -1,4 +1,4 @@
-﻿{
+{
   "Version": "1.1",
   "Apps": [
     {
@@ -1120,6 +1120,38 @@
       "SelectedByDefault": false,
       "Recommendation": "optional",
       "RemovalMethod": "Appx"
+    },
+    {
+      "FriendlyName": "ASUS Armoury Crate",
+      "AppId": "B9ECED6F.ASUSArmouryCrate",
+      "Description": "ASUS OEM hub for RGB lighting, fan control, and driver updates",
+      "SelectedByDefault": false,
+      "Recommendation": "optional",
+      "RemovalMethod": "Appx"
+    },
+    {
+      "FriendlyName": "MyASUS",
+      "AppId": "B9ECED6F.MyASUS",
+      "Description": "ASUS OEM system management and diagnostics app",
+      "SelectedByDefault": false,
+      "Recommendation": "optional",
+      "RemovalMethod": "Appx"
+    },
+    {
+      "FriendlyName": "ASUS ROG Live Service",
+      "AppId": "ROGLiveService",
+      "Description": "ASUS background service for ROG gaming peripherals and Armoury Crate",
+      "SelectedByDefault": false,
+      "Recommendation": "optional",
+      "RemovalMethod": "WinGet"
+    },
+    {
+      "FriendlyName": "Lenovo PC Manager",
+      "AppId": "LenovoPCManager",
+      "Description": "Lenovo OEM system management app (alternative to Lenovo Vantage on newer models)",
+      "SelectedByDefault": false,
+      "Recommendation": "optional",
+      "RemovalMethod": "WinGet"
     }
   ],
   "Presets": [
@@ -1132,7 +1164,7 @@
       ]
     },
     {
-      "Name": "OEM software (Dell, HP, Lenovo)",
+      "Name": "OEM software (Dell, HP, Lenovo, ASUS)",
       "AppIds": [
         "AD2F1837.HPAIExperienceCenter",
         "AD2F1837.HPConnectedMusic",
@@ -1156,9 +1188,13 @@
         "AD2F1837.myHP",
         "E046963F.LenovoCompanion",
         "LenovoCompanyLimited.LenovoVantageService",
+        "LenovoPCManager",
         "DellInc.DellSupportAssistforPCs",
         "DellInc.DellDigitalDelivery",
-        "DellInc.DellMobileConnect"
+        "DellInc.DellMobileConnect",
+        "B9ECED6F.ASUSArmouryCrate",
+        "B9ECED6F.MyASUS",
+        "ROGLiveService"
       ]
     }
   ]

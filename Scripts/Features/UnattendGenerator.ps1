@@ -4,21 +4,89 @@
 .DESCRIPTION
     Generates an autounattend.xml file that skips the Microsoft Account
     requirement, disables OOBE telemetry prompts, and optionally pre-seeds
-    WinSwift to run on first boot.
+    WinSwift to run on first boot with a saved configuration.
     Created by Bios-System | https://github.com/BiosSystem/WinSwift
 #>
 
 function Generate-UnattendXML {
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [string]$OutputPath = "C:\autounattend.xml"
+        [string]$OutputPath = "C:\autounattend.xml",
+
+        # If provided, embed a WinSwift first-boot run command using this config path
+        [string]$WinSwiftConfigPath = "",
+
+        # Local admin account to create (leave empty to skip)
+        [string]$LocalAdminName = "",
+
+        # Computer name to set (leave empty for random)
+        [string]$ComputerName = ""
     )
 
     Write-Host "> Generating autounattend.xml for offline OOBE bypass..." -ForegroundColor Cyan
 
+    $computerNameXml = if (-not [string]::IsNullOrWhiteSpace($ComputerName)) {
+        "            <ComputerName>$([System.Security.SecurityElement]::Escape($ComputerName))</ComputerName>"
+    } else { "" }
+
+    $localAdminXml = if (-not [string]::IsNullOrWhiteSpace($LocalAdminName)) {
+        @"
+            <UserAccounts>
+                <LocalAccounts>
+                    <LocalAccount wcm:action="add">
+                        <Name>$([System.Security.SecurityElement]::Escape($LocalAdminName))</Name>
+                        <Group>Administrators</Group>
+                        <DisplayName>$([System.Security.SecurityElement]::Escape($LocalAdminName))</DisplayName>
+                    </LocalAccount>
+                </LocalAccounts>
+            </UserAccounts>
+"@
+    } else { "" }
+
+    $winSwiftFirstBoot = if (-not [string]::IsNullOrWhiteSpace($WinSwiftConfigPath)) {
+        @"
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>2</Order>
+                    <Path>powershell.exe -NonInteractive -ExecutionPolicy Bypass -File "C:\WinSwift\WinSwift-Standalone.ps1" -Config "$WinSwiftConfigPath"</Path>
+                    <Description>Apply WinSwift configuration on first boot</Description>
+                </RunSynchronousCommand>
+"@
+    } else { "" }
+
     $xmlContent = @"
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State">
+    <settings pass="windowsPE">
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <SetupUILanguage>
+                <UILanguage>en-US</UILanguage>
+            </SetupUILanguage>
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <UserData>
+                <AcceptEula>true</AcceptEula>
+            </UserData>
+        </component>
+    </settings>
+    <settings pass="specialize">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+$computerNameXml
+        </component>
+        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <RunSynchronous>
+                <RunSynchronousCommand wcm:action="add">
+                    <Order>1</Order>
+                    <Path>reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t REG_DWORD /d 1 /f</Path>
+                    <Description>Bypass Microsoft Account requirement in OOBE</Description>
+                </RunSynchronousCommand>
+$winSwiftFirstBoot
+            </RunSynchronous>
+        </component>
+    </settings>
     <settings pass="oobeSystem">
         <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <OOBE>
@@ -28,17 +96,16 @@ function Generate-UnattendXML {
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <ProtectYourPC>3</ProtectYourPC>
                 <NetworkLocation>Home</NetworkLocation>
+                <SkipMachineOOBE>true</SkipMachineOOBE>
+                <SkipUserOOBE>true</SkipUserOOBE>
             </OOBE>
+$localAdminXml
         </component>
-    </settings>
-    <settings pass="specialize">
-        <component name="Microsoft-Windows-Deployment" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <RunSynchronous>
-                <RunSynchronousCommand wcm:action="add">
-                    <Order>1</Order>
-                    <Path>reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OOBE /v BypassNRO /t REG_DWORD /d 1 /f</Path>
-                </RunSynchronousCommand>
-            </RunSynchronous>
+        <component name="Microsoft-Windows-International-Core" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
         </component>
     </settings>
 </unattend>
@@ -47,8 +114,11 @@ function Generate-UnattendXML {
     if ($PSCmdlet.ShouldProcess($OutputPath, "Create autounattend.xml file")) {
         try {
             $xmlContent | Out-File -FilePath $OutputPath -Encoding UTF8 -Force
-            Write-Host "  [OK] Generated Unattend XML at: $OutputPath"
-            Write-Host "  To use: Place this file on the root of your Windows 11 installation USB." -ForegroundColor Yellow
+            Write-Host "  [OK] Generated autounattend.xml at: $OutputPath" -ForegroundColor Green
+            Write-Host "  To use: Place this file at the root of your Windows 11 installation USB." -ForegroundColor Yellow
+            if (-not [string]::IsNullOrWhiteSpace($WinSwiftConfigPath)) {
+                Write-Host "  WinSwift first-boot run is embedded. Place WinSwift-Standalone.ps1 at C:\WinSwift\ before running setup." -ForegroundColor DarkGray
+            }
         } catch {
             Write-Host "  [WARN] Failed to generate XML: $_" -ForegroundColor Yellow
         }
@@ -57,3 +127,24 @@ function Generate-UnattendXML {
     Write-Host ""
 }
 
+function Show-UnattendGeneratorPrompt {
+    [CmdletBinding()]
+    param()
+
+    Write-Host ""
+    Write-Host "=== WinSwift Unattend XML Generator ===" -ForegroundColor Cyan
+    Write-Host "Generates an autounattend.xml for automated Windows 11 setup." -ForegroundColor DarkGray
+    Write-Host ""
+
+    $outputPath = Read-Host "Output path [default: C:\autounattend.xml]"
+    if ([string]::IsNullOrWhiteSpace($outputPath)) { $outputPath = "C:\autounattend.xml" }
+
+    $configPath = Read-Host "WinSwift config path to embed for first-boot (leave blank to skip)"
+    $adminName  = Read-Host "Local admin account name to create (leave blank to skip)"
+    $pcName     = Read-Host "Computer name (leave blank for random)"
+
+    Generate-UnattendXML -OutputPath $outputPath `
+        -WinSwiftConfigPath $configPath `
+        -LocalAdminName $adminName `
+        -ComputerName $pcName
+}
