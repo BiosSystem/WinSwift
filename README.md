@@ -46,16 +46,14 @@ graph TD
     K --> L
 ```
 
-## ✨ What's New in v3.0.0
-- **Update Watchdog** - Automatically monitors for Windows Updates and warns you if Microsoft re-enables telemetry or bloatware.
-- **Telemetry Firewall Block** - Hardcoded Windows Defender Firewall outbound rules to block Microsoft telemetry domains permanently.
-- **Defender Gaming Exclusions** - Automatically exempts Steam, Epic, and GOG libraries from real-time scans to reduce stutter during gaming.
-- **v2.4.0**: `autounattend.xml` Generator, Software Installer, Preset Profiles, Dry-Run Mode.
-- **Software Installer** - Automated Winget deployment of essential apps.
-- **Preset Profiles** - Shareable JSON configurations for 1-click setups.
-- **Dry-Run Mode** - Preview all changes safely before applying.
-- **v2.2.0**: Competitive Gaming Mode, Settings App Ad Killer, Widgets Deep Disable, Auto-Update Check
-- **v2.1.0**: Gaming Mode, Performance Tweaks, Security Hardening, Extended AI Purge, Kill Windows Ads
+## ✨ What's New in v3.1.0
+
+We've overhauled WinSwift to keep up with the latest Windows 11 updates (24H2 and 25H2), focusing heavily on protecting your privacy from new AI integrations and telemetry.
+
+- **The Ultimate AI Purge:** We now actively hunt down and disable Copilot, Windows Recall, Click to Do, and generative AI features embedded in Paint, Notepad, and Photos. 
+- **Ironclad Privacy:** We've introduced a dual-layer telemetry block. WinSwift now disables tracking services at their root and applies hardcoded Firewall and HOSTS rules to prevent Windows from phoning home.
+- **Unattend Generator:** Building a new PC? Use our built-in XML generator to create a Windows installation file that entirely skips the Microsoft Account requirement and OOBE tracking screens.
+- **Ad-Free Experience:** We've expanded our ad-blocker to target the newest promotional banners Microsoft injected into the Settings app and File Explorer.
 
 <p align="center">
   <img src="Assets/Images/welcome.png" width="48%" />
@@ -129,134 +127,37 @@ This method supports command-line parameters to customize the behaviour of the s
 > [!TIP]
 > All changes made by WinSwift can easily be reverted, and almost all removed apps can be reinstalled through the Microsoft Store. Visit our [Wiki](https://github.com/BiosSystem/WinSwift/wiki/Reverting-Changes) for reversion instructions.
 
-### App Removal
-- Remove a wide variety of preinstalled bloatware apps (TikTok, Candy Crush, Solitaire).
+### 🗑️ App Removal & Bloatware
+Clean up your Start menu by instantly removing pre-installed bloatware (like TikTok, Candy Crush, and OEM manufacturer apps) in a single click.
 
-### Privacy & Telemetry
-- Disable OS telemetry, diagnostic data, activity history, app-launch tracking & targeted ads.
-- Disable tips, tricks, suggestions & ads across Windows, the lock screen, and Microsoft Edge.
-- Disable Windows location services, app location access, and Find My Device location tracking.
+### 🕵️ Privacy & Telemetry Hardening
+Take back control of your data. We disable background diagnostic data collection, activity history, targeted advertising IDs, and app-launch tracking. Your PC should serve you, not advertisers.
 
-### The AI Purge
-- Disable & remove **Microsoft Copilot**, **Windows Recall**, and **Click to Do**.
-- Prevent the AI service (`WSAIFabricSvc`) from starting automatically.
-- Disable baked-in AI Features in Edge, Paint, and Notepad.
+### 🤖 The AI Purge
+Not a fan of Microsoft's new AI push? WinSwift completely neutralizes Windows Recall snapshots, Copilot integrations, and AI-driven suggestions across Edge, Paint, and the OS workspace.
 
-### Persistence & Watchdog (`-EnableUpdateWatchdog`, `-EnableFirewallTelemetryBlock`)
-- **Update Watchdog**: Installs a lightweight scheduled task that alerts you if a Windows Update secretly re-enables your disabled telemetry or reinstalls bloatware.
-- **Telemetry Firewall**: Hardcoded outbound firewall block on `vortex.data.microsoft.com` and other tracking domains that survive Windows Updates.
+### 🎮 Gaming & Performance Modes
+Squeeze every drop of performance out of your hardware:
+- **Gaming Mode:** Automatically switches your PC to High Performance, lowers network latency for multiplayer games, disables mouse acceleration, and prevents background maintenance tasks from interrupting your match.
+- **Competitive Esports Mode:** For the hardcore players. Unlocks the hidden Ultimate Performance power plan, forces ultra-low system timer resolutions (0.5ms), and fine-tunes CPU/GPU scheduling to eliminate micro-stutters.
+- **Defender Exclusions:** Automatically tells Windows Defender to ignore your Steam, Epic, and GOG libraries, stopping real-time antivirus scans from slowing down game loading screens.
 
-### UI & System Tweaks
-- Restore the classic Windows 10 style context menu.
-- Disable transparency, animations, and visual effects for max performance.
-- Disable BitLocker automatic device encryption.
-- Disable network connectivity during Modern Standby to reduce battery drain.
+### 🚫 System-Wide Ad Blocker
+Microsoft has started putting ads inside the operating system itself. We turn them all off. Say goodbye to Lock Screen promotional banners, Start Menu suggested apps, and Settings app "tips".
 
-### Taskbar & Explorer Customization
-- Enable the 'End Task' option in the taskbar right-click menu to quickly force-close unresponsive apps.
-- Disable Bing web search & Copilot integration in the Start Menu.
-- Hide the Home, Gallery, or OneDrive section from the File Explorer navigation pane.
-- Show hidden files, folders, drives, and file extensions by default.
+### ⚡ General Performance Tweaks
+We turn off unnecessary background services that eat up your RAM and slow down your hard drive, such as Windows Search indexing and Superfetch, making your desktop feel much snappier.
 
-### Advanced Multi-tasking
-- Enable Windows Sandbox, a lightweight desktop environment for safely running applications in isolation.
-- Enable Windows Subsystem for Linux (WSL).
+### 🛡️ Security Hardening
+Close dangerous loopholes that malware loves to exploit. We disable outdated protocols (like SMBv1 and TLS 1.0) and block common attack vectors like AutoRun and Windows Script Host.
 
-### 🎮 Gaming Mode (`-EnableGamingMode`)
-- Switch to **High Performance** power plan automatically.
-- Disable Nagle's Algorithm for lower network latency in multiplayer games.
-- Disable Mouse Acceleration for true raw input.
-- Disable Sticky Keys (no more accidental Shift interruptions).
-- Disable Xbox Game Bar and DVR capture overhead.
-- Enable Hardware Accelerated GPU Scheduling (HAGS).
-- Disable automatic maintenance tasks during gaming hours.
-- Remove Windows startup delay.
-- **Auto-exclude game libraries (Steam/Epic/GOG) from Windows Defender real-time scanning** (via `-AddDefenderGamingExclusions`) to prevent disk I/O stutter.
+### 📦 Automated Software Installer
+Setting up a new PC? Check a few boxes and let WinSwift automatically download and install your favorite essential apps (like 7-Zip, Brave, VLC, and Discord) without you having to click through a single installer wizard.
 
-### ⚡ Performance Tweaks (`-EnablePerformanceTweaks`)
-- Disable **Superfetch (SysMain)** - unnecessary background RAM prefetching on SSD systems.
-- Disable **Windows Search indexing** - reduces disk I/O.
-- Disable **Hibernate** and free the `hiberfil.sys` file (often 8-32 GB).
-- Disable Windows Error Reporting dialog popups.
-- Disable Print Spooler on non-printer systems.
-- Disable Aero Shake (shake-to-minimize).
-- Set **NumLock ON** at every startup.
-- Show **seconds in the system clock**.
-
-### 🛡️ Security Hardening (`-EnableSecurityHardening`)
-- Disable **SMBv1** (EternalBlue/WannaCry ransomware vector).
-- Disable **Remote Desktop (RDP)** inbound access.
-- Disable **AutoRun** on all drive types (USB malware prevention).
-- Disable legacy **TLS 1.0 and 1.1** protocols.
-- Block common attack ports: **135, 139, 445** inbound.
-- Disable **Windows Script Host** (.vbs/.js malware protection).
-
-### 🤖 Extended AI Purge (24H2/25H2) (`-EnableExtendedAIPurge`)
-- Fully disable **Windows Recall** snapshots and AI indexing.
-- Deep-disable **Phone Link** via registry.
-- Disable **Windows Ink Workspace** AI suggestions.
-- Kill **Sluggishness Telemetry** scheduled tasks (CloudExperienceHost).
-- Suppress **OneDrive silent sign-in** from Microsoft account.
-- Disable **cross-device Cloud Clipboard sync**.
-
-### 🚫 Kill Windows Ads (`-DisableWindowsAds`)
-- Disable **Start menu promoted and suggested apps**.
-- Disable **Lock screen Spotlight ads**.
-- Remove **File Explorer promotional banners**.
-- Disable **Advertising ID** for app targeting.
-- Disable tailored experiences and device-usage personalization.
-
-### 🎯 Competitive Gaming Mode (`-EnableCompetitiveGaming`)
-For esports and competitive players who need every millisecond.
-- Enable hidden **Ultimate Performance** power plan (unlocks more CPU/GPU headroom than High Performance).
-- Force **high-precision system timer** resolution via `GlobalTimerResolutionRequests` (0.5ms vs Windows default 15.6ms).
-- BCD boot tweaks: `useplatformtick=yes`, `disabledynamictick=yes` for consistent kernel timing.
-- **MMCSS tuning**: `NetworkThrottlingIndex=0xFFFFFFFF` (removes artificial network latency cap), `SystemResponsiveness=0`.
-- **MMCSS Games task**: `GPU Priority=8`, `Priority=6`, `Scheduling Category=High`, `SFIO Priority=High`.
-- Disable **CPU core parking** (prevents latency spikes from parked cores waking mid-game).
-- Add `-DisableMemoryIntegrity` to also disable VBS/HVCI for a **5-10% FPS boost** (opt-in, shows security warning).
-
-### 📢 Kill Settings App Ads (`-DisableSettingsAds`)
-For Windows 11 25H2 - targets new ad vectors Microsoft injected into the Settings app itself.
-- Suppress all **Settings app suggestions and personalized tips** (17 ContentDeliveryManager keys).
-- Disable **post-OOBE "Get more out of Windows"** nag screen.
-- Block **silent Microsoft app installs** (`SilentInstalledAppsEnabled=0`).
-- Disable **Windows Backup nudge** introduced in 25H2.
-- Kill **Microsoft Teams reinstall suggestions**.
-- Master kill switch: `ContentDeliveryAllowed=0`.
-
-### 📌 Widgets Deep Disable (`-DisableWidgetsDeep`)
-The 25H2 update stopped Widgets opening on hover - but data collection continued in the background.
-- Remove `MicrosoftWindows.Client.WebExperience` and runtime packages entirely.
-- Set **Group Policy lock** (`AllowNewsAndInterests=0`) that **survives Windows Update** package reinstalls.
-- Kill all related background processes before removal.
-- Disable Widgets button in taskbar.
-
-### 📦 Software Installer (`-InstallSoftware`)
-Fully automated installation of essential utilities using Winget.
-- **Curated List**: 7-Zip, Brave Browser, VLC, Notepad++, PowerToys, Git, Visual Studio Code.
-- Provide a custom list via `-SoftwareList "7zip.7zip", "VideoLAN.VLC"`.
-- Silently accepts all EULAs and package agreements.
-
-### ⚙️ Community Preset Profiles (`-Preset <path.json>`)
-Create and share JSON configurations to quickly deploy standard setups.
-- **Example Usage**: `.\WinSwift.ps1 -Preset .\Config\Presets\gaming-rig.json`
-- Supports all WinSwift switches mapped in the `Switches` JSON array.
-
-### 🛡️ OOBE Bypass XML Generator (`-GenerateUnattend`)
-Instantly generate an `autounattend.xml` file for a fresh offline Windows 11 install.
-- Bypasses the mandatory Microsoft Account requirement (adds `BypassNRO` registry tweak).
-- Suppresses online account screens, EULA, and Wi-Fi setup prompts.
-- Outputs directly to `C:\autounattend.xml` (or custom `-UnattendOutPath`).
-
-### 🔎 Dry-Run Mode (`-DryRun`)
-Safely simulate all registry modifications and service changes without applying them.
-- Leverages PowerShell's native `$WhatIfPreference`.
-- Provides a detailed CLI preview of exactly what actions WinSwift would take.
+### 🔎 Dry-Run & Run Summaries
+Curious about what WinSwift actually does under the hood? Turn on Dry-Run Mode to safely preview all the changes without actually applying them. When you do run it for real, you'll get a clean summary report of exactly what was modified.
 
 ## 🤝 Contributing
-
-We welcome contributions of all kinds! Please see our [Contributing Guidelines](https://github.com/BiosSystem/WinSwift/blob/master/.github/CONTRIBUTING.md) for detailed instructions on how to get started.
 
 We welcome contributions of all kinds! Please see our [Contributing Guidelines](https://github.com/BiosSystem/WinSwift/blob/master/.github/CONTRIBUTING.md) for detailed instructions on how to get started.
 
