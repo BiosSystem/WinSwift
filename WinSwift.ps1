@@ -134,7 +134,7 @@ param (
     [switch]$AddDefenderGamingExclusions
 )
 
-Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.0.0' -Option Constant
+Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.1.0' -Option Constant
 
 # Call Helper Scripts
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Ensure-Admin.ps1') -OriginalCommandPath $PSCommandPath -OriginalBoundParameters $PSBoundParameters -OriginalUnboundArguments $MyInvocation.UnboundArguments

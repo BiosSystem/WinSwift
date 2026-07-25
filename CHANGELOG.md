@@ -1,4 +1,4 @@
-## [Unreleased]
+## [3.1.0] - 2026-07-25
 
 ### Added
 * **Modern Bloatware and AI Purge:** Added 24H2/25H2 AI purge targets (Photos Generative Fill, Clipboard AI, M365 silent install block, Outlook Copilot, Narrator AI).
