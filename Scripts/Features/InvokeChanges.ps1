@@ -34,8 +34,11 @@ function Invoke-FeatureApply {
                 RemoveApps @('Microsoft.Copilot', 'XP9CXNGPPJ97XX')
             }
             'DisableTelemetry' {
-                # Also disable telemetry scheduled tasks
+                # Also disable telemetry scheduled tasks and services
                 Disable-TelemetryScheduledTasks
+            }
+            'DisableTelemetryServices' {
+                Disable-TelemetryServices
             }
         }
         return
@@ -188,6 +191,10 @@ function Invoke-FeatureUndo {
         'DisableTelemetry' {
             # Also re-enable telemetry scheduled tasks
             Enable-TelemetryScheduledTasks
+            return
+        }
+        'DisableTelemetryServices' {
+            Enable-TelemetryServices
             return
         }
     }
@@ -416,10 +423,22 @@ function Invoke-AllChanges {
     }
 
     # ================================================================
-    # Final: Report registry import failures
+    # Final: Report registry import failures and export run summary
     # ================================================================
     if ($script:RegistryImportFailures -gt 0) {
         Write-Host ""
         Write-Host "$($script:RegistryImportFailures) registry import change(s) failed. See output above for details." -ForegroundColor Yellow
+    }
+
+    # Export run summary JSON to %TEMP% for later review
+    if ($script:RunStartTime -and (Get-Command Export-RunSummary -ErrorAction SilentlyContinue)) {
+        $version = if ($script:AppVersion) { $script:AppVersion } else { 'Unknown' }
+        Export-RunSummary `
+            -AppliedFeatureIds $applyIds `
+            -UndoneFeatureIds  $undoIds `
+            -RemovedApps       @() `
+            -FeatureErrors     @() `
+            -StartTime         $script:RunStartTime `
+            -WinSwiftVersion   $version
     }
 }

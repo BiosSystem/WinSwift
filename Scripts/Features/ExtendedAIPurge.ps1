@@ -85,6 +85,57 @@ function Disable-ExtendedAIPurge {
         Write-Host "  [OK] Windows Recall snapshots fully disabled"
     }
 
+    # 7. Disable Photos app Generative Fill (24H2 AI image editing)
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable Photos Generative Fill")) {
+        $photosPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Photos"
+        if (-not (Test-Path $photosPath)) { New-Item -Path $photosPath -Force | Out-Null }
+        Set-ItemProperty -Path $photosPath -Name "DisableGenerativeFill" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] Photos Generative Fill disabled"
+    }
+
+    # 8. Disable AI Suggested Clipboard Actions (AI reads clipboard to suggest tasks)
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable Suggested Clipboard Actions")) {
+        $clipPath = "HKCU:\Software\Microsoft\Clipboard"
+        if (-not (Test-Path $clipPath)) { New-Item -Path $clipPath -Force | Out-Null }
+        Set-ItemProperty -Path $clipPath -Name "EnableSuggestedClipboardActions" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] AI Suggested Clipboard Actions disabled"
+    }
+
+    # 9. Block Microsoft 365 silent auto-install push (delivered via Windows Update post-24H2)
+    if ($PSCmdlet.ShouldProcess("Registry", "Block M365 auto-install")) {
+        $m365Path = "HKLM:\SOFTWARE\Policies\Microsoft\Office\16.0\Common"
+        if (-not (Test-Path $m365Path)) { New-Item -Path $m365Path -Force | Out-Null }
+        Set-ItemProperty -Path $m365Path -Name "PreventProductInstall" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] Microsoft 365 silent auto-install blocked"
+    }
+
+    # 10. Disable Copilot in Outlook (new Outlook AI suggestions)
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable Outlook Copilot")) {
+        $olPath = "HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\outlook\options\mail"
+        if (-not (Test-Path $olPath)) { New-Item -Path $olPath -Force | Out-Null }
+        Set-ItemProperty -Path $olPath -Name "DisableCopilot" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] Outlook Copilot AI suggestions disabled"
+    }
+
+    # 11. Disable Power Automate Desktop UIFlowService autostart
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable UIFlowService autostart")) {
+        $uiflowKey = "HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService"
+        if (Test-Path $uiflowKey) {
+            Set-ItemProperty -Path $uiflowKey -Name "Start" -Value 4 -Type DWord -Force -ErrorAction SilentlyContinue
+            Write-Host "  [OK] Power Automate Desktop UIFlowService set to disabled"
+        } else {
+            Write-Host "  [SKIP] UIFlowService not found (Power Automate Desktop not installed)" -ForegroundColor DarkGray
+        }
+    }
+
+    # 12. Disable Narrator AI online voices (24H2 natural AI speech)
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable Narrator AI voices")) {
+        $narrPath = "HKCU:\Software\Microsoft\Narrator\NoRoam"
+        if (-not (Test-Path $narrPath)) { New-Item -Path $narrPath -Force | Out-Null }
+        Set-ItemProperty -Path $narrPath -Name "OnlineVoicesEnabled" -Value 0 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] Narrator AI online voices disabled"
+    }
+
     Write-Host ""
     Write-Host "Extended AI purge complete." -ForegroundColor Green
     Write-Host ""

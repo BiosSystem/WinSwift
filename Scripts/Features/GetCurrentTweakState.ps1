@@ -78,6 +78,15 @@ function Test-FeatureApplied {
             $vmpEnabled = Test-WindowsOptionalFeatureEnabled -FeatureName 'VirtualMachinePlatform'
             return ($wslEnabled -and $vmpEnabled)
         }
+        'DisableTelemetryServices' {
+            # Applied when all primary telemetry services are disabled
+            $keyServices = @('DiagTrack', 'WerSvc', 'DPS')
+            foreach ($svcName in $keyServices) {
+                $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
+                if ($svc -and $svc.StartType -ne 'Disabled') { return $false }
+            }
+            return $true
+        }
     }
 
     if (-not $feature.RegistryKey) { return $false }
