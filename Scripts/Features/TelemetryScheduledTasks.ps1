@@ -12,14 +12,40 @@
 #>
 function Get-TelemetryScheduledTasks {
     return @(
+        # Application Experience
         @{ Path = "\Microsoft\Windows\Application Experience\"; Name = "Microsoft Compatibility Appraiser" },
         @{ Path = "\Microsoft\Windows\Application Experience\"; Name = "Microsoft Compatibility Appraiser Exp" },
         @{ Path = "\Microsoft\Windows\Application Experience\"; Name = "ProgramDataUpdater" },
         @{ Path = "\Microsoft\Windows\Application Experience\"; Name = "StartupAppTask" },
+        # Customer Experience Improvement Program
         @{ Path = "\Microsoft\Windows\Customer Experience Improvement Program\"; Name = "Consolidator" },
         @{ Path = "\Microsoft\Windows\Customer Experience Improvement Program\"; Name = "UsbCeip" },
+        # Disk and Storage Telemetry
         @{ Path = "\Microsoft\Windows\DiskDiagnostic\"; Name = "Microsoft-Windows-DiskDiagnosticDataCollector" },
-        @{ Path = "\Microsoft\Windows\Autochk\"; Name = "Proxy" }
+        @{ Path = "\Microsoft\Windows\Autochk\"; Name = "Proxy" },
+        # Device Census (hardware fingerprint upload)
+        @{ Path = "\Microsoft\Windows\Device Information\"; Name = "Device" },
+        # AppID / SmartScreen Telemetry
+        @{ Path = "\Microsoft\Windows\AppID\"; Name = "SmartScreenSpecific" },
+        # Feedback / SIUF Telemetry
+        @{ Path = "\Microsoft\Windows\Feedback\Siuf\"; Name = "DmClient" },
+        @{ Path = "\Microsoft\Windows\Feedback\Siuf\"; Name = "DmClientOnScenarioDownload" },
+        # Maps Telemetry
+        @{ Path = "\Microsoft\Windows\Maps\"; Name = "MapsToastTask" },
+        @{ Path = "\Microsoft\Windows\Maps\"; Name = "MapsUpdateTask" },
+        # Software Quality Metrics
+        @{ Path = "\Microsoft\Windows\PI\"; Name = "Sqm-Tasks" },
+        # Windows Store Telemetry
+        @{ Path = "\Microsoft\Windows\WS\"; Name = "WSTask" },
+        # Activation / License Telemetry
+        @{ Path = "\Microsoft\Windows\Clip\"; Name = "License Validation" },
+        # CloudExperienceHost
+        @{ Path = "\Microsoft\Windows\CloudExperienceHost\"; Name = "CreateObjectTask" },
+        # Shell / Family Safety (used for usage telemetry)
+        @{ Path = "\Microsoft\Windows\Shell\"; Name = "FamilySafetyMonitor" },
+        @{ Path = "\Microsoft\Windows\Shell\"; Name = "FamilySafetyRefreshTask" },
+        # Device Inventory
+        @{ Path = "\Microsoft\Windows\Device Inventory\"; Name = "RunUpdateUserDeviceInventoryTask" }
     )
 }
 

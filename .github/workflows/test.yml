@@ -1,0 +1,57 @@
+name: Unit Tests
+
+on:
+  pull_request:
+    branches: [master, dev]
+  push:
+    branches: [dev]
+
+jobs:
+  pester-unit-tests:
+    name: Pester Unit Tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Pester
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge '5.0' })) {
+            Install-Module Pester -Force -SkipPublisherCheck -Scope CurrentUser
+          }
+          Import-Module Pester -MinimumVersion 5.0
+
+      - name: Run Features.json unit tests
+        shell: pwsh
+        run: |
+          $result = Invoke-Pester -Path "Tests/Unit/Test-FeaturesJson.ps1" -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0) {
+            Write-Error "$($result.FailedCount) test(s) failed in Test-FeaturesJson.ps1"
+            exit 1
+          }
+
+      - name: Run Apps.json unit tests
+        shell: pwsh
+        run: |
+          $result = Invoke-Pester -Path "Tests/Unit/Test-AppsJson.ps1" -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0) {
+            Write-Error "$($result.FailedCount) test(s) failed in Test-AppsJson.ps1"
+            exit 1
+          }
+
+      - name: Run registry file unit tests
+        shell: pwsh
+        run: |
+          $result = Invoke-Pester -Path "Tests/Unit/Test-RegistryFiles.ps1" -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0) {
+            Write-Error "$($result.FailedCount) test(s) failed in Test-RegistryFiles.ps1"
+            exit 1
+          }
+
+      - name: Report summary
+        if: always()
+        shell: pwsh
+        run: |
+          Write-Host "Unit test run complete."
