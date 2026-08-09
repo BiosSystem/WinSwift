@@ -10,17 +10,3 @@ updates:
         patterns:
           - '*'
 
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-      day: 'sunday'
-    groups:
-      development:
-        dependency-type: 'development'
-        patterns:
-          - '*'
-      production:
-        dependency-type: 'production'
-        patterns:
-          - '*'
