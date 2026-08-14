@@ -109,7 +109,15 @@ function Disable-ExtendedAIPurge {
         Write-Host "  [OK] Microsoft 365 silent auto-install blocked"
     }
 
-    # 10. Disable Copilot in Outlook (new Outlook AI suggestions)
+    # 10. Disable System-Wide Windows Copilot (Windows 11)
+    if ($PSCmdlet.ShouldProcess("Registry", "Disable Windows Copilot")) {
+        $copilotPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot"
+        if (-not (Test-Path $copilotPath)) { New-Item -Path $copilotPath -Force | Out-Null }
+        Set-ItemProperty -Path $copilotPath -Name "TurnOffWindowsCopilot" -Value 1 -Type DWord -Force -ErrorAction SilentlyContinue
+        Write-Host "  [OK] System-wide Windows Copilot disabled"
+    }
+
+    # 11. Disable Copilot in Outlook (new Outlook AI suggestions)
     if ($PSCmdlet.ShouldProcess("Registry", "Disable Outlook Copilot")) {
         $olPath = "HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\outlook\options\mail"
         if (-not (Test-Path $olPath)) { New-Item -Path $olPath -Force | Out-Null }
@@ -117,7 +125,7 @@ function Disable-ExtendedAIPurge {
         Write-Host "  [OK] Outlook Copilot AI suggestions disabled"
     }
 
-    # 11. Disable Power Automate Desktop UIFlowService autostart
+    # 12. Disable Power Automate Desktop UIFlowService autostart
     if ($PSCmdlet.ShouldProcess("Registry", "Disable UIFlowService autostart")) {
         $uiflowKey = "HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService"
         if (Test-Path $uiflowKey) {
@@ -128,7 +136,7 @@ function Disable-ExtendedAIPurge {
         }
     }
 
-    # 12. Disable Narrator AI online voices (24H2 natural AI speech)
+    # 13. Disable Narrator AI online voices (24H2 natural AI speech)
     if ($PSCmdlet.ShouldProcess("Registry", "Disable Narrator AI voices")) {
         $narrPath = "HKCU:\Software\Microsoft\Narrator\NoRoam"
         if (-not (Test-Path $narrPath)) { New-Item -Path $narrPath -Force | Out-Null }

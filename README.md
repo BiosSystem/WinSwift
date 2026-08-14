@@ -50,7 +50,7 @@ graph TD
 
 We've overhauled WinSwift to keep up with the latest Windows 11 updates (24H2 and 25H2), focusing heavily on protecting your privacy from new AI integrations and telemetry.
 
-- **The Ultimate AI Purge:** We now actively hunt down and disable Copilot, Windows Recall, Click to Do, and generative AI features embedded in Paint, Notepad, and Photos. 
+- **The Ultimate AI Purge (August 2026 Update):** We now actively hunt down and disable Copilot (System-wide and Outlook), Windows Recall, Click to Do, and generative AI features embedded in Paint, Notepad, and Photos for the latest 24H2 builds. 
 - **Ironclad Privacy:** We've introduced a dual-layer telemetry block. WinSwift now disables tracking services at their root and applies hardcoded Firewall and HOSTS rules to prevent Windows from phoning home.
 - **Unattend Generator:** Building a new PC? Use our built-in XML generator to create a Windows installation file that entirely skips the Microsoft Account requirement and OOBE tracking screens.
 - **Ad-Free Experience:** We've expanded our ad-blocker to target the newest promotional banners Microsoft injected into the Settings app and File Explorer.

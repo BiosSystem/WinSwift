@@ -1,0 +1,1 @@
+WinSwift must be run as Administrator.
