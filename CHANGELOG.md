@@ -1,3 +1,11 @@
+## [3.2.0] - 2026-08-14
+
+### Added
+* **OS R&D:** Audited 24H2 cumulative updates to ensure system stability against aggressive debloating practices.
+* **Copilot Purge:** Integrated explicit system-wide registry blocks for Windows Copilot (`TurnOffWindowsCopilot`) in `ExtendedAIPurge.ps1`.
+* **Safeguards:** Verified structural `CreateSystemRestorePoint` enforcement across all feature applications.
+* **Docs:** Authored `WINDOWS_OS_DISCOVERY_REPORT.md` mapping current Windows architecture community findings.
+
 ## [3.1.0] - 2026-07-25
 
 ### Added
