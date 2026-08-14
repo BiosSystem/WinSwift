@@ -1,0 +1,18 @@
+
+# Ignore log files
+*.log
+Logs/
+
+# Ignore backups
+Backups/
+
+# Ignore user settings
+Config/LastUsedSettings.json
+
+# Ignore old releases
+*.zip
+
+# Ignore scratch scripts and debug logs
+debug_out.txt
+test_run.ps1
+
