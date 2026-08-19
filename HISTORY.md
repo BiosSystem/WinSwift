@@ -1,3 +1,9 @@
+﻿## [Upcoming Releases]
+
+### v3.1.0 & v3.2.0 (Modernization Track)
+- Initiated a deep code audit to identify missing features against Windows 11 23H2/24H2 standards.
+- Drafted a modernization blueprint targeting missing AI toggles (Paint Co-Creator, Studio Effects), web search overrides, and aggressive Appx purges.
+- Designed a mandatory pre-flight safety architecture leveraging System Restore and Registry Backup before destructive executions.
 # Project History
 
 ## Origins
@@ -19,3 +25,4 @@ We cloned the repository to create a bespoke internal version that is easier to 
 ## Future Roadmap
 - Implementation of a CI/CD pipeline via GitHub Actions to automate the bundling of `WinSwift-Standalone.ps1` on every push to `master`.
 - Integration with external telemetry and dashboard services for remote execution monitoring.
+
