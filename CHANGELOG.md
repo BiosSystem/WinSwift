@@ -1,3 +1,9 @@
+﻿## [Upcoming Releases]
+
+### v3.1.0 & v3.2.0 (Modernization Track)
+- Initiated a deep code audit to identify missing features against Windows 11 23H2/24H2 standards.
+- Drafted a modernization blueprint targeting missing AI toggles (Paint Co-Creator, Studio Effects), web search overrides, and aggressive Appx purges.
+- Designed a mandatory pre-flight safety architecture leveraging System Restore and Registry Backup before destructive executions.
 ## [3.2.0] - 2026-08-14
 
 ### Added
@@ -110,3 +116,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Initial fork of [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat).
 - Base rebranding to WinSwift across all scripts.
+
