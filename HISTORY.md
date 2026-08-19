@@ -1,4 +1,16 @@
-﻿## [Upcoming Releases]
+﻿## [v3.2.0] - 2026-08-19
+### Added
+- Track 2 Guardrails: Hardcoded a mandatory System Restore execution in InvokeChanges.ps1 prior to bulk app removal.
+- Fallback DISM uninstaller injected into RemoveApps.ps1 for resilient packages like Dev Home, new Teams, and Copilot Provider.
+- CBS Registry backups triggered before feature modifications.
+
+## [v3.1.0] - 2026-08-19
+### Added
+- Track 1 AI Purge: Deep disables for Paint Co-Creator AI, Windows Studio Effects AI telemetry, Auto SR (Super Resolution) analytics, Live Captions, and Voice Access.
+- Start Menu Overrides: Injected BingSearchEnabled lock into Disable_Bing_Cortana_In_Search.reg.
+- Appx Targets: Mapped Microsoft.Windows.AI.Copilot.Provider for complete removal alongside existing Copilot components.
+- Cloud Nag Suppression: Silenced Windows Backup cloud sync nags and Smart App Control telemetry.
+## [Upcoming Releases]
 
 ### v3.1.0 & v3.2.0 (Modernization Track)
 - Initiated a deep code audit to identify missing features against Windows 11 23H2/24H2 standards.
@@ -25,4 +37,5 @@ We cloned the repository to create a bespoke internal version that is easier to 
 ## Future Roadmap
 - Implementation of a CI/CD pipeline via GitHub Actions to automate the bundling of `WinSwift-Standalone.ps1` on every push to `master`.
 - Integration with external telemetry and dashboard services for remote execution monitoring.
+
 

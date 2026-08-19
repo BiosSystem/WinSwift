@@ -334,6 +334,9 @@ function Invoke-AllChanges {
         if ($key -eq 'CreateRestorePoint') { continue }
         $applyIds += $key
     }
+    if ($applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
+        if (-not $script:Params.ContainsKey("CreateRestorePoint")) { $script:Params.Add("CreateRestorePoint", $true) }
+    }
     $undoIds = @($script:UndoParams.Keys)
 
     # ---- Determine if registry backup is needed ----
@@ -380,6 +383,10 @@ function Invoke-AllChanges {
                     }
                 } | Where-Object { $_ })
                 New-RegistrySettingsBackup -ActionableKeys $applyIds -ExtraFeatures $undoSyntheticFeatures | Out-Null
+                if ($applyIds -contains 'RemoveApps') {
+                    Write-Host "  [INFO] Backing up Component-Based Servicing hive (HKLM\COMPONENTS)..."
+                    reg export HKLM\COMPONENTS "$env:TEMP\WinSwift_CBS_Backup.reg" /y | Out-Null
+                }
             }
             catch {
                 throw "Registry backup failed before applying changes. $($_.Exception.Message)"
@@ -442,3 +449,4 @@ function Invoke-AllChanges {
             -WinSwiftVersion   $version
     }
 }
+
