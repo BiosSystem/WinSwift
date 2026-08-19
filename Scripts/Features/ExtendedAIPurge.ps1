@@ -144,6 +144,7 @@ function Disable-ExtendedAIPurge {
         Write-Host "  [OK] Narrator AI online voices disabled"
     }
 
+    $newAI
     Write-Host ""
     Write-Host "Extended AI purge complete." -ForegroundColor Green
     Write-Host ""
@@ -171,4 +172,5 @@ function Enable-ExtendedAIPurgeRevert {
     Write-Host "  [OK] Extended AI settings reverted (Phone Link and Cloud Clipboard restored)"
     Write-Host ""
 }
+
 
