@@ -1,4 +1,7 @@
 ## [v3.2.0] - 2026-08-19
+### Artifacts
+- **Release Package**: WinSwift_v3.2.0.zip
+- **SHA256**: 82AA1FB35BF980182A8587AC288366BA2D65A03D396A408BE65725F4A63E32C9
 ### Added
 - Track 2 Guardrails: Hardcoded a mandatory System Restore execution in InvokeChanges.ps1 prior to bulk app removal.
 - Fallback DISM uninstaller injected into RemoveApps.ps1 for resilient packages like Dev Home, new Teams, and Copilot Provider.
@@ -32,6 +35,7 @@ We cloned the repository to create a bespoke internal version that is easier to 
 ## Future Roadmap
 - Implementation of a CI/CD pipeline via GitHub Actions to automate the bundling of `WinSwift-Standalone.ps1` on every push to `master`.
 - Integration with external telemetry and dashboard services for remote execution monitoring.
+
 
 
 

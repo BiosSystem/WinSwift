@@ -1,4 +1,7 @@
 ## [v3.2.0] - 2026-08-19
+### Artifacts
+- **Release Package**: WinSwift_v3.2.0.zip
+- **SHA256**: 82AA1FB35BF980182A8587AC288366BA2D65A03D396A408BE65725F4A63E32C9
 ### Added
 - Track 2 Guardrails: Hardcoded a mandatory System Restore execution in InvokeChanges.ps1 prior to bulk app removal.
 - Fallback DISM uninstaller injected into RemoveApps.ps1 for resilient packages like Dev Home, new Teams, and Copilot Provider.
@@ -123,6 +126,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Initial fork of [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat).
 - Base rebranding to WinSwift across all scripts.
+
 
 
 
