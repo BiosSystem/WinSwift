@@ -198,7 +198,18 @@ function Remove-AppxApp {
                 Invoke-NonBlocking -ScriptBlock {
                     param($pattern)
                     Get-AppxPackage -Name $pattern -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction Continue
-                    Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like $pattern } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName }
+                                        Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like $pattern } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName }
+                    # 24H2 Resilient Appx Fallback via DISM
+                    if ($pattern -like '*Copilot*' -or $pattern -like '*DevHome*' -or $pattern -like '*MSTeams*') {
+                        try {
+                            DISM /Online /Remove-ProvisionedAppxPackage /PackageName:$pattern /quiet | Out-Null
+                            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 87) {
+                                Write-Warning "DISM fallback failed for $pattern with exit code $LASTEXITCODE"
+                            }
+                        } catch {
+                            Write-Warning "DISM fallback encountered an error for $pattern : $_"
+                        }
+                    }
                     # 24H2 Resilient Appx Fallback via DISM
                     if ($pattern -like '*Copilot*' -or $pattern -like '*DevHome*' -or $pattern -like '*MSTeams*') {
                         DISM /Online /Remove-ProvisionedAppxPackage /PackageName:$pattern /quiet | Out-Null
@@ -394,4 +405,5 @@ function Set-RunOnceWingetTask {
         Write-Host "Failed to schedule uninstall task for $($appId): $_" -ForegroundColor Red
     }
 }
+
 
