@@ -44,7 +44,7 @@ function Install-Software {
                     Write-Host "  [WARN] Failed to install $app (Exit code: $($process.ExitCode))" -ForegroundColor Yellow
                 }
             } catch {
-                Write-Host "  [WARN] Error installing $app: $_" -ForegroundColor Yellow
+                Write-Host "  [WARN] Error installing ${app}: $_" -ForegroundColor Yellow
             }
         }
     }
