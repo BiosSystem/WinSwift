@@ -91,7 +91,7 @@
     },
     {
       "FriendlyName": "Microsoft Copilot",
-      "AppId": "XP9CXNGPPJ97XX", "Microsoft.Windows.AI.Copilot.Provider",
+      "AppId": ["XP9CXNGPPJ97XX", "Microsoft.Windows.AI.Copilot.Provider"],
       "Description": "AI assistant integrated into Windows",
       "SelectedByDefault": true,
       "Recommendation": "safe",
