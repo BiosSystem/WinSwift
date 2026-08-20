@@ -1,3 +1,13 @@
+## [v3.2.0 audit hold] - 2026-08-20
+
+- Block release publication. `Config/Apps.json` is invalid JSON at the Copilot Provider row.
+- Block release publication. `InvokeChanges.ps1` contains duplicate definitions of six functions.
+- Confirm all three reviewed PowerShell files parse, demonstrating that parser success does not
+  detect the duplicate-function defect.
+- Confirm all 369 checksum entries match and packaged files match source. The archive is intact but
+  faithfully contains the broken source state.
+- Keep `Release/` untracked until source is repaired, tests pass, and the package is regenerated.
+
 ## [v3.2.0] - 2026-08-19
 ### Artifacts
 - **Release Package**: WinSwift_v3.2.0.zip
