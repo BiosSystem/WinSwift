@@ -1,3 +1,9 @@
+## 2026-08-20 - v3.2.0 release blocked by handoff audit
+
+The package checksum is correct, but release integrity is not. `Config/Apps.json` cannot be parsed,
+and `InvokeChanges.ps1` defines the same six functions twice. The archive matches source exactly,
+so regenerating it without repairing source would reproduce both defects. Keep v3.2.0 on hold.
+
 ## [v3.2.0] - 2026-08-19
 ### Artifacts
 - **Release Package**: WinSwift_v3.2.0.zip
