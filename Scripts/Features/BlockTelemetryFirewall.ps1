@@ -7,29 +7,31 @@
     writing a permanent HOSTS file entry as defense-in-depth. Covers original telemetry
     endpoints plus new 24H2/25H2 AI inference and data pipeline routes.
 #>
+function Get-WinSwiftTelemetryDomains {
+    return @(
+        'vortex.data.microsoft.com',
+        'settings-win.data.microsoft.com',
+        'watson.telemetry.microsoft.com',
+        'telemetry.microsoft.com',
+        'sqm.microsoft.com',
+        'oca.telemetry.microsoft.com.nsatc.net',
+        'us.vortex-win.data.microsoft.com',
+        'east.pipe.aria.microsoft.com',
+        'api.msai.microsoft.com',
+        'inference.windows.microsoft.com',
+        'copilot.microsoft.com',
+        'substrate.office.com',
+        'canary.designerapp.office.com',
+        'designer.microsoft.com'
+    )
+}
+
 function Invoke-BlockTelemetryFirewall {
     param (
         [switch]$WhatIf
     )
 
-    $telemetryDomains = @(
-        # Classic telemetry endpoints
-        "vortex.data.microsoft.com",
-        "settings-win.data.microsoft.com",
-        "watson.telemetry.microsoft.com",
-        "telemetry.microsoft.com",
-        "sqm.microsoft.com",
-        "oca.telemetry.microsoft.com.nsatc.net",
-        # New 24H2/25H2 AI inference and data pipeline routes
-        "us.vortex-win.data.microsoft.com",
-        "east.pipe.aria.microsoft.com",
-        "api.msai.microsoft.com",
-        "inference.windows.microsoft.com",
-        "copilot.microsoft.com",
-        "substrate.office.com",
-        "canary.designerapp.office.com",
-        "designer.microsoft.com"
-    )
+    $telemetryDomains = @(Get-WinSwiftTelemetryDomains)
 
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
     $hostsMarkerStart = "# WinSwift-TelemetryBlock-Start"

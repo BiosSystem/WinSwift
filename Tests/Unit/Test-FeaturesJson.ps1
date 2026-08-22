@@ -16,6 +16,14 @@ Describe 'Features.json' {
         $script:regPath = Join-Path $repoRoot 'Regfiles'
         $script:json = Get-Content $configPath -Raw | ConvertFrom-Json
         $script:features = $script:json.Features
+        $tokens = $null
+        $errors = $null
+        $entryAst = [System.Management.Automation.Language.Parser]::ParseFile(
+            (Join-Path $repoRoot 'WinSwift.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+        )
+        $script:entryParameterNames = @($entryAst.ParamBlock.Parameters.Name.VariablePath.UserPath)
     }
 
     It 'parses as valid JSON' {
@@ -26,6 +34,11 @@ Describe 'Features.json' {
         $ids = $script:features | ForEach-Object { $_.FeatureId }
         $dupes = $ids | Group-Object | Where-Object { $_.Count -gt 1 } | Select-Object -ExpandProperty Name
         $dupes | Should -BeNullOrEmpty -Because "Duplicate FeatureIds: $($dupes -join ', ')"
+    }
+
+    It 'exposes every feature through a direct CLI parameter' {
+        $missing = @($script:features.FeatureId | Where-Object { $_ -notin $script:entryParameterNames })
+        $missing | Should -BeNullOrEmpty -Because "Missing WinSwift.ps1 parameters: $($missing -join ', ')"
     }
 
     It 'every entry has a non-empty FeatureId' {
@@ -70,5 +83,34 @@ Describe 'Features.json' {
             $null -ne $_.MinVersion -and -not ($_.MinVersion -is [int] -or $_.MinVersion -is [long])
         }
         $invalid.Count | Should -Be 0
+    }
+
+    It 'uses only supported verification adapters' {
+        $supportedAdapters = @(
+            'CurrentFeatureState',
+            'GamingMode',
+            'ExtendedAIPurge',
+            'SecurityHardening',
+            'TelemetryFirewall'
+        )
+        $invalid = $script:features | Where-Object {
+            $_.VerificationAdapter -and $_.VerificationAdapter -notin $supportedAdapters
+        }
+        $invalid.Count | Should -Be 0
+    }
+
+    It 'declares verification metadata for release custom modules' {
+        $required = @(
+            'EnableGamingMode',
+            'EnableExtendedAIPurge',
+            'EnableSecurityHardening',
+            'EnableFirewallTelemetryBlock'
+        )
+        foreach ($featureId in $required) {
+            $feature = $script:features | Where-Object FeatureId -eq $featureId
+            $feature | Should -Not -BeNullOrEmpty
+            $feature.VerificationAdapter | Should -Not -BeNullOrEmpty
+            $feature.RequiresRestorePoint | Should -BeTrue
+        }
     }
 }

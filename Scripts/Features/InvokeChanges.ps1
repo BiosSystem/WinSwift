@@ -137,6 +137,27 @@ function Invoke-FeatureApply {
             Write-Host ""
             return
         }
+        'DisableTelemetryServices' {
+            Write-Host "> $applyText..."
+            Disable-TelemetryServices
+            return
+        }
+        'EnableGamingMode' {
+            Enable-GamingMode
+            return
+        }
+        'EnableExtendedAIPurge' {
+            Disable-ExtendedAIPurge
+            return
+        }
+        'EnableSecurityHardening' {
+            Enable-SecurityHardening
+            return
+        }
+        'EnableFirewallTelemetryBlock' {
+            Invoke-BlockTelemetryFirewall -WhatIf:$script:Params.ContainsKey('WhatIf')
+            return
+        }
     }
 }
 
@@ -195,6 +216,10 @@ function Invoke-FeatureUndo {
         }
         'DisableTelemetryServices' {
             Enable-TelemetryServices
+            return
+        }
+        'EnableFirewallTelemetryBlock' {
+            Invoke-UnblockTelemetryFirewall -WhatIf:$script:Params.ContainsKey('WhatIf')
             return
         }
     }
@@ -331,7 +356,11 @@ function Invoke-AllChanges {
         if (-not $script:Features.ContainsKey($key)) { continue }
         $applyIds += $key
     }
-    if ($applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
+    $requiresRestorePoint = @($applyIds | Where-Object {
+        $feature = $script:Features[$_]
+        $feature -and $feature.RequiresRestorePoint -eq $true
+    }).Count -gt 0
+    if ($requiresRestorePoint -or $applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
         if (-not $script:Params.ContainsKey("CreateRestorePoint")) { $script:Params.Add("CreateRestorePoint", $true) }
     }
     $undoIds = @($script:UndoParams.Keys)

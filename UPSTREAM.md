@@ -19,6 +19,17 @@
 - Support `-SkipExplorerRestart` while preserving `-NoRestartExplorer` as an alias.
 - Support `-SkipRegistryBackup` for controlled deployment workflows.
 
+## Release hardening verification
+
+- Recheck the Windows PowerShell 5.1 guard against upstream before loading any runtime module.
+- Recheck Win32-safe quoting for paths, scalar values, arrays, and unbound elevation arguments.
+- Recheck Mark-of-the-Web handling against upstream and limit unblocking to marked PowerShell source files.
+- Protect the three upstream safety contracts with Pester regression tests.
+- Apply the same Win32-safe quoting contract to bootstrap launcher arguments and propagate child exit codes.
+- Add metadata-driven verification adapters for WinSwift gaming, extended AI purge, security hardening, and telemetry firewall modules.
+- Enforce a direct command-line parameter for every configured feature ID.
+- Require a restore point before applying the four high-impact custom modules.
+
 ## WinSwift-owned differences
 
 - Keep WinSwift naming, BiosSystem authorship, standalone packaging, presets, and run summaries.

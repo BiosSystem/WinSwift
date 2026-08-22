@@ -1,190 +1,146 @@
+# Changelog
+
+Document all notable WinSwift changes in this file.
+
+Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## [3.3.0] - 2026-08-23
 
 ### Added
 
-- Add desired-state feature verification with registry read-back and Appx package checks.
+- Add desired-state verification with registry read-back and installed plus provisioned Appx checks.
 - Add `-Verify` and `-VerifyProfile` for unattended compliance checks.
-- Add exit code `2` for noncompliant, unsupported, or failed verification.
-- Add static parsing, duplicate-function, JSON, and PSScriptAnalyzer validation.
-- Add Pester coverage for verification contracts and repair the existing Windows PowerShell test harness.
-- Add `UPSTREAM.md` to record the reviewed Win11Debloat commit and reconciliation decisions.
+- Return exit code `2` for noncompliant, unsupported, or failed verification.
+- Add metadata-driven verification adapters for gaming mode, extended AI purge, security hardening, and telemetry firewall state.
+- Add static PowerShell parsing, duplicate-function detection, JSON validation, and PSScriptAnalyzer enforcement.
+- Add Pester coverage for verification, custom feature routing, and startup safety contracts.
+- Add `UPSTREAM.md` and `CREDITS.md` for upstream reconciliation and attribution.
 
 ### Changed
 
 - Require Windows PowerShell 5.1 before loading Appx and system restore code.
-- Quote UAC elevation arguments using Win32-safe escaping.
-- Unblock marked PowerShell source files when machine or user Group Policy overrides process execution policy.
-- Warn on domain-joined systems and fail missing runtime file checks with nonzero exit codes.
+- Quote UAC elevation arguments with Win32-safe escaping.
+- Limit Mark-of-the-Web handling to marked PowerShell source files when Group Policy overrides execution policy.
+- Warn on domain-joined systems and return nonzero exit codes for missing runtime files.
+- Route verified custom modules through the unified feature execution engine.
+- Expose every configured feature through a direct command-line parameter.
+- Require a system restore point before gaming, extended AI purge, security hardening, or telemetry firewall changes.
+- Direct single-file quick-start installations to the standalone release asset.
 - Propagate the modular process exit code through the standalone wrapper.
+- Quote bootstrap launcher arguments safely and propagate the child process exit code.
 - Run unit and static validation on pushes to `master` and `dev`.
 
 ### Fixed
 
+- Remove an undefined extended AI purge expression.
 - Initialize runtime parameters before the update check.
 - Repair the malformed WPF fallback warning.
-- Replace a PowerShell 5.1-incompatible Unicode update banner.
+- Replace a Windows PowerShell 5.1-incompatible update banner.
 - Keep registry backup progress counts consistent when `-SkipRegistryBackup` is used.
-
-## [v3.2.0 release stabilization] - 2026-08-20
-
-WinSwift v3.2.0 stabilizes the build pipeline, resolves structural syntax blockers, and clears
-significant technical debt from the release source.
-
-### 🐛 Bug Fixes
-
-- Correct the malformed Copilot `AppId` array in `Config/Apps.json`.
-- Fix invalid variable interpolation in `Scripts/Features/SoftwareInstaller.ps1`.
-
-### 🧹 Technical Debt & Refactoring
-
-- Remove 460 lines of duplicated PowerShell function declarations from
-  `Scripts/Features/InvokeChanges.ps1`.
-
-### ✅ Validation
-
-- Validate 144 application records and 146 application identifiers.
-- Confirm zero parse errors across all 98 tracked PowerShell files.
-- Confirm the standalone package builds and parses successfully.
-
-## [v3.2.0 audit hold] - 2026-08-20
-
-- Block release publication. `Config/Apps.json` is invalid JSON at the Copilot Provider row.
-- Block release publication. `InvokeChanges.ps1` contains duplicate definitions of six functions.
-- Confirm all three reviewed PowerShell files parse, demonstrating that parser success does not
-  detect the duplicate-function defect.
-- Confirm all 369 checksum entries match and packaged files match source. The archive is intact but
-  faithfully contains the broken source state.
-- Keep `Release/` untracked until source is repaired, tests pass, and the package is regenerated.
-
-## [v3.2.0] - 2026-08-19
-### Artifacts
-- **Release Package**: WinSwift_v3.2.0.zip
-- **SHA256**: 82AA1FB35BF980182A8587AC288366BA2D65A03D396A408BE65725F4A63E32C9
-### Added
-- Track 2 Guardrails: Hardcoded a mandatory System Restore execution in InvokeChanges.ps1 prior to bulk app removal.
-- Fallback DISM uninstaller injected into RemoveApps.ps1 for resilient packages like Dev Home, new Teams, and Copilot Provider.
-- CBS Registry backups triggered before feature modifications.
-
-## [v3.1.0] - 2026-08-19
-### Added
-- Track 1 AI Purge: Deep disables for Paint Co-Creator AI, Windows Studio Effects AI telemetry, Auto SR (Super Resolution) analytics, Live Captions, and Voice Access.
-- Start Menu Overrides: Injected BingSearchEnabled lock into Disable_Bing_Cortana_In_Search.reg.
-- Appx Targets: Mapped Microsoft.Windows.AI.Copilot.Provider for complete removal alongside existing Copilot components.
-- Cloud Nag Suppression: Silenced Windows Backup cloud sync nags and Smart App Control telemetry.
+- Correct malformed application JSON and invalid software-installer interpolation found during release stabilization.
+- Remove duplicate feature function declarations that bypassed parser-only validation.
 
 ## [3.2.0] - 2026-08-14
 
 ### Added
-* **OS R&D:** Audited 24H2 cumulative updates to ensure system stability against aggressive debloating practices.
-* **Copilot Purge:** Integrated explicit system-wide registry blocks for Windows Copilot (`TurnOffWindowsCopilot`) in `ExtendedAIPurge.ps1`.
-* **Safeguards:** Verified structural `CreateSystemRestorePoint` enforcement across all feature applications.
-* **Docs:** Authored `WINDOWS_OS_DISCOVERY_REPORT.md` mapping current Windows architecture community findings.
+
+- Add system restore enforcement before bulk app removal.
+- Add Component-Based Servicing registry backup support.
+- Add a DISM fallback for resistant Appx packages.
+- Add explicit system-wide Copilot policy blocks.
+- Add Windows 11 architecture discovery documentation.
+
+### Changed
+
+- Validate 144 application records and the complete standalone payload before publication.
 
 ## [3.1.0] - 2026-07-25
 
 ### Added
-* **Modern Bloatware and AI Purge:** Added 24H2/25H2 AI purge targets (Photos Generative Fill, Clipboard AI, M365 silent install block, Outlook Copilot, Narrator AI).
-* **Telemetry:** Refreshed telemetry block list with dual-method Firewall and HOSTS fallback. Expanded scheduled tasks purge from 8 to 24 critical tasks.
-* **Privacy Hardening:** Added service-level telemetry disabling (DiagTrack, WerSvc, DPS).
-* **Advertising ID:** Added explicit disable for Microsoft Advertising ID.
-* **Voice Activation:** Added disable for voice activation wakeword listeners.
-* **Windows Update Hardening:** Added blocks for Windows Update driver search and feature version upgrades.
-* **Pester Tests:** Added structural unit tests for Features.json, Apps.json, and all registry files via GitHub Actions.
-* **Run Summary:** Added ExportRunSummary.ps1 to generate a timestamped JSON report of all applied changes and removed apps.
-* **Unattend Generator:** Rewrote UnattendGenerator.ps1 to embed WinSwift first-boot execution, local admin creation, and computer name.
+
+- Add Windows 11 24H2 and 25H2 AI controls for Photos, Clipboard, Microsoft 365, Outlook, and Narrator.
+- Add telemetry service and scheduled-task controls.
+- Add Advertising ID and voice activation controls.
+- Add Windows Update driver and feature-update policies.
+- Add Pester tests for feature metadata, applications, and registry files.
+- Add JSON run summaries and unattended Windows setup generation.
 
 ### Changed
-* **CI/CD:** Re-engineered Dependabot configuration to group development and production dependencies, enforcing a weekly Sunday execution array to eliminate notification spam and maintain strict validation gates.
-* **Git History:** Rewrote git history (via git filter-branch) across all commits to strip invalid AI signatures and conventional commit prefixes, complying with global BiosSystem repository rules.
-* **Modernization:** Completed full architectural audit and competitive gap analysis against WinUtil and SophiaScript. Added WINSWIFT_MODERNIZATION_PLAN.md as the master execution ledger and completed execution of Track 1, Track 2, and Track 3.
 
-# Changelog
+- Expand telemetry firewall and HOSTS fallback coverage.
+- Modernize the modular feature architecture and release validation workflow.
 
-All notable changes to this project will be documented in this file.
+## [3.0.0] - 2026-07-16
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### Added
 
----
-
-## [3.0.0](https://github.com/BiosSystem/WinSwift/compare/v2.4.0...v3.0.0) (2026-07-16)
-
-### New Features
-
-* **Update Watchdog:** Added a scheduled task that monitors Windows Updates and alerts if telemetry or bloatware is secretly re-enabled.
-* **Telemetry Firewall Block:** Added hardcoded Windows Defender Firewall outbound rules to block Microsoft telemetry domains (vortex, sqm, watson) permanently.
-* **Defender Gaming Exclusions:** Added automated exemption of Steam, Epic, and GOG libraries from real-time scans to reduce disk I/O stuttering.
+- Add the Windows Update watchdog scheduled task.
+- Add telemetry firewall and HOSTS endpoint blocking.
+- Add Defender gaming exclusions for common game libraries.
 
 ## [2.4.0] - 2026-07-11
 
 ### Added
-- **`autounattend.xml` Generator** (`-GenerateUnattend`): Generates an offline Windows installation answer file (at `C:\autounattend.xml` or custom `-UnattendOutPath`) that skips the Microsoft Account requirement, disables OOBE telemetry prompts, and bypasses Windows 11 setup limitations. 
 
----
+- Add `autounattend.xml` generation with configurable output paths.
 
 ## [2.3.0] - 2026-07-11
 
 ### Added
-- **Software Installer** (`-InstallSoftware`): Winget-powered installer for a curated list of essential software (7-Zip, Brave, VLC, Notepad++, PowerToys, Git, VS Code). Accepts a custom list via `-SoftwareList`.
-- **Community Preset Profiles** (`-Preset <path.json>`): Load JSON files containing an array of switches to apply instantly, allowing users to share "Gaming Rig" or "Privacy First" configurations.
-- **Dry-Run Mode** (`-DryRun`): Simulates changes without applying them (sets `$WhatIfPreference = $true`), allowing you to preview exactly what registry keys and services will be affected.
 
----
+- Add Winget software installation for a curated application list.
+- Add reusable JSON preset profiles.
+- Add dry-run execution through `-DryRun`.
 
 ## [2.2.0] - 2026-07-11
 
 ### Added
-- **Competitive Gaming Mode** (`-EnableCompetitiveGaming`): Ultimate Performance power plan, high-precision timer resolution (`GlobalTimerResolutionRequests`), BCD `useplatformtick`/`disabledynamictick`, MMCSS `NetworkThrottlingIndex=0xFFFFFFFF` and `SystemResponsiveness=0`, MMCSS Games task `GPU Priority=8`/`Priority=6`/`Scheduling=High`, CPU core parking disable, optional Memory Integrity/VBS disable (`-DisableMemoryIntegrity`).
-- **Settings App Ads Kill** (`-DisableSettingsAds`): Suppress all 25H2 Settings suggestions, personalized tips, post-OOBE nags (`ScoobeSystemSettingEnabled`), Windows Backup nudge, Teams reinstall prompts, and silent app installs by Microsoft.
-- **Widgets Deep Disable** (`-DisableWidgetsDeep`): Remove `MicrosoftWindows.Client.WebExperience` package, kill data collection process, set Group Policy `AllowNewsAndInterests=0` (survives Windows Update), disable taskbar widget button.
-- **Auto-Update Check**: On every launch, WinSwift silently queries the GitHub releases API and displays a banner if a newer version is available. Pass `-SkipUpdateCheck` to suppress.
-- **Bios-System attribution signatures** in all four new modules.
 
----
+- Add competitive gaming mode with power, timer, scheduler, and optional Memory Integrity controls.
+- Add Settings advertising suppression.
+- Add deep Widgets removal and policy enforcement.
+- Add automatic release update checks.
 
-
+## [2.1.0] - 2026-07-11
 
 ### Added
-- **Gaming Mode** (`-EnableGamingMode`): High Performance power plan, Nagle disable, raw mouse input, HAGS, maintenance disable, startup delay removal.
-- **Performance Tweaks** (`-EnablePerformanceTweaks`): Disable SysMain/Superfetch, WSearch indexing, Hibernate (frees hiberfil.sys), Aero Shake, WER. NumLock ON, seconds in clock.
-- **Security Hardening** (`-EnableSecurityHardening`): Disable SMBv1, RDP, AutoRun, TLS 1.0/1.1. Block ports 135/139/445. Disable Windows Script Host.
-- **Extended AI Purge** (`-EnableExtendedAIPurge`): 24H2/25H2 targets - Recall snapshots, Phone Link deep-disable, Windows Ink AI, Sluggishness Telemetry tasks, OneDrive silent sign-in, Cloud Clipboard.
-- **Kill Windows Ads** (`-DisableWindowsAds`): Lock screen Spotlight, File Explorer banners, Start menu suggested apps, Advertising ID, device-usage personalization, Windows Spotlight.
-- **Bios-System attribution signatures** embedded in all new feature modules for fork attribution.
+
+- Add gaming and performance profiles.
+- Add security hardening and extended AI purge modules.
+- Add Windows advertising suppression.
 
 ### Fixed
-- Quick-run one-liner (`irm ... | iex`) broken due to `[CmdletBinding()]` at top level. Replaced with correct `irm -OutFile + & ` pattern in README.
 
----
-
+- Replace the incompatible pipeline quick-run command with file-based execution.
 
 ## [2.0.0] - 2026-07-11
 
 ### Added
-- **Standalone Bundler**: `build.ps1` compiles the entire project into a single self-contained `WinSwift-Standalone.ps1` executable - no extraction or folder structure required.
-- **AI/Copilot Purge Module**: Comprehensive purge of Microsoft Copilot, Windows Recall, Click to Do, Edge AI, Paint AI, Notepad AI, and the underlying `WSAIFabricSvc` service.
-- **Version Constant**: `WINSWIFT_VERSION` embedded directly in `WinSwift.ps1` for runtime version reporting.
-- **Git Branching Strategy**: Production-ready `master`, active `dev`, and legacy-archive `classic` branches.
-- **Full Documentation**: Initialized `CHANGELOG.md`, `SECURITY.md`, `CONTRIBUTING.md`, architecture Mermaid diagram, and feature overview in `README.md`.
+
+- Add the standalone source bundler.
+- Add the AI and Copilot purge module.
+- Add the WinSwift version constant and branch release model.
+- Add project documentation, security policy, and contribution guidelines.
 
 ### Changed
-- **Rebranding**: All project references migrated from `Win11Debloat` to `WinSwift` across all scripts, schemas, and assets.
-- **UI Redesign**: Re-engineered the GUI from a 3-column to a responsive 2-column grid layout to drastically reduce vertical scrolling.
-- **UI Styling**: Adjusted Category Card margins and padding; updated `ComboBox` high-contrast background colors for both light and dark themes.
-- **Code Modularization**: Extracted admin verification and path initialization into `Ensure-Admin.ps1` and `Initialize-Environment.ps1`.
-- **Credit**: Added explicit attribution to Raphire/Win11Debloat in README.
 
-### Fixed
-- Broken `readme-typing-svg` domain link in README.
-- Path resolution bug introduced by dev branch refactoring.
-
----
+- Rebrand the Win11Debloat fork as WinSwift while preserving upstream attribution.
+- Modularize administrator checks and environment initialization.
+- Redesign the WPF interface around a responsive two-column layout.
 
 ## [1.0.0] - 2026-07-04
 
 ### Added
-- Initial fork of [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat).
-- Base rebranding to WinSwift across all scripts.
 
+- Create the WinSwift fork from [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat).
 
-
-
+[3.3.0]: https://github.com/BiosSystem/WinSwift/compare/v3.2.0...v3.3.0
+[3.2.0]: https://github.com/BiosSystem/WinSwift/compare/v3.1.0...v3.2.0
+[3.1.0]: https://github.com/BiosSystem/WinSwift/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/BiosSystem/WinSwift/compare/v2.4.0...v3.0.0
+[2.4.0]: https://github.com/BiosSystem/WinSwift/compare/v2.3.0...v2.4.0
+[2.3.0]: https://github.com/BiosSystem/WinSwift/compare/v2.2.0...v2.3.0
+[2.2.0]: https://github.com/BiosSystem/WinSwift/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/BiosSystem/WinSwift/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/BiosSystem/WinSwift/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/BiosSystem/WinSwift/releases/tag/v1.0.0

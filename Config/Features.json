@@ -707,6 +707,7 @@
       "UndoLabel": "Enable Microsoft Store app suggestions in search",
       "ApplyUndoText": "Enabling Microsoft Store app suggestions in search",
       "RegistryUndoKey": null,
+      "VerificationAdapter": "CurrentFeatureState",
       "MinVersion": 22621,
       "MaxVersion": null
     },
@@ -733,6 +734,7 @@
       "UndoLabel": "Re-enable telemetry and diagnostic background services",
       "ApplyUndoText": "Re-enabling telemetry and diagnostic background services",
       "RegistryUndoKey": null,
+      "VerificationAdapter": "CurrentFeatureState",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -1058,6 +1060,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "CurrentFeatureState",
       "DisableWhenApplied": true,
       "MinVersion": null,
       "MaxVersion": null
@@ -1607,6 +1610,7 @@
       "UndoLabel": "Disable Windows Sandbox",
       "ApplyUndoText": "Disabling Windows Sandbox",
       "RegistryUndoKey": null,
+      "VerificationAdapter": "CurrentFeatureState",
       "RequiresReboot": true,
       "MinVersion": 22483,
       "MaxVersion": null
@@ -1621,6 +1625,7 @@
       "UndoLabel": "Disable Windows Subsystem for Linux",
       "ApplyUndoText": "Disabling Windows Subsystem for Linux",
       "RegistryUndoKey": null,
+      "VerificationAdapter": "CurrentFeatureState",
       "RequiresReboot": true,
       "MinVersion": 22000,
       "MaxVersion": null
@@ -1714,6 +1719,66 @@
       "ApplyUndoText": "Setting All Apps view to Category",
       "RegistryUndoKey": "Start_AllApps_Category.reg",
       "MinVersion": 26200,
+      "MaxVersion": null
+    },
+    {
+      "FeatureId": "EnableGamingMode",
+      "Label": "Enable the WinSwift gaming profile",
+      "ToolTip": "Apply the WinSwift gaming power, input, Game DVR, startup, GPU scheduling, network, and maintenance settings.",
+      "Category": null,
+      "RegistryKey": null,
+      "ApplyText": "Enabling the WinSwift gaming profile",
+      "UndoLabel": null,
+      "ApplyUndoText": null,
+      "RegistryUndoKey": null,
+      "VerificationAdapter": "GamingMode",
+      "RequiresRestorePoint": true,
+      "MinVersion": 22000,
+      "MaxVersion": null
+    },
+    {
+      "FeatureId": "EnableExtendedAIPurge",
+      "Label": "Apply the extended Windows AI purge",
+      "ToolTip": "Disable additional Windows 11 24H2 and 25H2 AI, Copilot, cloud clipboard, Phone Link, and telemetry integration.",
+      "Category": null,
+      "RegistryKey": null,
+      "ApplyText": "Applying the extended Windows AI purge",
+      "UndoLabel": null,
+      "ApplyUndoText": null,
+      "RegistryUndoKey": null,
+      "VerificationAdapter": "ExtendedAIPurge",
+      "RequiresRestorePoint": true,
+      "MinVersion": 22621,
+      "MaxVersion": null
+    },
+    {
+      "FeatureId": "EnableSecurityHardening",
+      "Label": "Apply the WinSwift security hardening profile",
+      "ToolTip": "Disable SMBv1, Remote Desktop, AutoRun, TLS 1.0 and 1.1, Windows Script Host, and block selected inbound legacy ports.",
+      "Category": null,
+      "RegistryKey": null,
+      "ApplyText": "Applying the WinSwift security hardening profile",
+      "UndoLabel": null,
+      "ApplyUndoText": null,
+      "RegistryUndoKey": null,
+      "VerificationAdapter": "SecurityHardening",
+      "RequiresRestorePoint": true,
+      "MinVersion": 22000,
+      "MaxVersion": null
+    },
+    {
+      "FeatureId": "EnableFirewallTelemetryBlock",
+      "Label": "Block Microsoft telemetry endpoints",
+      "ToolTip": "Block the WinSwift telemetry domain list with outbound firewall rules or marked HOSTS file fallback entries.",
+      "Category": null,
+      "RegistryKey": null,
+      "ApplyText": "Blocking Microsoft telemetry endpoints",
+      "UndoLabel": "Remove WinSwift telemetry endpoint blocks",
+      "ApplyUndoText": "Removing WinSwift telemetry endpoint blocks",
+      "RegistryUndoKey": null,
+      "VerificationAdapter": "TelemetryFirewall",
+      "RequiresRestorePoint": true,
+      "MinVersion": 22000,
       "MaxVersion": null
     }
   ]
