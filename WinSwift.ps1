@@ -34,6 +34,9 @@ param (
     [switch]$EnableWindowsSandbox,
     [switch]$EnableWindowsSubsystemForLinux,
     [switch]$DisableTelemetry,
+    [switch]$DisableTelemetryServices,
+    [switch]$DisableAdvertisingID,
+    [switch]$DisableVoiceActivation,
     [switch]$DisableSearchHistory,
     [switch]$DisableFastStartup,
     [switch]$DisableBitlockerAutoEncryption,
@@ -42,6 +45,8 @@ param (
     [switch]$DisableUpdateASAP,
     [switch]$PreventUpdateAutoReboot,
     [switch]$DisableDeliveryOptimization,
+    [switch]$DisableWUDriverSearch,
+    [switch]$DisableFeatureUpdates,
     [switch]$DisableBing,
     [switch]$DisableStoreSearchSuggestions,
     [switch]$DisableSearchHighlights,
@@ -74,8 +79,12 @@ param (
     [switch]$DisableClickToDo,
     [switch]$DisableAISvcAutoStart,
     [switch]$DisablePaintAI,
+    [switch]$DisablePhotosGenerativeFill,
     [switch]$DisableNotepadAI,
     [switch]$DisableEdgeAI,
+    [switch]$DisableSuggestedClipboardActions,
+    [switch]$DisableM365AutoInstall,
+    [switch]$DisableNarratorAIVoices,
     [switch]$DisableWidgets,
     [switch]$HideChat,
     [switch]$EnableEndTask,
@@ -581,11 +590,8 @@ if (($controlParamsCount -eq $script:Params.Keys.Count) -or ($script:Params.Keys
 Invoke-AllChanges
 
 # --- WinSwift Extended Features (Bios-System) ---
-if ($script:Params.ContainsKey("EnableGamingMode"))       { Enable-GamingMode }
 if ($script:Params.ContainsKey("EnablePerformanceTweaks")) { Enable-PerformanceTweaks }
 if ($script:Params.ContainsKey("DisableWindowsAds"))      { Disable-WindowsAds }
-if ($script:Params.ContainsKey("EnableExtendedAIPurge"))   { Disable-ExtendedAIPurge }
-if ($script:Params.ContainsKey("EnableSecurityHardening")) { Enable-SecurityHardening }
 
 # --- WinSwift v2.2.0 Features (Bios-System) ---
 if ($script:Params.ContainsKey("EnableCompetitiveGaming")) {
@@ -595,21 +601,18 @@ if ($script:Params.ContainsKey("DisableSettingsAds"))     { Disable-SettingsAds 
 if ($script:Params.ContainsKey("DisableWidgetsDeep"))     { Disable-WidgetsDeep }
 
 # --- WinSwift v2.3.0 & v2.4.0 Features (Bios-System) ---
-if ($script:Params.ContainsKey("InstallSoftware")) { 
-    Install-Software -SoftwareList $script:Params["SoftwareList"] 
+if ($script:Params.ContainsKey("InstallSoftware")) {
+    Install-Software -SoftwareList $script:Params["SoftwareList"]
 }
-if ($script:Params.ContainsKey("GenerateUnattend")) { 
-    Generate-UnattendXML -OutputPath $script:Params["UnattendOutPath"] 
+if ($script:Params.ContainsKey("GenerateUnattend")) {
+    Generate-UnattendXML -OutputPath $script:Params["UnattendOutPath"]
 }
 
 # --- WinSwift v3.0.0 Features (Bios-System) ---
-if ($script:Params.ContainsKey("EnableFirewallTelemetryBlock")) { 
-    Invoke-BlockTelemetryFirewall -WhatIf:$script:Params.ContainsKey("DryRun")
-}
-if ($script:Params.ContainsKey("EnableUpdateWatchdog")) { 
+if ($script:Params.ContainsKey("EnableUpdateWatchdog")) {
     Invoke-InstallUpdateWatchdog -WhatIf:$script:Params.ContainsKey("DryRun")
 }
-if ($script:Params.ContainsKey("AddDefenderGamingExclusions")) { 
+if ($script:Params.ContainsKey("AddDefenderGamingExclusions")) {
     Invoke-AddDefenderGamingExclusions -WhatIf:$script:Params.ContainsKey("DryRun")
 }
 

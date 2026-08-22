@@ -112,6 +112,216 @@ function Test-WinSwiftAppRemoved {
     return ($installed.Count -eq 0 -and $provisioned.Count -eq 0)
 }
 
+function Test-WinSwiftRegistryExpectations {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [object[]]$Expectations
+    )
+
+    foreach ($expectation in $Expectations) {
+        try {
+            $actual = Get-ItemPropertyValue -LiteralPath $expectation.Path -Name $expectation.Name -ErrorAction Stop
+        }
+        catch {
+            return $false
+        }
+
+        if ($actual -ne $expectation.Value) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-WinSwiftGamingModeState {
+    $expectations = @(
+        @{ Path = 'HKCU:\Control Panel\Mouse'; Name = 'MouseSpeed'; Value = '0' },
+        @{ Path = 'HKCU:\Control Panel\Mouse'; Name = 'MouseThreshold1'; Value = '0' },
+        @{ Path = 'HKCU:\Control Panel\Mouse'; Name = 'MouseThreshold2'; Value = '0' },
+        @{ Path = 'HKCU:\Control Panel\Accessibility\StickyKeys'; Name = 'Flags'; Value = '506' },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\GameDVR'; Name = 'AppCaptureEnabled'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\GameDVR'; Name = 'AllowGameDVR'; Value = 0 },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize'; Name = 'StartupDelayInMSec'; Value = 0 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers'; Name = 'HwSchMode'; Value = 2 },
+        @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance'; Name = 'MaintenanceDisabled'; Value = 1 }
+    )
+    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+        return $false
+    }
+
+    $interfaceKeys = @(Get-ChildItem -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces' -ErrorAction SilentlyContinue)
+    if ($interfaceKeys.Count -eq 0) {
+        return $false
+    }
+    foreach ($interfaceKey in $interfaceKeys) {
+        $interfaceExpectations = @(
+            @{ Path = $interfaceKey.PSPath; Name = 'TcpAckFrequency'; Value = 1 },
+            @{ Path = $interfaceKey.PSPath; Name = 'TCPNoDelay'; Value = 1 }
+        )
+        if (-not (Test-WinSwiftRegistryExpectations -Expectations $interfaceExpectations)) {
+            return $false
+        }
+    }
+
+    try {
+        $powerCfg = Get-Command powercfg.exe -ErrorAction Stop
+        $activeScheme = (& $powerCfg.Source /getactivescheme 2>$null | Out-String)
+        return ($activeScheme -match '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c')
+    }
+    catch {
+        return $false
+    }
+}
+
+function Test-WinSwiftExtendedAIPurgeState {
+    $expectations = @(
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Mobility'; Name = 'PhoneLinkEnabled'; Value = 0 },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Mobility'; Name = 'OptedIn'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsInkWorkspace'; Name = 'AllowWindowsInkWorkspace'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive'; Name = 'DisableFileSyncNGSC'; Value = 1 },
+        @{ Path = 'HKCU:\Software\Microsoft\Clipboard'; Name = 'EnableCloudClipboard'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'; Name = 'AllowCrossDeviceClipboard'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI'; Name = 'DisableAIDataAnalysis'; Value = 1 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI'; Name = 'AllowRecallEnablement'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Photos'; Name = 'DisableGenerativeFill'; Value = 1 },
+        @{ Path = 'HKCU:\Software\Microsoft\Clipboard'; Name = 'EnableSuggestedClipboardActions'; Value = 0 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Office\16.0\Common'; Name = 'PreventProductInstall'; Value = 1 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot'; Name = 'TurnOffWindowsCopilot'; Value = 1 },
+        @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\outlook\options\mail'; Name = 'DisableCopilot'; Value = 1 },
+        @{ Path = 'HKCU:\Software\Microsoft\Narrator\NoRoam'; Name = 'OnlineVoicesEnabled'; Value = 0 }
+    )
+    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+        return $false
+    }
+
+    if (Test-Path -LiteralPath 'HKCU:\Software\Microsoft\OneDrive') {
+        if (-not (Test-WinSwiftRegistryExpectations -Expectations @(
+            @{ Path = 'HKCU:\Software\Microsoft\OneDrive'; Name = 'DisablePersonalSync'; Value = 1 }
+        ))) {
+            return $false
+        }
+    }
+    if (Test-Path -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService') {
+        if (-not (Test-WinSwiftRegistryExpectations -Expectations @(
+            @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService'; Name = 'Start'; Value = 4 }
+        ))) {
+            return $false
+        }
+    }
+
+    $tasks = @(
+        @{ Path = '\Microsoft\Windows\CloudExperienceHost\'; Name = 'CreateObjectTask' },
+        @{ Path = '\Microsoft\Windows\Shell\'; Name = 'FamilySafetyMonitor' },
+        @{ Path = '\Microsoft\Windows\Shell\'; Name = 'FamilySafetyRefreshTask' },
+        @{ Path = '\Microsoft\Windows\Device Inventory\'; Name = 'RunUpdateUserDeviceInventoryTask' }
+    )
+    foreach ($task in $tasks) {
+        $scheduledTask = Get-ScheduledTask -TaskPath $task.Path -TaskName $task.Name -ErrorAction SilentlyContinue
+        if ($scheduledTask -and $scheduledTask.State -ne 'Disabled') {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-WinSwiftSecurityHardeningState {
+    $expectations = @(
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'; Name = 'fDenyTSConnections'; Value = 1 },
+        @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'; Name = 'NoDriveTypeAutoRun'; Value = 255 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client'; Name = 'Enabled'; Value = 0 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client'; Name = 'DisabledByDefault'; Value = 1 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server'; Name = 'Enabled'; Value = 0 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server'; Name = 'DisabledByDefault'; Value = 1 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client'; Name = 'Enabled'; Value = 0 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client'; Name = 'DisabledByDefault'; Value = 1 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server'; Name = 'Enabled'; Value = 0 },
+        @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server'; Name = 'DisabledByDefault'; Value = 1 },
+        @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows Script Host\Settings'; Name = 'Enabled'; Value = 0 }
+    )
+    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+        return $false
+    }
+
+    try {
+        $smbConfiguration = Get-SmbServerConfiguration -ErrorAction Stop
+        if ($smbConfiguration.EnableSMB1Protocol -ne $false) {
+            return $false
+        }
+        $smbFeature = Get-WindowsOptionalFeature -Online -FeatureName 'SMB1Protocol' -ErrorAction Stop
+        if ($smbFeature.State -notin @('Disabled', 'DisabledWithPayloadRemoved')) {
+            return $false
+        }
+    }
+    catch {
+        return $false
+    }
+
+    $portRules = @(
+        @{ Name = 'Block-RPC-135'; Port = '135' },
+        @{ Name = 'Block-NetBIOS-139'; Port = '139' },
+        @{ Name = 'Block-SMB-445'; Port = '445' }
+    )
+    foreach ($expectedRule in $portRules) {
+        $rules = @(Get-NetFirewallRule -DisplayName $expectedRule.Name -ErrorAction SilentlyContinue |
+            Where-Object { $_.Enabled -eq $true -and $_.Direction -eq 'Inbound' -and $_.Action -eq 'Block' })
+        if ($rules.Count -eq 0) {
+            return $false
+        }
+        $portMatches = @($rules | ForEach-Object {
+            Get-NetFirewallPortFilter -AssociatedNetFirewallRule $_ -ErrorAction SilentlyContinue
+        } | Where-Object { $_.Protocol -eq 'TCP' -and $_.LocalPort -contains $expectedRule.Port })
+        if ($portMatches.Count -eq 0) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-WinSwiftTelemetryFirewallState {
+    $hostsPath = Join-Path $env:SystemRoot 'System32\drivers\etc\hosts'
+    $hostsContent = if (Test-Path -LiteralPath $hostsPath) {
+        Get-Content -LiteralPath $hostsPath -Raw -ErrorAction SilentlyContinue
+    }
+    else {
+        ''
+    }
+
+    foreach ($domain in @(Get-WinSwiftTelemetryDomains)) {
+        $ruleName = "WinSwift_BlockTelemetry_$domain"
+        $firewallMatch = @(Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue |
+            Where-Object { $_.Enabled -eq $true -and $_.Direction -eq 'Outbound' -and $_.Action -eq 'Block' }).Count -gt 0
+        $hostsMatch = $hostsContent -match ("(?m)^\s*0\.0\.0\.0\s+{0}\s*$" -f [regex]::Escape($domain))
+        if (-not $firewallMatch -and -not $hostsMatch) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-WinSwiftCustomFeatureState {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$FeatureId,
+        [Parameter(Mandatory)]
+        [string]$Adapter
+    )
+
+    switch ($Adapter) {
+        'CurrentFeatureState' { return (Test-FeatureApplied -FeatureId $FeatureId) }
+        'GamingMode' { return (Test-WinSwiftGamingModeState) }
+        'ExtendedAIPurge' { return (Test-WinSwiftExtendedAIPurgeState) }
+        'SecurityHardening' { return (Test-WinSwiftSecurityHardeningState) }
+        'TelemetryFirewall' { return (Test-WinSwiftTelemetryFirewallState) }
+        default { throw "Unknown verification adapter: $Adapter" }
+    }
+}
+
 function New-WinSwiftVerificationResult {
     param(
         [string]$FeatureId,
@@ -167,26 +377,21 @@ function Test-WinSwiftFeature {
         }
 
         $feature = $script:Features[$FeatureId]
-        $supportedCustomFeatures = @(
-            'DisableWidgets',
-            'DisableStoreSearchSuggestions',
-            'EnableWindowsSandbox',
-            'EnableWindowsSubsystemForLinux',
-            'DisableTelemetryServices'
-        )
-        if (-not $feature.RegistryKey -and $FeatureId -notin $supportedCustomFeatures) {
+        $adapter = if ($feature.RegistryKey) { 'CurrentFeatureState' } else { [string]$feature.VerificationAdapter }
+        if ([string]::IsNullOrWhiteSpace($adapter)) {
             return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'No desired-state test is defined for this custom feature.'
         }
 
         $isApplied = if ($script:Params.ContainsKey('Sysprep') -or $script:Params.ContainsKey('User')) {
             $targetUserName = if ($script:Params.ContainsKey('Sysprep')) { 'Default' } else { $script:Params.User }
-            Invoke-WithTargetUserHive -TargetUserName $targetUserName -ArgumentObject $FeatureId -ScriptBlock {
-                param($TargetFeatureId)
-                Test-FeatureApplied -FeatureId $TargetFeatureId
+            $verificationRequest = [PSCustomObject]@{ FeatureId = $FeatureId; Adapter = $adapter }
+            Invoke-WithTargetUserHive -TargetUserName $targetUserName -ArgumentObject $verificationRequest -ScriptBlock {
+                param($Request)
+                Test-WinSwiftCustomFeatureState -FeatureId $Request.FeatureId -Adapter $Request.Adapter
             }
         }
         else {
-            Test-FeatureApplied -FeatureId $FeatureId
+            Test-WinSwiftCustomFeatureState -FeatureId $FeatureId -Adapter $adapter
         }
 
         if ($isApplied) {

@@ -26,6 +26,9 @@ param (
     [switch]$EnableWindowsSandbox,
     [switch]$EnableWindowsSubsystemForLinux,
     [switch]$DisableTelemetry,
+    [switch]$DisableTelemetryServices,
+    [switch]$DisableAdvertisingID,
+    [switch]$DisableVoiceActivation,
     [switch]$DisableSearchHistory,
     [switch]$DisableFastStartup,
     [switch]$DisableBitlockerAutoEncryption,
@@ -34,6 +37,8 @@ param (
     [switch]$DisableUpdateASAP,
     [switch]$PreventUpdateAutoReboot,
     [switch]$DisableDeliveryOptimization,
+    [switch]$DisableWUDriverSearch,
+    [switch]$DisableFeatureUpdates,
     [switch]$DisableBing,
     [switch]$DisableStoreSearchSuggestions,
     [switch]$DisableDesktopSpotlight,
@@ -65,8 +70,12 @@ param (
     [switch]$DisableClickToDo,
     [switch]$DisableAISvcAutoStart,
     [switch]$DisablePaintAI,
+    [switch]$DisablePhotosGenerativeFill,
     [switch]$DisableNotepadAI,
     [switch]$DisableEdgeAI,
+    [switch]$DisableSuggestedClipboardActions,
+    [switch]$DisableM365AutoInstall,
+    [switch]$DisableNarratorAIVoices,
     [switch]$DisableSearchHighlights,
     [switch]$DisableWidgets,
     [switch]$HideChat,
@@ -101,6 +110,10 @@ param (
     [switch]$ShowDriveLettersLast,
     [switch]$ShowNetworkDriveLettersFirst,
     [switch]$HideDriveLetters,
+    [switch]$EnableGamingMode,
+    [switch]$EnableExtendedAIPurge,
+    [switch]$EnableSecurityHardening,
+    [switch]$EnableFirewallTelemetryBlock,
     [switch]$Verify,
     [string]$VerifyProfile
 )
@@ -194,15 +207,30 @@ if (Test-Path "$backupDir") {
     Remove-Item "$backupDir" -Recurse -Force
 }
 
-# Make list of arguments to pass on to the script (exclude the -Dev switch, which only affects this launcher)
-$arguments = $($PSBoundParameters.GetEnumerator() | Where-Object { $_.Key -ne 'Dev' } | ForEach-Object {
-    if ($_.Value -eq $true) {
-        "-$($_.Key)"
-    } 
-    else {
-         "-$($_.Key) ""$($_.Value)"""
+function Format-LauncherArg {
+    param([AllowEmptyString()][string]$Value)
+
+    $escaped = $Value -replace '(\\*)"', '$1$1\"'
+    $escaped = $escaped -replace '(\\+)$', '$1$1'
+    return '"{0}"' -f $escaped
+}
+
+# Make a safely quoted argument list for the script. Exclude -Dev because it only affects this launcher.
+$arguments = @()
+foreach ($boundParameter in $PSBoundParameters.GetEnumerator() | Where-Object { $_.Key -ne 'Dev' }) {
+    $arguments += "-$($boundParameter.Key)"
+    if ($boundParameter.Value -is [System.Management.Automation.SwitchParameter] -or $boundParameter.Value -is [bool]) {
+        continue
     }
-})
+
+    $argumentValue = if ($boundParameter.Value -is [array]) {
+        $boundParameter.Value -join ','
+    }
+    else {
+        [string]$boundParameter.Value
+    }
+    $arguments += Format-LauncherArg $argumentValue
+}
 
 Write-Output ""
 Write-Output "> Launching WinSwift..."
@@ -223,11 +251,27 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
 
 # Run WinSwift script with the provided arguments
 $debloatScriptPath = Join-Path $tempWorkPath 'WinSwift.ps1'
-$debloatProcess = Start-Process powershell.exe -WindowStyle $windowStyle -PassThru -ArgumentList "-executionpolicy bypass -File `"$debloatScriptPath`" $arguments" -Verb RunAs
+$launchArguments = @(
+    '-NoProfile'
+    '-ExecutionPolicy'
+    'Bypass'
+    '-File'
+    (Format-LauncherArg $debloatScriptPath)
+) + $arguments
+
+$exitCode = 1
+try {
+    $debloatProcess = Start-Process powershell.exe -WindowStyle $windowStyle -PassThru -ArgumentList $launchArguments -Verb RunAs -ErrorAction Stop
+}
+catch {
+    Write-Host "Error: Unable to launch WinSwift with administrator privileges. $($_.Exception.Message)" -ForegroundColor Red
+    $debloatProcess = $null
+}
 
 # Wait for the process to finish before continuing
 if ($null -ne $debloatProcess) {
     $debloatProcess.WaitForExit()
+    $exitCode = $debloatProcess.ExitCode
 }
 
 # Remove all remaining script files, except for configs, logs and backups
@@ -240,4 +284,5 @@ if (Test-Path $tempWorkPath) {
 }
 
 Write-Output ""
+Exit $exitCode
 

@@ -21,6 +21,26 @@ Describe 'WinSwift desired-state verification' {
                 FeatureId = 'RemoveApps'
                 RegistryKey = $null
             }
+            EnableGamingMode = [PSCustomObject]@{
+                FeatureId = 'EnableGamingMode'
+                RegistryKey = $null
+                VerificationAdapter = 'GamingMode'
+            }
+            EnableExtendedAIPurge = [PSCustomObject]@{
+                FeatureId = 'EnableExtendedAIPurge'
+                RegistryKey = $null
+                VerificationAdapter = 'ExtendedAIPurge'
+            }
+            EnableSecurityHardening = [PSCustomObject]@{
+                FeatureId = 'EnableSecurityHardening'
+                RegistryKey = $null
+                VerificationAdapter = 'SecurityHardening'
+            }
+            EnableFirewallTelemetryBlock = [PSCustomObject]@{
+                FeatureId = 'EnableFirewallTelemetryBlock'
+                RegistryKey = $null
+                VerificationAdapter = 'TelemetryFirewall'
+            }
         }
     }
 
@@ -85,5 +105,30 @@ Describe 'WinSwift desired-state verification' {
         $input.FeatureIds | Should -Contain 'DisableTelemetry'
         $input.FeatureIds | Should -Contain 'RemoveApps'
         $input.AppIds | Should -Contain 'Microsoft.TestApp'
+    }
+
+    It 'dispatches every release custom verification adapter' {
+        Mock Test-WinSwiftCustomFeatureState { $true }
+
+        $featureIds = @(
+            'EnableGamingMode',
+            'EnableExtendedAIPurge',
+            'EnableSecurityHardening',
+            'EnableFirewallTelemetryBlock'
+        )
+        foreach ($featureId in $featureIds) {
+            $result = Test-WinSwiftFeature -FeatureId $featureId
+            $result.Status | Should -Be 'Compliant'
+        }
+
+        Should -Invoke Test-WinSwiftCustomFeatureState -Times 4
+    }
+
+    It 'reports custom feature drift as noncompliant' {
+        Mock Test-WinSwiftCustomFeatureState { $false }
+
+        $result = Test-WinSwiftFeature -FeatureId 'EnableSecurityHardening'
+
+        $result.Status | Should -Be 'NonCompliant'
     }
 }

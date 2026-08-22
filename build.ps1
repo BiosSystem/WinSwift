@@ -41,6 +41,14 @@ $WrapperCode = @"
 
 `$VerbosePreference = 'SilentlyContinue'
 
+function Format-StandaloneArg {
+    param([AllowEmptyString()][string]`$Value)
+
+    `$escaped = `$Value -replace '(\\*)"', '`$1`$1\"'
+    `$escaped = `$escaped -replace '(\\+)$', '`$1`$1'
+    return '"' + `$escaped + '"'
+}
+
 # Payload (Base64 Zip)
 `$processExitCode = 1
 `$Payload = "$Base64String"
@@ -65,7 +73,10 @@ try {
     `$ScriptPath = Join-Path `$ExtractPath "WinSwift.ps1"
     
     if (Test-Path `$ScriptPath) {
-        `$ArgsList = @("-ExecutionPolicy", "Bypass", "-NoProfile", "-File", "`$ScriptPath") + `$args
+        `$ArgsList = @("-ExecutionPolicy", "Bypass", "-NoProfile", "-File", (Format-StandaloneArg `$ScriptPath))
+        foreach (`$argument in `$args) {
+            `$ArgsList += (Format-StandaloneArg ([string]`$argument))
+        }
         Write-Host "Launching WinSwift..." -ForegroundColor Cyan
         `$process = Start-Process -FilePath "powershell.exe" -ArgumentList `$ArgsList -NoNewWindow -Wait -PassThru
         `$processExitCode = `$process.ExitCode

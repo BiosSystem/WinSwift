@@ -36,7 +36,22 @@ jobs:
         run: |
           $ver = "${{ steps.version.outputs.VERSION }}"
           $zipName = "WinSwift-v$ver.zip"
-          $items = @("Assets", "Config", "Regfiles", "Schemas", "Scripts", "WinSwift.ps1", "Run.bat", "README.md", "CHANGELOG.md", "LICENSE")
+          $items = @(
+            "Assets",
+            "Config",
+            "Regfiles",
+            "Schemas",
+            "Scripts",
+            "WinSwift.ps1",
+            "Run.bat",
+            "README.md",
+            "CHANGELOG.md",
+            "CONTRIBUTING.md",
+            "CREDITS.md",
+            "SECURITY.md",
+            "UPSTREAM.md",
+            "LICENSE"
+          )
           $itemPaths = $items | ForEach-Object { Join-Path $PWD $_ } | Where-Object { Test-Path $_ }
           Compress-Archive -Path $itemPaths -DestinationPath $zipName -Force
           Write-Host "Created $zipName"

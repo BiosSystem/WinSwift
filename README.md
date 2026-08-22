@@ -101,14 +101,24 @@ For an in-depth look at our architecture, registry modifications, deployment met
 
 ## ⚡ Quick Start
 
-Run WinSwift directly from PowerShell without downloading any files manually. This method is perfect for rapid deployment on fresh installations.
+Download the standalone release asset when you need a single-file deployment. The standalone script contains the complete modular payload and launches it through Windows PowerShell 5.1.
 
 ```PowerShell
-$f = New-TemporaryFile | Rename-Item -NewName { $_.Name + '.ps1' } -PassThru
-irm https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1 -OutFile $f
-& $f
-Remove-Item $f -Force
+$scriptPath = Join-Path $env:TEMP 'WinSwift-Standalone.ps1'
+Invoke-WebRequest 'https://github.com/BiosSystem/WinSwift/releases/latest/download/WinSwift-Standalone.ps1' -OutFile $scriptPath
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File $scriptPath
+Remove-Item -LiteralPath $scriptPath -Force
 ```
+
+Clone the complete repository when you need modular source, configuration files, registry definitions, or development tools:
+
+```PowerShell
+git clone https://github.com/BiosSystem/WinSwift.git
+Set-Location .\WinSwift
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1
+```
+
+Do not download and run `WinSwift.ps1` by itself. The modular entry point requires the `Assets`, `Config`, `Regfiles`, `Schemas`, and `Scripts` directories.
 
 > [!WARNING]
 > While designed to be safe and reversible, modifying OS features carries inherent risks. Use at your own risk. Check out the [Wiki](docs/WIKI.md) for instructions on how to revert changes.
@@ -140,5 +150,7 @@ Use `-SkipExplorerRestart` to defer the Explorer restart. Use `-SkipRegistryBack
 ## 🤝 Contributing & License
 
 Read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+Review [upstream credits](CREDITS.md) before redistributing a modified build.
 
 WinSwift is released under the MIT license.
