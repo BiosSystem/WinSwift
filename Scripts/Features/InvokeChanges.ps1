@@ -253,7 +253,7 @@ function Invoke-ApplyFeatures {
             & $script:ApplyProgressCallback $step $TotalSteps $displayName
         }
 
-        Invoke-FeatureApply -FeatureId $featureId
+        Invoke-WinSwiftFeature -FeatureId $featureId
         $step++
     }
 }
@@ -293,11 +293,7 @@ function Invoke-UndoFeatures {
             & $script:ApplyProgressCallback $step $TotalSteps $undoText
         }
 
-        if ($f -and $f.RegistryUndoKey) {
-            ImportRegistryFile "> $undoText" (Resolve-UndoRegFilePath $f.RegistryUndoKey)
-        }
-
-        Invoke-FeatureUndo -FeatureId $featureId
+        Undo-WinSwiftFeature -FeatureId $featureId
         $step++
     }
 }
@@ -332,6 +328,7 @@ function Invoke-AllChanges {
         if ($script:ControlParams -contains $key) { continue }
         if ($key -eq 'Apps') { continue }
         if ($key -eq 'CreateRestorePoint') { continue }
+        if (-not $script:Features.ContainsKey($key)) { continue }
         $applyIds += $key
     }
     if ($applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
@@ -357,14 +354,14 @@ function Invoke-AllChanges {
 
     # ---- Calculate total progress steps ----
     $totalSteps = $applyIds.Count + $undoIds.Count
-    if ($needsBackup) { $totalSteps++ }
+    if ($needsBackup -and -not $script:Params.ContainsKey('SkipRegistryBackup')) { $totalSteps++ }
     if ($script:Params.ContainsKey("CreateRestorePoint")) { $totalSteps++ }
     $step = 0
 
     # ================================================================
     # Phase 1: Registry backup
     # ================================================================
-    if ($needsBackup) {
+    if ($needsBackup -and -not $script:Params.ContainsKey('SkipRegistryBackup')) {
         $step++
         if ($script:ApplyProgressCallback) {
             & $script:ApplyProgressCallback $step $totalSteps "Creating registry backup..."

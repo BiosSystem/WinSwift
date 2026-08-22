@@ -1,3 +1,30 @@
+## [3.3.0] - 2026-08-23
+
+### Added
+
+- Add desired-state feature verification with registry read-back and Appx package checks.
+- Add `-Verify` and `-VerifyProfile` for unattended compliance checks.
+- Add exit code `2` for noncompliant, unsupported, or failed verification.
+- Add static parsing, duplicate-function, JSON, and PSScriptAnalyzer validation.
+- Add Pester coverage for verification contracts and repair the existing Windows PowerShell test harness.
+- Add `UPSTREAM.md` to record the reviewed Win11Debloat commit and reconciliation decisions.
+
+### Changed
+
+- Require Windows PowerShell 5.1 before loading Appx and system restore code.
+- Quote UAC elevation arguments using Win32-safe escaping.
+- Unblock marked PowerShell source files when machine or user Group Policy overrides process execution policy.
+- Warn on domain-joined systems and fail missing runtime file checks with nonzero exit codes.
+- Propagate the modular process exit code through the standalone wrapper.
+- Run unit and static validation on pushes to `master` and `dev`.
+
+### Fixed
+
+- Initialize runtime parameters before the update check.
+- Repair the malformed WPF fallback warning.
+- Replace a PowerShell 5.1-incompatible Unicode update banner.
+- Keep registry backup progress counts consistent when `-SkipRegistryBackup` is used.
+
 ## [v3.2.0 release stabilization] - 2026-08-20
 
 WinSwift v3.2.0 stabilizes the build pipeline, resolves structural syntax blockers, and clears

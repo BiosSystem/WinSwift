@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/github/stars/BiosSystem/WinSwift?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
-> **Notice:** WinSwift is an enterprise-grade, rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). All original credits and core architecture concepts belong to the Raphire team.
+> **Notice:** WinSwift is a rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). Preserve all original credits and upstream attribution.
 
 ---
 
@@ -115,8 +115,30 @@ Remove-Item $f -Force
 
 ---
 
+## Requirements and verification
+
+Run WinSwift with Windows PowerShell 5.1 through `powershell.exe`. Do not run the tool with PowerShell 7 because Appx removal and system restore cmdlets cannot complete correctly there.
+
+Check selected feature state without applying changes:
+
+```PowerShell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -Verify -DisableTelemetry -DisableCopilot -Silent
+```
+
+Check an exported configuration or preset:
+
+```PowerShell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
+```
+
+Treat exit code `0` as compliant. Treat exit code `2` as noncompliant, unsupported, or failed verification. Review each result to identify registry values or Appx packages that remain outside the requested state.
+
+Use `-SkipExplorerRestart` to defer the Explorer restart. Use `-SkipRegistryBackup` only in controlled disposable environments.
+
+---
+
 ## 🤝 Contributing & License
 
-We welcome contributions from the community! Please see our [Contributing Guidelines](.github/CONTRIBUTING.md) before submitting a pull request.
+Read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
 
 WinSwift is released under the MIT license.

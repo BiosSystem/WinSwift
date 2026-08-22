@@ -2,7 +2,7 @@
 
 Welcome to the technical documentation for WinSwift. These guides are meant for developers, sysadmins, and power users who want a transparent look at exactly how WinSwift operates under the hood. 
 
-We believe in open-source transparency—no "black box" registry hacking. Below you will find deep-dives into the exact mechanisms, services, and paths we modify.
+We believe in open-source transparency - no "black box" registry hacking. Below you will find deep-dives into the exact mechanisms, services, and paths we modify.
 
 ## Technical Guides
 

@@ -107,7 +107,7 @@ function RemoveApps {
     Runs winget uninstall for a single app. If the User or Sysprep
     parameter was passed, also schedules removal for future logins.
     After uninstall, the system is checked to confirm whether the app
-    is still present — winget output is not trusted on its
+    is still present - winget output is not trusted on its
     own, as it sometimes reports failure after a successful removal.
     Edge apps are handled separately after the main loop.
 
@@ -146,7 +146,7 @@ function Remove-WinGetApp {
     then creates a single scheduled task if the User or Sysprep parameter
     was passed. After all attempts, the system is checked to confirm
     whether Edge is still present. The force-remove prompt only
-    appears if Edge remains installed — winget false positives are ignored.
+    appears if Edge remains installed - winget false positives are ignored.
 
     .PARAMETER edgeAppsInList
     The Edge AppIds that appear in the removal list (one or both).
@@ -382,7 +382,7 @@ function Set-RunOnceWingetTask {
 
     # Escape single quotes in appId, then wrap in single quotes so cmd/pwsh metacharacters
     # like & | < > ^ " are treated as literals. Base64-encode the whole command so the
-    # RunOnce value contains only [A-Za-z0-9+/=] — safe in any shell parser.
+    # RunOnce value contains only [A-Za-z0-9+/=] - safe in any shell parser.
     $escapedAppId = $appId.Replace("'", "''")
     $wingetCommand = "winget uninstall --accept-source-agreements --disable-interactivity --id '$escapedAppId'"
     $encodedWingetCommand = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($wingetCommand))

@@ -8,13 +8,12 @@
     file references pointing to real files on disk.
 #>
 
-$repoRoot   = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
-$configPath = Join-Path $repoRoot 'Config\Features.json'
-$regPath    = Join-Path $repoRoot 'Regfiles'
-
 Describe 'Features.json' {
 
     BeforeAll {
+        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+        $configPath = Join-Path $repoRoot 'Config\Features.json'
+        $script:regPath = Join-Path $repoRoot 'Regfiles'
         $script:json = Get-Content $configPath -Raw | ConvertFrom-Json
         $script:features = $script:json.Features
     }
@@ -43,7 +42,7 @@ Describe 'Features.json' {
         $broken = @()
         foreach ($f in $script:features) {
             if (-not [string]::IsNullOrWhiteSpace($f.RegistryKey)) {
-                $filePath = Join-Path $regPath $f.RegistryKey
+                $filePath = Join-Path $script:regPath $f.RegistryKey
                 if (-not (Test-Path $filePath)) {
                     $broken += "$($f.FeatureId) -> $($f.RegistryKey)"
                 }
@@ -56,8 +55,8 @@ Describe 'Features.json' {
         $broken = @()
         foreach ($f in $script:features) {
             if (-not [string]::IsNullOrWhiteSpace($f.RegistryUndoKey)) {
-                $undoPath = Join-Path $regPath 'Undo' $f.RegistryUndoKey
-                $rootPath = Join-Path $regPath $f.RegistryUndoKey
+                $undoPath = Join-Path (Join-Path $script:regPath 'Undo') $f.RegistryUndoKey
+                $rootPath = Join-Path $script:regPath $f.RegistryUndoKey
                 if (-not (Test-Path $undoPath) -and -not (Test-Path $rootPath)) {
                     $broken += "$($f.FeatureId) -> $($f.RegistryUndoKey)"
                 }
