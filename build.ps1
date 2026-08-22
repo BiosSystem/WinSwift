@@ -42,6 +42,7 @@ $WrapperCode = @"
 `$VerbosePreference = 'SilentlyContinue'
 
 # Payload (Base64 Zip)
+`$processExitCode = 1
 `$Payload = "$Base64String"
 
 # Extraction Path
@@ -66,7 +67,8 @@ try {
     if (Test-Path `$ScriptPath) {
         `$ArgsList = @("-ExecutionPolicy", "Bypass", "-NoProfile", "-File", "`$ScriptPath") + `$args
         Write-Host "Launching WinSwift..." -ForegroundColor Cyan
-        Start-Process -FilePath "powershell.exe" -ArgumentList `$ArgsList -NoNewWindow -Wait
+        `$process = Start-Process -FilePath "powershell.exe" -ArgumentList `$ArgsList -NoNewWindow -Wait -PassThru
+        `$processExitCode = `$process.ExitCode
     } else {
         Write-Error "Failed to locate WinSwift.ps1 in extracted payload."
     }
@@ -78,6 +80,8 @@ try {
         Remove-Item `$ExtractPath -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
+
+exit `$processExitCode
 "@
 
 # 4. Save to Output File

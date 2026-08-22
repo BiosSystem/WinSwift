@@ -27,11 +27,11 @@ function Invoke-UpdateCheck {
 
         if ($latest -gt $current) {
             Write-Host ""
-            Write-Host "  ╔══════════════════════════════════════════════════════╗" -ForegroundColor Yellow
-            Write-Host "  ║  WinSwift Update Available!                          ║" -ForegroundColor Yellow
-            Write-Host "  ║  Current: v$CurrentVersion  ->  Latest: v$latestTag               ║" -ForegroundColor Yellow
-            Write-Host "  ║  https://github.com/BiosSystem/WinSwift/releases     ║" -ForegroundColor Yellow
-            Write-Host "  ╚══════════════════════════════════════════════════════╝" -ForegroundColor Yellow
+            Write-Host "  +------------------------------------------------------+" -ForegroundColor Yellow
+            Write-Host "  |  WinSwift update available                           |" -ForegroundColor Yellow
+            Write-Host "  |  Current: v$CurrentVersion  ->  Latest: v$latestTag" -ForegroundColor Yellow
+            Write-Host "  |  https://github.com/BiosSystem/WinSwift/releases     |" -ForegroundColor Yellow
+            Write-Host "  +------------------------------------------------------+" -ForegroundColor Yellow
             Write-Host ""
         } elseif (-not $Silent) {
             Write-Host "  [OK] WinSwift v$CurrentVersion is up to date." -ForegroundColor DarkGray

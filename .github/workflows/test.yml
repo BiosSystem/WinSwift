@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master, dev]
   push:
-    branches: [dev]
+    branches: [master, dev]
 
 jobs:
   pester-unit-tests:
@@ -18,10 +18,22 @@ jobs:
       - name: Install Pester
         shell: pwsh
         run: |
-          if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -ge '5.0' })) {
-            Install-Module Pester -Force -SkipPublisherCheck -Scope CurrentUser
+          if (-not (Get-Module -ListAvailable -Name Pester | Where-Object { $_.Version -eq '5.7.1' })) {
+            Install-Module Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck -Scope CurrentUser
           }
-          Import-Module Pester -MinimumVersion 5.0
+          Import-Module Pester -RequiredVersion 5.7.1
+
+      - name: Install PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
+            Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          }
+
+      - name: Run static validation
+        shell: powershell
+        run: |
+          .\Tests\Invoke-StaticValidation.ps1 -RequirePSScriptAnalyzer
 
       - name: Run Features.json unit tests
         shell: pwsh
@@ -47,6 +59,32 @@ jobs:
           $result = Invoke-Pester -Path "Tests/Unit/Test-RegistryFiles.ps1" -Output Detailed -PassThru
           if ($result.FailedCount -gt 0) {
             Write-Error "$($result.FailedCount) test(s) failed in Test-RegistryFiles.ps1"
+            exit 1
+          }
+
+      - name: Run desired-state verification tests
+        shell: pwsh
+        run: |
+          $result = Invoke-Pester -Path "Tests/Unit/Test-DesiredStateVerification.ps1" -Output Detailed -PassThru
+          if ($result.FailedCount -gt 0) {
+            Write-Error "$($result.FailedCount) test(s) failed in Test-DesiredStateVerification.ps1"
+            exit 1
+          }
+
+      - name: Build and parse standalone script
+        shell: powershell
+        run: |
+          $outputFile = Join-Path $env:RUNNER_TEMP 'WinSwift-Standalone.ps1'
+          .\build.ps1 -OutputFile $outputFile
+          $tokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            $outputFile,
+            [ref]$tokens,
+            [ref]$parseErrors
+          ) | Out-Null
+          if ($parseErrors.Count -gt 0) {
+            $parseErrors | ForEach-Object { Write-Error $_.Message }
             exit 1
           }
 

@@ -8,12 +8,11 @@
     reference entries that exist in the Apps array.
 #>
 
-$repoRoot   = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
-$configPath = Join-Path $repoRoot 'Config\Apps.json'
-
 Describe 'Apps.json' {
 
     BeforeAll {
+        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+        $configPath = Join-Path $repoRoot 'Config\Apps.json'
         $script:json    = Get-Content $configPath -Raw | ConvertFrom-Json
         $script:apps    = $script:json.Apps
         $script:presets = $script:json.Presets

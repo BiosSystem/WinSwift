@@ -1,5 +1,6 @@
 # Define script-level variables & paths
-$script:Version = "2026.06.24"
+$script:Version = "3.3.0"
+$script:AppVersion = $script:Version
 $rootDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $configPath = Join-Path $rootDir 'Config'
 $logsPath = Join-Path $rootDir 'Logs'
@@ -26,20 +27,23 @@ $script:RestoreBackupWindowSchema = Join-Path $schemasPath 'RestoreBackupWindow.
 $script:LoadAppsDetailsScriptPath = Join-Path (Join-Path $scriptsPath 'FileIO') 'LoadAppsDetailsFromJson.ps1'
 $script:TestAppInWingetListScriptPath = Join-Path (Join-Path $scriptsPath 'AppRemoval') 'Test-AppInWingetList.ps1'
 
-$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'NoRestartExplorer', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget'
+$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'SkipExplorerRestart', 'SkipRegistryBackup', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget', 'Preset', 'DryRun', 'Verify', 'VerifyProfile', 'SkipUpdateCheck'
 
 # Script-level variables for GUI elements
 $script:GuiWindow = $null
 $script:CancelRequested = $false
 $script:ApplyProgressCallback = $null
 $script:ApplySubStepCallback = $null
+$script:RegistryImportFailures = 0
+$script:AppRemovalFailures = 0
+$script:AppRemovalVerificationUnavailable = $false
 
 # Check if current powershell environment is limited by security policies
 if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {
     Write-Error "WinSwift is unable to run on your system, powershell execution is restricted by security policies"
     Write-Output "Press any key to exit..."
     $null = [System.Console]::ReadKey()
-    Exit
+    Exit 1
 }
 
 Clear-Host

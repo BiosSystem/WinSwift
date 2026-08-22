@@ -1,73 +1,49 @@
 #Requires -Modules Pester
-<#
-.SYNOPSIS
-    Unit tests for registry file (.reg) syntax and encoding.
-.DESCRIPTION
-    Scans all .reg files in Regfiles/ and Regfiles/Undo/ and validates:
-    - File starts with the correct registry editor header
-    - File is non-empty
-    - No line uses CRLF-broken key paths (common sign of encoding corruption)
-    - Every key section starts with a valid hive prefix
-#>
 
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
-$regRoot  = Join-Path $repoRoot 'Regfiles'
-
-$validHives = @(
-    'HKEY_LOCAL_MACHINE',
-    'HKEY_CURRENT_USER',
-    'HKEY_CLASSES_ROOT',
-    'HKEY_USERS',
-    'HKEY_CURRENT_CONFIG'
-)
-
-$regFiles = @(Get-ChildItem -Path $regRoot -Filter '*.reg' -Recurse)
-
-Describe 'Registry files (.reg)' {
-
+Describe 'Registry files' {
     BeforeAll {
-        $script:regFiles = $regFiles
+        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+        $script:regFiles = @(Get-ChildItem -Path (Join-Path $repoRoot 'Regfiles') -Filter '*.reg' -Recurse)
+        $script:validHives = @(
+            'HKEY_LOCAL_MACHINE',
+            'HKEY_CURRENT_USER',
+            'HKEY_CLASSES_ROOT',
+            'HKEY_USERS',
+            'HKEY_CURRENT_CONFIG'
+        )
     }
 
-    It 'finds at least one .reg file' {
+    It 'finds registry files' {
         $script:regFiles.Count | Should -BeGreaterThan 0
     }
 
-    foreach ($regFile in $regFiles) {
-        $relativePath = $regFile.FullName.Replace($repoRoot, '').TrimStart('\')
+    It 'validates every registry file' {
+        $failures = [System.Collections.Generic.List[string]]::new()
 
-        Context $relativePath {
+        foreach ($regFile in $script:regFiles) {
+            $content = Get-Content -LiteralPath $regFile.FullName -Raw
+            $lines = @(Get-Content -LiteralPath $regFile.FullName)
 
-            BeforeAll {
-                $script:content = Get-Content $regFile.FullName -Raw
-                $script:lines   = Get-Content $regFile.FullName
+            if ([string]::IsNullOrWhiteSpace($content)) {
+                $failures.Add("$($regFile.FullName): file is empty")
+                continue
+            }
+            if ($lines.Count -eq 0 -or $lines[0].Trim() -ne 'Windows Registry Editor Version 5.00') {
+                $failures.Add("$($regFile.FullName): invalid registry header")
+            }
+            if ($content -notmatch '(?m)^\[-?[^\]]+\]') {
+                $failures.Add("$($regFile.FullName): no registry key section")
             }
 
-            It 'is non-empty' {
-                $script:content.Trim() | Should -Not -BeNullOrEmpty
-            }
-
-            It 'starts with the registry editor header' {
-                $firstLine = ($script:lines | Select-Object -First 1).Trim()
-                $firstLine | Should -Be 'Windows Registry Editor Version 5.00'
-            }
-
-            It 'contains at least one key section or delete directive' {
-                $hasSections = $script:content -match '^\[' -or $script:content -match '^\[-'
-                $hasSections | Should -Be $true
-            }
-
-            It 'all key sections start with a valid hive' {
-                $keyLines = $script:lines | Where-Object { $_ -match '^\[' }
-                $invalidKeys = $keyLines | Where-Object {
-                    $stripped = $_ -replace '^\[-?\[?', '' -replace '\]$', ''
-                    $hive = ($stripped -split '\\')[0]
-                    $validHives -notcontains $hive
+            foreach ($keyLine in @($lines | Where-Object { $_ -match '^\[' })) {
+                $stripped = $keyLine -replace '^\[-?', '' -replace '\]$', ''
+                $hive = ($stripped -split '\\')[0]
+                if ($script:validHives -notcontains $hive) {
+                    $failures.Add("$($regFile.FullName): invalid hive '$hive'")
                 }
-                $invalidKeys | Should -BeNullOrEmpty -Because (
-                    "Invalid hive prefixes: $($invalidKeys -join '; ')"
-                )
             }
         }
+
+        $failures | Should -BeNullOrEmpty -Because ($failures -join [Environment]::NewLine)
     }
 }

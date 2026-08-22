@@ -7,8 +7,10 @@ param (
     [switch]$Sysprep,
     [string]$LogPath,
     [string]$User,
-    [switch]$NoRestartExplorer,
+    [Alias('NoRestartExplorer')]
+    [switch]$SkipExplorerRestart,
     [switch]$CreateRestorePoint,
+    [switch]$SkipRegistryBackup,
     [switch]$RunDefaults,
     [switch]$RunDefaultsLite,
     [switch]$RunSavedSettings,
@@ -98,7 +100,9 @@ param (
     [switch]$ShowDriveLettersFirst,
     [switch]$ShowDriveLettersLast,
     [switch]$ShowNetworkDriveLettersFirst,
-    [switch]$HideDriveLetters
+    [switch]$HideDriveLetters,
+    [switch]$Verify,
+    [string]$VerifyProfile
 )
 
 # Show error if current powershell environment does not have LanguageMode set to FullLanguage 

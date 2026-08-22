@@ -15,7 +15,15 @@ if (-not $isAdmin) {
     $choice = Read-Host "Restart as Administrator? (y/n)"
 
     if ($choice -match '^[Yy]$') {
-        $elevatedArgs = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", $OriginalCommandPath)
+        function Format-ElevatedArg {
+            param([AllowEmptyString()][string]$Value)
+
+            $escaped = $Value -replace '(\\*)"', '$1$1\"'
+            $escaped = $escaped -replace '(\\+)$', '$1$1'
+            return '"' + $escaped + '"'
+        }
+
+        $elevatedArgs = @("-NoProfile", "-ExecutionPolicy", "Bypass", "-File", (Format-ElevatedArg $OriginalCommandPath))
 
         foreach ($paramName in $OriginalBoundParameters.Keys) {
             $paramValue = $OriginalBoundParameters[$paramName]
@@ -27,17 +35,31 @@ if (-not $isAdmin) {
             }
             else {
                 $elevatedArgs += "-$paramName"
-                $elevatedArgs += "$paramValue"
+                if ($paramValue -is [array]) {
+                    $elevatedArgs += (Format-ElevatedArg (($paramValue | ForEach-Object { [string]$_ }) -join ','))
+                }
+                else {
+                    $elevatedArgs += (Format-ElevatedArg ([string]$paramValue))
+                }
             }
         }
 
         if ($OriginalUnboundArguments.Count -gt 0) {
-            $elevatedArgs += $OriginalUnboundArguments
+            foreach ($unboundArg in $OriginalUnboundArguments) {
+                $elevatedArgs += (Format-ElevatedArg ([string]$unboundArg))
+            }
         }
 
-        Start-Process powershell -ArgumentList $elevatedArgs -Verb RunAs
+        try {
+            Start-Process powershell.exe -ArgumentList $elevatedArgs -Verb RunAs -ErrorAction Stop
+        }
+        catch {
+            Write-Error "Failed to start WinSwift as Administrator: $_"
+            exit 1
+        }
+
+        exit 0
     }
-    
-    # Exit process if not admin
-    [Environment]::Exit(0)
+
+    exit 1
 }
