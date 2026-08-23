@@ -9,6 +9,10 @@
   <img src="https://img.shields.io/github/stars/BiosSystem/WinSwift?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
+<p align="center">
+  <img src="Assets/Images/winswift-hero-banner.png" alt="WinSwift Optimization Engine" width="100%" />
+</p>
+
 > **Notice:** WinSwift is a rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). Preserve all original credits and upstream attribution.
 
 ---
@@ -26,6 +30,10 @@ Whether you are provisioning enterprise workstations, configuring a dedicated co
 Stock Windows 11 ships with default scheduling intervals, background telemetry pipelines, and continuous recording hooks that introduce input lag, frame pacing jitter, and 1% low drops in competitive titles (Valorant, CS2, Apex Legends, Call of Duty, Fortnite).
 
 WinSwift provides a dedicated, non-destructive low-latency optimization stack designed to eliminate OS-level microstutters while maintaining 100% compatibility with kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates.
+
+<p align="center">
+  <img src="Assets/Images/winswift-gaming-hud.png" alt="WinSwift Esports Low Latency HUD" width="100%" />
+</p>
 
 ### 🕹️ Gaming Performance Stack
 
