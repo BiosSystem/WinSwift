@@ -21,6 +21,40 @@ Whether you are provisioning enterprise workstations, configuring a dedicated co
 
 ---
 
+## 🎮 Engineered for Competitive Gaming & Low Latency
+
+Stock Windows 11 ships with default scheduling intervals, background telemetry pipelines, and continuous recording hooks that introduce input lag, frame pacing jitter, and 1% low drops in competitive titles (Valorant, CS2, Apex Legends, Call of Duty, Fortnite).
+
+WinSwift provides a dedicated, non-destructive low-latency optimization stack designed to eliminate OS-level microstutters while maintaining 100% compatibility with kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates.
+
+### 🕹️ Gaming Performance Stack
+
+| Optimization Layer | Technical Implementation | Gaming Benefit |
+|---|---|---|
+| **0.5ms Timer Resolution** | Forces `GlobalTimerResolutionRequests = 1` in kernel session manager | Replaces 15.6ms default tick with 0.5ms high-precision scheduling, reducing frame-time variance on 144Hz-540Hz monitors |
+| **BCD Clock Synchronization** | Sets `useplatformtick=yes` and `disabledynamictick=yes` | Eliminates timer drift and dynamic tick synchronization stalls across high-core-count CPUs |
+| **Zero-Buffer Network Protocol** | Disables Nagle's Algorithm (`TcpAckFrequency = 1`, `TCPNoDelay = 1`) | Eliminates TCP packet buffering delay for instantaneous hit registration and network updates |
+| **MMCSS Network Throttling Kill** | Sets `NetworkThrottlingIndex = 0xFFFFFFFF` and `SystemResponsiveness = 0` | Prevents Windows from throttling network traffic during intensive background multimedia tasks |
+| **MMCSS Games Task Priority** | Sets `GPU Priority = 8`, `Priority = 6`, `Scheduling Category = High` | Grants game render threads top-tier GPU scheduler priority over desktop window manager processes |
+| **Core Parking Elimination** | Disables CPU core parking via power policy (`ValueMax = 0`) | Prevents dormant CPU cores from entering deep C-states, eliminating latency spikes when cores wake up mid-match |
+| **GameDVR & Game Bar Purge** | Disables `AppCaptureEnabled` and `AllowGameDVR` system-wide | Frees dedicated VRAM, disables background encoding buffers, and removes DWM capture hooks |
+| **Defender Game Exclusions** | Whitelists Steam, Epic Games, and GOG directories via `Add-MpPreference` | Prevents real-time antivirus IOPS bottlenecks during in-game asset streaming and shader compilation |
+| **1:1 Raw Input Parity** | Disables Windows pointer precision acceleration curves | Delivers true linear 1:1 hardware sensor tracking without erratic OS mouse acceleration |
+| **Hardware GPU Scheduling** | Enables `HwSchMode = 2` (HAGS) in graphics driver registry | Offloads high-frequency scheduling tasks directly to GPU memory management hardware |
+
+### ⚖️ Why WinSwift vs. Alternatives?
+
+| Feature / Criteria | WinSwift | Stripped Custom ISOs (AtlasOS, ReviOS, Tiny11) | Generic Script Suites (Chris Titus, Sophia) |
+|---|---|---|---|
+| **Anti-Cheat Compatibility** | **100% Compatible** (Vanguard, EAC, BattlEye, FACEIT) | Often broken due to stripped security modules | Mixed (some scripts break Hyper-V / VBS dependencies) |
+| **Windows Update Support** | **Full Support** (Standard cumulative updates work normally) | Broken or permanently disabled | Supported |
+| **Execution Architecture** | Native PowerShell 5.1 in-memory execution | Modified ISO reinstall required (data wipe) | External package managers and third-party CLIs |
+| **Rollback & Safety** | Automatic state backup snapshot with instant `-Revert` | Impossible without full OS reinstallation | Manual registry inspection required |
+| **Security Posture** | Retains core Defender & SmartScreen by default | Defender stripped completely (malware risk) | Toggles vary |
+| **Verification Auditing** | Built-in `-Verify` and `-VerifyProfile` audit engine | No automated state verification | None |
+
+---
+
 ## ⚙️ How It Works
 
 WinSwift operates entirely in memory using standard PowerShell protocols. It takes a backup snapshot of your state, parses your configuration, and surgically removes or alters OS components.
@@ -38,7 +72,7 @@ flowchart TD
     F --> G[Module: App Removal]
     F --> H[Module: Privacy & Telemetry]
     F --> I[Module: The AI Purge]
-    F --> J[Module: Performance Profiles]
+    F --> J[Module: Performance & Gaming]
     
     G & H & I & J --> K[Commit Changes]
     K --> L[Generate Summary Report]
@@ -54,7 +88,7 @@ WinSwift is divided into powerful, self-contained modules that target specific o
 Regain control over your data. WinSwift cuts off diagnostics, tracking, and advertising pipelines at the root.
 
 | Feature | Description | Impact Level |
-|---------|-------------|--------------|
+|---|---|---|
 | **Diagnostic Data** | Disables Windows diagnostic data collection and activity history. | High |
 | **Telemetry Endpoints** | Applies hardcoded firewall and HOSTS file rules to block telemetry servers. | High |
 | **Advertising IDs** | Turns off targeted advertising IDs and system-wide ad tracking. | Medium |
@@ -64,7 +98,7 @@ Regain control over your data. WinSwift cuts off diagnostics, tracking, and adve
 Strip the operating system down to its bare essentials for maximum efficiency.
 
 | Feature | Description | Impact Level |
-|---------|-------------|--------------|
+|---|---|---|
 | **OEM Bloatware** | Removes manufacturer-installed junkware and trial software. | High |
 | **Consumer Apps** | Uninstalls TikTok, Candy Crush, and other consumer pre-installs. | Medium |
 | **Start Menu Cleanup** | Unpins dead tiles and promotional shortcuts. | Low |
@@ -74,19 +108,19 @@ Strip the operating system down to its bare essentials for maximum efficiency.
 For environments where embedded Generative AI is a liability or unwanted distraction.
 
 | Feature | Description | Impact Level |
-|---------|-------------|--------------|
+|---|---|---|
 | **Windows Copilot** | Neutralizes Copilot integrations system-wide, including the taskbar icon. | High |
 | **Windows Recall** | Disables Windows Recall snapshots and related background services. | High |
 | **Click to Do** | Turns off contextual AI actions across the OS. | Medium |
 | **Embedded AI** | Disables generative AI features in Paint, Notepad, and Photos. | Low |
 
-### 4. Performance Modes
+### 4. Performance & Gaming Profiles
 Unlock the full potential of your hardware with specialized tuning profiles.
 
 | Mode | Target Audience | Key Adjustments |
-|------|-----------------|-----------------|
-| **Gaming Mode** | Gamers, Power Users | High Performance power plan, network latency optimization, disabled mouse acceleration. |
-| **Esports Mode** | Competitive Gamers | Ultimate Performance plan, 0.5ms system timer resolution, CPU/GPU scheduling prioritization. |
+|---|---|---|
+| **Gaming Mode** | Gamers, Power Users | High Performance power plan, network latency optimization, disabled mouse acceleration, HAGS enabled. |
+| **Esports Mode** | Competitive Gamers | Ultimate Performance plan, 0.5ms system timer resolution, CPU/GPU scheduling prioritization, core unparking. |
 | **Defender Tweaks** | All Gamers | Whitelists game libraries (Steam, Epic, GOG) to prevent real-time scan overhead during gameplay. |
 
 ---
