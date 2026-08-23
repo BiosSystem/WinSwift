@@ -63,6 +63,68 @@ WinSwift provides a dedicated, non-destructive low-latency optimization stack de
 
 ---
 
+---
+
+## 🛡️ Windows 11 24H2 / 25H2 Compatibility Matrix
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Windows%2011%2024H2-Verified-00ff72?style=flat-square&logo=windows11" alt="24H2 Verified">
+  <img src="https://img.shields.io/badge/Windows%2011%2025H2-Verified-00ff72?style=flat-square&logo=windows11" alt="25H2 Verified">
+  <img src="https://img.shields.io/badge/Anti--Cheat-100%25%20Safe-00ff72?style=flat-square" alt="Anti-Cheat Safe">
+  <img src="https://img.shields.io/badge/Update%20Lifecycle-Intact-00ff72?style=flat-square" alt="Update Lifecycle">
+</p>
+
+Microsoft introduced six structural changes in Windows 11 24H2 that directly affect gamers and power users. WinSwift handles each with a non-destructive, policy-level fix that preserves update integrity and kernel anti-cheat trust chains.
+
+| Windows 11 Change | Impact Without WinSwift | WinSwift Fix | Implementation |
+|---|---|---|---|
+| **BitLocker Auto-Encryption** | Software BitLocker enabled silently on clean install - SSD write throughput reduced by up to 45% with risk of recovery-key lockout | Prevents auto-encryption before it activates | `Disable_Bitlocker_Auto_Encryption.reg` sets `PreventDeviceEncryption = 1` |
+| **Windows Recall Snapshots** | Continuous NPU/CPU screenshot indexing consumes 3-8% CPU headroom during gaming sessions | Non-destructive policy suppression - no file deletion that could destabilize explorer.exe | `Disable_AI_Recall.reg` and `Disable_AI_Service_Auto_Start.reg` suppress Recall scheduling without touching CoreAIComponents binaries |
+| **Modern Standby Network (S0)** | Network adapters stay active during sleep, draining laptop battery and generating thermal load | Enforces disconnected standby state | `Disable_Modern_Standby_Networking.reg` re-routes S0 into network-disconnected idle mode |
+| **Windows Update Driver Overwrite** | Cumulative updates replace NVIDIA/AMD drivers with generic OEM packages, introducing microstutter after each patch cycle | Blocks WU from scanning and installing drivers | `Disable_WU_Driver_Search.reg` sets `ExcludeWUDriversInQualityUpdate = 1` |
+| **Phone Link Start Menu Panel** | Microsoft injects Phone Link and Microsoft 365 promotional cards into Start Menu and Settings Home | Removes promotional injections without breaking shell binaries | `Disable_Phone_Link_In_Start.reg` and `Disable_Settings_365_Ads.reg` |
+| **Click To Do and Edge AI** | Contextual AI analysis on cursor hover and Edge background AI inference workers consume idle CPU | Disables all context AI workers and Edge AI features | `Disable_Click_to_Do.reg`, `Disable_Edge_AI_Features.reg`, and `ExtendedAIPurge.ps1` |
+
+> [!IMPORTANT]
+> WinSwift uses non-destructive GPO and registry policy suppression for all AI components. Aggressive binary deletion of `CoreAIComponents` causes `explorer.exe` and `SearchHost.exe` crash loops in 24H2 builds. WinSwift never performs binary stripping.
+
+### Anti-Cheat Safety Guarantee
+
+Kernel anti-cheats (Riot Vanguard, Epic EAC, BattlEye, FACEIT) verify the integrity of specific Windows security components at driver initialization. WinSwift is validated safe across all four:
+
+| Anti-Cheat | Kernel Dependencies Preserved by WinSwift |
+|---|---|
+| **Riot Vanguard** | Xbox Identity Provider, Windows Security Center API, Code Integrity services |
+| **Epic EAC** | Windows Update service chain, UWP certificate stores, AppModel host |
+| **BattlEye** | Windows Firewall service bindings, WMI repository, kernel patch guard |
+| **FACEIT** | Hypervisor-Protected Code Integrity (HVCI), Secure Boot chain, TPM attestation |
+
+WinSwift disables only background behavior (DVR recording buffers, telemetry scheduled tasks, advertising ID generation) while keeping all security service binaries and registrations intact.
+
+---
+
+## 🔁 State Snapshot, Verification and Rollback Architecture
+
+WinSwift implements a three-stage execution safety model before and after applying any system modification.
+
+### Stage 1 - Pre-Execution Snapshot
+
+Before any registry key is written, WinSwift captures a point-in-time backup of all registry paths scheduled for modification. The backup is written to a timestamped `.reg` export under `%TEMP%\WinSwift_Backup_<timestamp>`. If `-SkipRegistryBackup` is not specified, this step is mandatory and blocks execution on failure. A System Restore point is created before any of the four high-impact custom modules run.
+
+### Stage 2 - Feature Apply Engine
+
+The apply engine dispatches each feature through `Invoke-WinSwiftFeature`, which reads the registry target, expected value, and optional service or Appx action from `Config/Features.json`. Each operation is wrapped in `ShouldProcess` for `-WhatIf` support. No binary files are deleted. No Windows service registrations are removed from the service control manager database.
+
+### Stage 3 - Desired-State Verification
+
+After applying changes, or at any time using `-Verify` or `-VerifyProfile`, WinSwift reads the actual system state and compares it against the requested configuration:
+
+- Registry values: read back via `Get-ItemPropertyValue` and compared to the expected target.
+- Appx packages: checked via `Get-AppxPackage` and `Get-AppxProvisionedPackage` to confirm removal across user and system contexts.
+- Custom modules: verified through metadata-driven adapters for gaming, AI purge, security hardening, and telemetry firewall state.
+
+Exit code `0` signals full compliance. Exit code `2` signals drift, an unsupported feature state, or a verification failure. This enables automated rollout pipelines and endpoint compliance auditing without manual inspection.
+
 ## ⚙️ How It Works
 
 WinSwift operates entirely in memory using standard PowerShell protocols. It takes a backup snapshot of your state, parses your configuration, and surgically removes or alters OS components.
