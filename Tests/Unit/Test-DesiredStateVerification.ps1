@@ -20,6 +20,26 @@ Describe 'WinSwift desired-state verification' {
             RemoveApps = [PSCustomObject]@{
                 FeatureId = 'RemoveApps'
                 RegistryKey = $null
+                VerificationAdapter = 'AppxAbsence'
+            }
+            Apps = [PSCustomObject]@{
+                FeatureId = 'Apps'
+                RegistryKey = $null
+                VerificationAdapter = 'NotApplicable'
+            }
+            ClearStart = [PSCustomObject]@{
+                FeatureId = 'ClearStart'
+                RegistryKey = $null
+                VerificationAdapter = 'StartLayout'
+            }
+            ForceRemoveEdge = [PSCustomObject]@{
+                FeatureId = 'ForceRemoveEdge'
+                RegistryKey = $null
+                VerificationAdapter = 'EdgeRemoved'
+            }
+            UnroutableFeature = [PSCustomObject]@{
+                FeatureId = 'UnroutableFeature'
+                RegistryKey = $null
             }
             EnableGamingMode = [PSCustomObject]@{
                 FeatureId = 'EnableGamingMode'
@@ -130,5 +150,50 @@ Describe 'WinSwift desired-state verification' {
         $result = Test-WinSwiftFeature -FeatureId 'EnableSecurityHardening'
 
         $result.Status | Should -Be 'NonCompliant'
+    }
+
+    It 'routes the start layout and Edge removal adapters' {
+        Mock Test-WinSwiftCustomFeatureState { $true }
+
+        foreach ($featureId in @('ClearStart', 'ForceRemoveEdge')) {
+            $result = Test-WinSwiftFeature -FeatureId $featureId
+            $result.Status | Should -Be 'Compliant'
+        }
+
+        Should -Invoke Test-WinSwiftCustomFeatureState -Times 2
+    }
+
+    It 'reports entries with no persistent desired state as NotApplicable' {
+        # Apps is a value-carrying parameter, so there is nothing to read back.
+        $result = Test-WinSwiftFeature -FeatureId 'Apps'
+
+        $result.Status | Should -Be 'NotApplicable'
+    }
+
+    It 'never counts NotApplicable as a failure or an error' {
+        $summary = Invoke-WinSwiftVerification -FeatureIds @('Apps')
+
+        $summary.FailedCount | Should -Be 0
+        $summary.ErrorCount | Should -Be 0
+        $summary.NotApplicableCount | Should -Be 1
+    }
+
+    It 'still reports a feature with no verification story as Unsupported' {
+        $result = Test-WinSwiftFeature -FeatureId 'UnroutableFeature'
+
+        $result.Status | Should -Be 'Unsupported'
+    }
+
+    It 'surfaces an unknown adapter as an Error rather than throwing' {
+        $script:Features['BadAdapter'] = [PSCustomObject]@{
+            FeatureId = 'BadAdapter'
+            RegistryKey = $null
+            VerificationAdapter = 'NoSuchAdapter'
+        }
+
+        $result = Test-WinSwiftFeature -FeatureId 'BadAdapter'
+
+        $result.Status | Should -Be 'Error'
+        $result.Details | Should -Match 'NoSuchAdapter'
     }
 }
