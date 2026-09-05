@@ -76,7 +76,30 @@ $configuration.Filter.Tag = $tags
 $configuration.Output.Verbosity = 'Detailed'
 $configuration.Run.PassThru = $true
 
-$result = Invoke-Pester -Configuration $configuration
+$result = $null
+try {
+    $result = Invoke-Pester -Configuration $configuration
+}
+catch {
+    # Discovery problems surface here, for example when no file matches
+    # *.Tests.ps1. Left unhandled these produce an empty result that reads as a
+    # pass, so they have to be turned into a hard failure.
+    Write-Error ("The integration suite could not run: {0}" -f $_.Exception.Message)
+    if ($PassThru) { return $null }
+    exit 1
+}
+
+# A suite that discovered nothing is a failure, not a pass. Without this a
+# rename or a bad filter silently reports success.
+if ($null -eq $result -or $result.TotalCount -eq 0) {
+    Write-Error ("No integration tests were discovered for tag(s): {0}. Test files must be named *.Tests.ps1." -f ($tags -join ', '))
+    if ($PassThru) { return $result }
+    exit 1
+}
+
+Write-Host ''
+Write-Host ("Integration suite: {0} passed, {1} failed, {2} skipped, {3} total." -f
+    $result.PassedCount, $result.FailedCount, $result.SkippedCount, $result.TotalCount)
 
 if ($PassThru) {
     return $result

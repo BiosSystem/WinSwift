@@ -45,23 +45,23 @@ unelevated session will skip most cases and say so.
 
 ## What is covered
 
-**`Test-VerifyContract.ps1`** — `ReadOnly`. Exit-code contract for `-Verify` and
+**`VerifyContract.Tests.ps1`** — `ReadOnly`. Exit-code contract for `-Verify` and
 profile parsing. Every case is deterministic on any machine: whether a real tweak
 is currently applied depends on how the host is configured, so none of these
 assert on one. The cases that are machine-independent are an exempt-only profile
 (`NotApplicable` must never fail a run), an unknown feature, an empty profile, a
 missing profile path, and an app id that cannot exist.
 
-**`Test-DryRunSafety.ps1`** — `DryRun`. Proves `-DryRun` reaches the apply
+**`DryRunSafety.Tests.ps1`** — `DryRun`. Proves `-DryRun` reaches the apply
 pipeline and still changes nothing. The assertion targets the exact values the
 selected feature would write, read out of its `.reg` file, rather than sweeping
 the registry broadly.
 
-**`Test-ApplyRoundTrip.ps1`** — `Mutating`. Applies a registry-backed feature and
+**`ApplyRoundTrip.Tests.ps1`** — `Mutating`. Applies a registry-backed feature and
 checks both the verification verdict and the individual values underneath it, so
 a partially applied `.reg` file cannot pass as compliant.
 
-**`Test-RollbackContract.ps1`** — `Mutating`. The executable specification for
+**`RollbackContract.Tests.ps1`** — `Mutating`. The executable specification for
 Track 1 automatic rollback. Rollback does not exist yet, so the whole block skips
 itself until `InvokeChanges.ps1` references `Restore-RegistryBackupState`. When
 Track 1 wires that up, these activate on their own.
@@ -71,6 +71,13 @@ one is that an app-removal failure must **not** trigger rollback: a registry
 restore cannot bring back an uninstalled Appx package, so rolling back there
 would report a recovery that did not happen while the apps stay gone. If the
 failure policy changes, these assertions are what has to change with it.
+
+## File naming
+
+Pester 5 only discovers files matching `*.Tests.ps1` when given a directory, so
+these are named that way rather than following the `Test-*.ps1` convention used
+in `Tests/Unit`, which CI invokes by explicit path. The runner fails when it
+discovers nothing, because an empty suite otherwise reports success.
 
 ## Known gaps
 

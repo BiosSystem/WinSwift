@@ -90,7 +90,13 @@ jobs:
           # DryRun tags both run here. Mutating tests need Windows Sandbox,
           # which hosted runners do not provide; see Tests/Integration/README.md.
           $result = .\Tests\Integration\Invoke-IntegrationTests.ps1 -Ephemeral -PassThru
-          Write-Host "Integration: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped"
+          # A null or empty result means the suite never ran. Checking only
+          # FailedCount would let that pass as green.
+          if ($null -eq $result -or $result.TotalCount -eq 0) {
+            Write-Error "The integration suite did not run"
+            exit 1
+          }
+          Write-Host "Integration: $($result.PassedCount) passed, $($result.FailedCount) failed, $($result.SkippedCount) skipped, $($result.TotalCount) total"
           if ($result.FailedCount -gt 0) {
             Write-Error "$($result.FailedCount) integration test(s) failed"
             exit 1
