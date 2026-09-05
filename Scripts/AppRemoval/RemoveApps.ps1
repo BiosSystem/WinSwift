@@ -202,9 +202,19 @@ function Remove-AppxApp {
                     # 24H2 Resilient Appx Fallback via DISM
                     if ($pattern -like '*Copilot*' -or $pattern -like '*DevHome*' -or $pattern -like '*MSTeams*') {
                         try {
-                            DISM /Online /Remove-ProvisionedAppxPackage /PackageName:$pattern /quiet | Out-Null
-                            if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 87) {
-                                Write-Warning "DISM fallback failed for $pattern with exit code $LASTEXITCODE"
+                            # Re-query so DISM only targets packages the cmdlet above left behind.
+                            # /PackageName takes an exact provisioned package name; wildcards are rejected.
+                            $stubborn = @(Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like $pattern })
+
+                            foreach ($provisioned in $stubborn) {
+                                $packageName = $provisioned.PackageName
+                                $global:LASTEXITCODE = 0
+                                DISM /Online /Remove-ProvisionedAppxPackage /PackageName:$packageName /quiet | Out-Null
+
+                                # 3010 is success pending reboot.
+                                if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) {
+                                    Write-Warning "DISM fallback failed for $packageName with exit code $LASTEXITCODE"
+                                }
                             }
                         } catch {
                             Write-Warning "DISM fallback encountered an error for $pattern : $_"
