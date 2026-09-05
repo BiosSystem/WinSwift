@@ -198,7 +198,7 @@ function Remove-AppxApp {
                 Invoke-NonBlocking -ScriptBlock {
                     param($pattern)
                     Get-AppxPackage -Name $pattern -AllUsers | Remove-AppxPackage -AllUsers -ErrorAction Continue
-                                        Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like $pattern } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName }
+                    Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like $pattern } | ForEach-Object { Remove-ProvisionedAppxPackage -Online -AllUsers -PackageName $_.PackageName }
                     # 24H2 Resilient Appx Fallback via DISM
                     if ($pattern -like '*Copilot*' -or $pattern -like '*DevHome*' -or $pattern -like '*MSTeams*') {
                         try {
@@ -209,10 +209,6 @@ function Remove-AppxApp {
                         } catch {
                             Write-Warning "DISM fallback encountered an error for $pattern : $_"
                         }
-                    }
-                    # 24H2 Resilient Appx Fallback via DISM
-                    if ($pattern -like '*Copilot*' -or $pattern -like '*DevHome*' -or $pattern -like '*MSTeams*') {
-                        DISM /Online /Remove-ProvisionedAppxPackage /PackageName:$pattern /quiet | Out-Null
                     }
                 } -ArgumentList $appPattern
             }
