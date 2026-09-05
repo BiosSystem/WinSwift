@@ -31,6 +31,48 @@ Describe 'WinSwift startup safety guards' {
         $script:adminScript | Should -Match '-ErrorAction Stop'
     }
 
+    It 'reports the elevation outcome instead of relying on exit' {
+        # `exit` inside a dot-sourced script does not terminate the caller, so a
+        # non-elevated run used to continue into the apply pipeline.
+        $script:adminScript | Should -Match "\`$script:ElevationOutcome = 'Elevated'"
+        $script:adminScript | Should -Match "\`$script:ElevationOutcome = 'Denied'"
+        $script:adminScript | Should -Match "\`$script:ElevationOutcome = 'Relaunched'"
+        $script:adminScript | Should -Match "\`$script:ElevationOutcome = 'Failed'"
+        $script:adminScript | Should -Not -Match '(?m)^\s*exit \d'
+    }
+
+    It 'stops the run when elevation was not obtained' {
+        $guardPosition = $script:entryScript.IndexOf('$script:ElevationOutcome -ne')
+        $environmentPosition = $script:entryScript.IndexOf('Initialize-Environment.ps1')
+
+        $guardPosition | Should -BeGreaterThan -1
+        $guardPosition | Should -BeLessThan $environmentPosition -Because 'the run must stop before any runtime module loads'
+    }
+
+    It 'refuses a non-interactive run that cannot elevate' -Skip:(
+        ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()
+        ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    ) {
+        # Only meaningful unelevated. CI runners are administrators, so this is
+        # skipped there and the source assertions above carry the contract.
+        $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
+        $psi = New-Object System.Diagnostics.ProcessStartInfo
+        $psi.FileName = 'powershell.exe'
+        $psi.Arguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -DryRun -Silent -CLI -DisableTelemetry' -f (Join-Path $repoRoot 'WinSwift.ps1')
+        $psi.RedirectStandardOutput = $true
+        $psi.RedirectStandardError = $true
+        $psi.RedirectStandardInput = $true
+        $psi.UseShellExecute = $false
+
+        $process = [System.Diagnostics.Process]::Start($psi)
+        $process.StandardInput.Close()
+        $stdout = $process.StandardOutput.ReadToEnd()
+        $null = $process.WaitForExit(90000)
+
+        $process.ExitCode | Should -Not -Be 0
+        $stdout | Should -Not -Match '\[WhatIf\]' -Because 'the apply pipeline must never be reached without elevation'
+    }
+
     It 'quotes bound arrays and unbound arguments during elevation' {
         $script:adminScript | Should -Match 'paramValue -is \[array\]'
         $script:adminScript | Should -Match 'OriginalUnboundArguments'

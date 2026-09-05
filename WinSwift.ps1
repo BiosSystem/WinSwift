@@ -156,6 +156,19 @@ Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.3.0' -Option Constant
 
 # Call Helper Scripts
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Ensure-Admin.ps1') -OriginalCommandPath $PSCommandPath -OriginalBoundParameters $PSBoundParameters -OriginalUnboundArguments $MyInvocation.UnboundArguments
+
+# Ensure-Admin is dot-sourced and cannot terminate this script itself, so the
+# elevation outcome has to be acted on here. Anything other than 'Elevated'
+# means the run must not continue in this process.
+if ($script:ElevationOutcome -ne 'Elevated') {
+    # 'Relaunched' handed the run to an elevated child, which is not a failure.
+    if ($script:ElevationOutcome -eq 'Relaunched') {
+        exit 0
+    }
+
+    exit 1
+}
+
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Initialize-Environment.ps1')
 
 # Log script output to 'WinSwift.log' at the specified path
