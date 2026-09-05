@@ -324,6 +324,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "AppxAbsence",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -336,6 +337,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "NotApplicable",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -348,6 +350,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "AppxAbsence",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -360,6 +363,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "AppxAbsence",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -372,6 +376,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "NotApplicable",
       "MinVersion": null,
       "MaxVersion": null
     },
@@ -606,6 +611,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "StartLayout",
       "MinVersion": 22621,
       "MaxVersion": null
     },
@@ -618,6 +624,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "StartLayout",
       "MinVersion": 22621,
       "MaxVersion": null
     },
@@ -630,6 +637,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "StartLayout",
       "MinVersion": 22621,
       "MaxVersion": null
     },
@@ -642,6 +650,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "StartLayout",
       "MinVersion": 22621,
       "MaxVersion": null
     },
@@ -1486,6 +1495,7 @@
       "UndoLabel": null,
       "ApplyUndoText": null,
       "RegistryUndoKey": null,
+      "VerificationAdapter": "EdgeRemoved",
       "MinVersion": null,
       "MaxVersion": null
     },
