@@ -30,3 +30,8 @@ To prevent irreversible damage during the v3.2.0 aggressive Appx purge:
 1. **Pre-Flight Check**: The script will invoke `CreateSystemRestorePoint` (with a 90-second timeout) and `BackupRegistryState`.
 2. **Validation**: We will modify `InvokeChanges.ps1` to parse the return status of these backups.
 3. **Abort Matrix**: If System Restore is disabled and the user refuses to enable it, the aggressive Appx purge array will be bypassed entirely, executing only safe registry tweaks.
+
+## 4. Successor Plan
+
+This document covers the v3.1.0 and v3.2.0 release tracks and is retained as a record of
+those decisions. The current roadmap is [WINSWIFT_V3.4.0_PLAN.md](WINSWIFT_V3.4.0_PLAN.md).
