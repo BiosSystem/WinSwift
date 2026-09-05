@@ -3,17 +3,24 @@
     Windows Sandbox configuration for the mutating integration tests.
 
     The repository is mapped read-only so a test cannot modify the working tree
-    it was launched from. Everything the tests write goes to the sandbox's own
-    registry and disappears when the window closes.
+    it was launched from. A second folder is mapped writable so the results
+    survive: everything else inside the sandbox is destroyed when the window
+    closes, including the console output.
 
-    Update HostFolder if the repository does not live at this path, then open
-    this file to start the run.
+    Both HostFolder paths must already exist or the sandbox refuses to start.
+    Update them if the repository does not live at this path, then open this
+    file to start the run.
   -->
   <MappedFolders>
     <MappedFolder>
       <HostFolder>D:\Antigravity_Projects\WinSwift</HostFolder>
       <SandboxFolder>C:\WinSwift</SandboxFolder>
       <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>D:\Antigravity_Projects\WinSwift\Tests\Integration\Sandbox\results</HostFolder>
+      <SandboxFolder>C:\WinSwift-Results</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
     </MappedFolder>
   </MappedFolders>
   <LogonCommand>

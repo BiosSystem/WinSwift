@@ -4,15 +4,32 @@
 .DESCRIPTION
     Launched by WinSwift-Tests.wsb. Installs Pester, copies the repository out
     of the read-only mapped folder so the tests can write alongside it, runs the
-    full suite, and holds the window open so the result can be read before the
-    sandbox is closed and everything is discarded.
+    full suite, and writes the results to the mapped output folder.
+
+    Everything inside the sandbox is destroyed when the window closes, console
+    output included, so the results folder is the only thing that survives. A
+    transcript goes there too, which is what makes a failed bootstrap
+    diagnosable after the fact.
 #>
 $ErrorActionPreference = 'Stop'
+
+$resultRoot = 'C:\WinSwift-Results'
+$transcript = $null
+
+if (Test-Path -LiteralPath $resultRoot) {
+    $transcript = Join-Path $resultRoot 'sandbox-transcript.log'
+    try { Start-Transcript -Path $transcript -Force | Out-Null } catch { }
+}
 
 Write-Host 'WinSwift integration suite, Windows Sandbox' -ForegroundColor Cyan
 Write-Host ''
 
+$exitCode = 1
 try {
+    if (-not (Test-Path -LiteralPath $resultRoot)) {
+        throw "The results folder is not mapped at $resultRoot. Check the second MappedFolder in WinSwift-Tests.wsb, and that its HostFolder exists on the host."
+    }
+
     $source = 'C:\WinSwift'
     $working = 'C:\WinSwift-Run'
 
@@ -35,7 +52,7 @@ try {
     Write-Host 'Running the full suite, including mutating tests...' -ForegroundColor Yellow
     Write-Host ''
 
-    & "$working\Tests\Integration\Invoke-IntegrationTests.ps1" -Mutating
+    & "$working\Tests\Integration\Invoke-IntegrationTests.ps1" -Mutating -ResultPath $resultRoot
     $exitCode = $LASTEXITCODE
 
     Write-Host ''
@@ -49,10 +66,24 @@ try {
 catch {
     Write-Host ''
     Write-Host "Sandbox run failed before the suite completed: $($_.Exception.Message)" -ForegroundColor Red
+
+    # Record it in the results folder as well, so a bootstrap failure is not
+    # invisible once the window is gone.
+    if (Test-Path -LiteralPath $resultRoot) {
+        [ordered]@{
+            RanAt = (Get-Date).ToString('o')
+            BootstrapError = $_.Exception.Message
+            ScriptStackTrace = $_.ScriptStackTrace
+        } | ConvertTo-Json -Depth 4 |
+            Out-File -FilePath (Join-Path $resultRoot 'integration-summary.json') -Encoding UTF8 -Force
+    }
 }
 finally {
+    if ($transcript) { try { Stop-Transcript | Out-Null } catch { } }
+
     Write-Host ''
-    Write-Host 'This sandbox and every change made inside it is discarded when you close the window.'
+    Write-Host "Results were written to the host folder mapped at $resultRoot."
+    Write-Host 'Everything else in this sandbox is discarded when you close the window.'
     Write-Host 'Press Enter to close.'
     [void](Read-Host)
 }
