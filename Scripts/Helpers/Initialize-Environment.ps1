@@ -27,7 +27,7 @@ $script:RestoreBackupWindowSchema = Join-Path $schemasPath 'RestoreBackupWindow.
 $script:LoadAppsDetailsScriptPath = Join-Path (Join-Path $scriptsPath 'FileIO') 'LoadAppsDetailsFromJson.ps1'
 $script:TestAppInWingetListScriptPath = Join-Path (Join-Path $scriptsPath 'AppRemoval') 'Test-AppInWingetList.ps1'
 
-$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'SkipExplorerRestart', 'SkipRegistryBackup', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget', 'Preset', 'DryRun', 'Verify', 'VerifyProfile', 'SkipUpdateCheck'
+$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'SkipExplorerRestart', 'SkipRegistryBackup', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget', 'Preset', 'DryRun', 'Verify', 'VerifyProfile', 'SkipUpdateCheck', 'NoAutoRollback'
 
 # Script-level variables for GUI elements
 $script:GuiWindow = $null
@@ -37,6 +37,13 @@ $script:ApplySubStepCallback = $null
 $script:RegistryImportFailures = 0
 $script:AppRemovalFailures = 0
 $script:AppRemovalVerificationUnavailable = $false
+
+# Rollback state for the current run. The backup path is captured in phase 1 so
+# the apply phase can restore from it without re-reading the Backups folder.
+# Outcome is one of: None, RolledBack, RollbackFailed, Skipped.
+$script:RunRegistryBackupPath = $null
+$script:RunRollbackOutcome = 'None'
+$script:RunRollbackReason = $null
 
 # Check if current powershell environment is limited by security policies
 if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {

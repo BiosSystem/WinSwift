@@ -347,6 +347,11 @@ function Invoke-AllChanges {
 
     $script:RegistryImportFailures = 0
 
+    # The run summary export is guarded on this and nothing ever set it, so no
+    # summary was written at all. The GUI's "View Last Report" had nothing to
+    # open, and rollback had nowhere to be recorded.
+    $script:RunStartTime = Get-Date
+
     # ---- Gather work items ----
     $applyIds = @()
     foreach ($key in $script:Params.Keys) {
@@ -390,6 +395,12 @@ function Invoke-AllChanges {
     # ================================================================
     # Phase 1: Registry backup
     # ================================================================
+    # Say this up front rather than at the moment rollback is needed and missing.
+    if ($needsBackup -and $script:Params.ContainsKey('SkipRegistryBackup') -and -not $script:Params.ContainsKey('WhatIf')) {
+        Write-Host "  [WARN] -SkipRegistryBackup disables automatic rollback. A failed apply will be left in place." -ForegroundColor Yellow
+        Write-Host ""
+    }
+
     if ($needsBackup -and -not $script:Params.ContainsKey('SkipRegistryBackup')) {
         $step++
         if ($script:ApplyProgressCallback) {
@@ -408,7 +419,9 @@ function Invoke-AllChanges {
                         [PSCustomObject]@{ FeatureId = $_; RegistryKey = (Resolve-UndoRegFilePath $f.RegistryUndoKey) }
                     }
                 } | Where-Object { $_ })
-                New-RegistrySettingsBackup -ActionableKeys $applyIds -ExtraFeatures $undoSyntheticFeatures | Out-Null
+                # Keep the path: it is what automatic rollback restores from if
+                # the apply phase fails.
+                $script:RunRegistryBackupPath = New-RegistrySettingsBackup -ActionableKeys $applyIds -ExtraFeatures $undoSyntheticFeatures
                 if ($applyIds -contains 'RemoveApps') {
                     Write-Host "  [INFO] Backing up Component-Based Servicing hive (HKLM\COMPONENTS)..."
                     reg export HKLM\COMPONENTS "$env:TEMP\WinSwift_CBS_Backup.reg" /y | Out-Null
@@ -442,15 +455,94 @@ function Invoke-AllChanges {
     # ================================================================
     # Phase 3: Apply features
     # ================================================================
+    # Invoke-ApplyFeatures does not catch per-feature errors, and a missing .reg
+    # file throws rather than only incrementing the failure counter. Without this
+    # the exception would escape the whole function and skip rollback entirely,
+    # which is the case rollback exists for.
+    $applyException = $null
     if ($applyIds.Count -gt 0) {
-        Invoke-ApplyFeatures -FeatureIds $applyIds -StartStep ($step + 1) -TotalSteps $totalSteps
+        try {
+            Invoke-ApplyFeatures -FeatureIds $applyIds -StartStep ($step + 1) -TotalSteps $totalSteps
+        }
+        catch {
+            $applyException = $_
+            Write-Host ""
+            Write-Host "Apply phase failed: $($_.Exception.Message)" -ForegroundColor Red
+        }
         $step += $applyIds.Count
+    }
+
+    # ================================================================
+    # Phase 3b: Automatic rollback
+    # ================================================================
+    # Runs before any undo work so a failed apply is not compounded by undo
+    # operations against a half-applied system.
+    #
+    # Only registry import failures trigger this. An app removal failure must
+    # not: a registry backup cannot reinstall an uninstalled Appx package, so
+    # restoring here would report a recovery that did not happen while the apps
+    # stay gone.
+    # A dry run reports what would happen and changes nothing, so it can never
+    # count as a failed apply.
+    $applyFailed = (-not $script:Params.ContainsKey("WhatIf")) -and
+        (($script:RegistryImportFailures -gt 0) -or ($null -ne $applyException))
+
+    if ($applyFailed) {
+        $script:RunRollbackReason = if ($script:RegistryImportFailures -gt 0) {
+            "$($script:RegistryImportFailures) registry import change(s) failed"
+        }
+        else {
+            "the apply phase failed: $($applyException.Exception.Message)"
+        }
+
+        if ($script:Params.ContainsKey('NoAutoRollback')) {
+            $script:RunRollbackOutcome = 'Skipped'
+            Write-Host ""
+            Write-Host "  [WARN] $($script:RunRollbackReason). Rollback skipped because -NoAutoRollback was passed." -ForegroundColor Yellow
+        }
+        elseif ([string]::IsNullOrWhiteSpace($script:RunRegistryBackupPath)) {
+            $script:RunRollbackOutcome = 'Skipped'
+            Write-Host ""
+            Write-Host "  [WARN] $($script:RunRollbackReason), but no registry backup is available to roll back to." -ForegroundColor Yellow
+        }
+        else {
+            Write-Host ""
+            Write-Host "> $($script:RunRollbackReason). Rolling back registry changes..." -ForegroundColor Yellow
+            try {
+                $rollbackBackup = Load-RegistryBackupFromFile -FilePath $script:RunRegistryBackupPath
+                $rollbackResult = Restore-RegistryBackupState -Backup $rollbackBackup
+
+                if ($rollbackResult -and $rollbackResult.Result) {
+                    $script:RunRollbackOutcome = 'RolledBack'
+                    Write-Host "Registry changes were rolled back." -ForegroundColor Yellow
+                }
+                else {
+                    $script:RunRollbackOutcome = 'RollbackFailed'
+                    Write-Host "Rollback did not complete. The system may be partially changed." -ForegroundColor Red
+                    Write-Host "Backup file: $($script:RunRegistryBackupPath)" -ForegroundColor Red
+                }
+            }
+            catch {
+                # Name the backup file so the restore can be finished by hand.
+                $script:RunRollbackOutcome = 'RollbackFailed'
+                Write-Host "Rollback failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "Restore manually from: $($script:RunRegistryBackupPath)" -ForegroundColor Red
+            }
+            Write-Host ""
+        }
     }
 
     # ================================================================
     # Phase 4: Undo features
     # ================================================================
-    if ($undoIds.Count -gt 0) {
+    # Skipped after a failed apply. The system has just been restored or is
+    # known to be partially changed, and undo work on top of either would make
+    # the final state harder to reason about.
+    if ($applyFailed -and $undoIds.Count -gt 0) {
+        Write-Host "  [WARN] Skipping $($undoIds.Count) undo operation(s) because the apply phase failed." -ForegroundColor Yellow
+        Write-Host ""
+    }
+    elseif ($undoIds.Count -gt 0) {
         Invoke-UndoFeatures -FeatureIds $undoIds -StartStep ($step + 1) -TotalSteps $totalSteps
         $step += $undoIds.Count
     }

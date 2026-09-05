@@ -11,10 +11,15 @@
 function Export-RunSummary {
     [CmdletBinding()]
     param(
+        # AllowEmptyCollection because an apply-only run undoes nothing and an
+        # undo-only run applies nothing. A mandatory string[] rejects @() by
+        # default, which made both of those throw.
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [string[]]$AppliedFeatureIds,
 
         [Parameter(Mandatory)]
+        [AllowEmptyCollection()]
         [string[]]$UndoneFeatureIds,
 
         [string[]]$RemovedApps = @(),
@@ -73,6 +78,13 @@ function Export-RunSummary {
         AppsRemoved          = @($RemovedApps)
         TotalFeaturesChanged = $AppliedFeatureIds.Count + $UndoneFeatureIds.Count
         ErrorCount           = $FeatureErrors.Count
+        Rollback             = [ordered]@{
+            # None, RolledBack, RollbackFailed, or Skipped.
+            Outcome    = if ($script:RunRollbackOutcome) { $script:RunRollbackOutcome } else { 'None' }
+            Triggered  = ($script:RunRollbackOutcome -in @('RolledBack', 'RollbackFailed'))
+            Reason     = $script:RunRollbackReason
+            BackupPath = $script:RunRegistryBackupPath
+        }
     }
 
     try {

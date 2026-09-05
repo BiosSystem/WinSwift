@@ -27,7 +27,7 @@ introduced.
 - An integration test suite that exercises apply, failure, and rollback for real.
 - Field validation of the 24H2 DISM fallback repaired in #9.
 
-## 3. Track 1 — Automatic rollback on failed apply
+## 3. Track 1 — Automatic rollback on failed apply (delivered)
 
 ### 3.1 Why this is mostly wiring
 
@@ -105,6 +105,51 @@ Upstream `Raphire/Win11Debloat` has an open issue (#612) and PR (#613) for autom
 registry rollback. Review both before finalizing the policy table — not to port the code,
 since `InvokeChanges.ps1` is on the deferred-port list in `UPSTREAM.md` and has diverged,
 but to avoid a gratuitously different failure model.
+
+### 3.6 Decisions taken, and what shipped
+
+The two open questions from section 9 were settled before implementation:
+
+- **Rollback is always automatic**, with `-NoAutoRollback` to opt out. One code path
+  behaves the same interactive and unattended. A prompt at failure time would ask the user
+  to decide with the least information they will ever have about what just broke.
+- **Exit `3` means failed and rolled back cleanly; exit `4` means rollback itself failed.**
+  4 is the only outcome that needs someone at the machine, so it stays distinct rather than
+  folding into a single code. `0`, `1` and `2` keep their existing meanings.
+
+Three defects were found while wiring it up, each of which would have made the feature
+quietly useless:
+
+- **`Invoke-ApplyFeatures` does not catch per-feature errors**, and a missing `.reg` file
+  throws rather than only incrementing the failure counter. The exception escaped
+  `Invoke-AllChanges` entirely, so the harshest failure mode skipped rollback altogether.
+  The apply phase is now wrapped, and both a thrown error and a counted failure trigger
+  rollback.
+- **`$script:RunStartTime` was read but never assigned**, so the run summary export was
+  guarded on a value that was always null. No summary had ever been written, in GUI or CLI,
+  which also meant the GUI's "View Last Report" had nothing to open. Rollback had nowhere
+  to be recorded until this was fixed.
+- **`Export-RunSummary` rejected empty arrays.** `UndoneFeatureIds` was a mandatory
+  `string[]`, which refuses `@()`, so an apply-only run would have thrown even once the
+  guard passed. Both collection parameters now allow empty.
+
+Undo is skipped after a failed apply. The system has just been restored, or is known to be
+partially changed, and undo work on top of either makes the final state harder to reason
+about.
+
+`$script:AppRemovalFailures` is initialised and never incremented anywhere, so the
+app-removal branch of the policy table has nothing to read. That is not a problem in
+practice: the correct behaviour is for app removal failures not to trigger rollback, which
+is what happens. Recorded here so the dead counter is not mistaken for working logic.
+
+### 3.7 Not verified end to end
+
+The rollback path itself has not been executed. It is covered by source-level assertions in
+the unit suite, which CI runs, and by `RollbackContract.Tests.ps1`, which injects a real
+failure by copying the repository and deleting one feature's `.reg` file. Those are tagged
+`Mutating` and need Windows Sandbox, so they have not run yet. The run summary rollback
+section was verified directly, both triggered and clean.
+
 
 ## 4. Track 2 — Verification coverage to 112/112 (delivered)
 

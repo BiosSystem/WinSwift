@@ -19,6 +19,7 @@ param (
     [switch]$SkipExplorerRestart,
     [switch]$CreateRestorePoint,
     [switch]$SkipRegistryBackup,
+    [switch]$NoAutoRollback,
     [switch]$RunDefaults,
     [switch]$RunDefaultsLite,
     [switch]$RunSavedSettings,
@@ -636,4 +637,14 @@ Write-Output ""
 Write-Output ""
 Write-Output "Script completed! Please check above for any errors."
 
-AwaitKeyToExit
+# Exit codes: 0 success, 1 generic failure, 2 verification noncompliant,
+# 3 apply failed and was rolled back, 4 apply failed and rollback failed too.
+# 4 is the only outcome that needs someone at the machine, so it stays distinct
+# from 3 rather than folding into a single "rolled back" code.
+$rollbackExitCode = switch ($script:RunRollbackOutcome) {
+    'RolledBack' { 3 }
+    'RollbackFailed' { 4 }
+    default { 0 }
+}
+
+AwaitKeyToExit -ExitCode $rollbackExitCode
