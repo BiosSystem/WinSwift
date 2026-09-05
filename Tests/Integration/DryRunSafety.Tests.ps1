@@ -12,6 +12,13 @@
     read out of its .reg file, rather than sweeping the registry broadly.
 #>
 
+BeforeDiscovery {
+    # -Skip: is evaluated during discovery, before any BeforeAll runs, so the
+    # elevation check has to be resolved here.
+    . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
+    $script:IsElevated = Test-IsElevated
+}
+
 Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
 
     BeforeAll {
@@ -26,7 +33,7 @@ Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
         Test-Path -LiteralPath $script:regFile | Should -BeTrue
     }
 
-    It 'reaches the apply pipeline but changes no registry value' -Skip:(-not (Test-IsElevated)) {
+    It 'reaches the apply pipeline but changes no registry value' -Skip:(-not $script:IsElevated) {
         $before = Get-RegFileValueSnapshot -RegFilePath $script:regFile
         $before.Count | Should -BeGreaterThan 0 -Because 'the test is meaningless without values to watch'
 
@@ -41,7 +48,7 @@ Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
         $changed | Should -BeNullOrEmpty -Because "DryRun wrote to the registry: $($changed -join '; ')"
     }
 
-    It 'announces the registry backup without creating one' -Skip:(-not (Test-IsElevated)) {
+    It 'announces the registry backup without creating one' -Skip:(-not $script:IsElevated) {
         $result = Invoke-WinSwiftProcess -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry')
 
         $result.TimedOut | Should -BeFalse

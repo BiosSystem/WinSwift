@@ -11,6 +11,13 @@
     depends on how the host is configured, so none of these assert on one.
 #>
 
+BeforeDiscovery {
+    # -Skip: is evaluated during discovery, before any BeforeAll runs, so the
+    # elevation check has to be resolved here.
+    . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
+    $script:IsElevated = Test-IsElevated
+}
+
 Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
 
     BeforeAll {
@@ -27,7 +34,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         }
     }
 
-    It 'exits 0 when the only selected entry carries no desired state' -Skip:(-not (Test-IsElevated)) {
+    It 'exits 0 when the only selected entry carries no desired state' -Skip:(-not $script:IsElevated) {
         # CreateRestorePoint is exempt, so it verifies as NotApplicable. This is
         # the end-to-end proof that an exemption never fails a run.
         $path = New-VerifyProfile -Name 'exempt-only' -Content @{ Switches = @('CreateRestorePoint') }
@@ -39,7 +46,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $result.ExitCode | Should -Be 0
     }
 
-    It 'exits 2 when a selected feature is unknown' -Skip:(-not (Test-IsElevated)) {
+    It 'exits 2 when a selected feature is unknown' -Skip:(-not $script:IsElevated) {
         $path = New-VerifyProfile -Name 'unknown-feature' -Content @{ Switches = @('NoSuchFeatureExists') }
 
         $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
@@ -48,7 +55,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $result.ExitCode | Should -Be 2
     }
 
-    It 'exits 2 when the profile selects nothing verifiable' -Skip:(-not (Test-IsElevated)) {
+    It 'exits 2 when the profile selects nothing verifiable' -Skip:(-not $script:IsElevated) {
         $path = New-VerifyProfile -Name 'empty' -Content @{ Switches = @() }
 
         $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
@@ -57,7 +64,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $result.ExitCode | Should -Be 2
     }
 
-    It 'exits 2 when the profile path does not exist' -Skip:(-not (Test-IsElevated)) {
+    It 'exits 2 when the profile path does not exist' -Skip:(-not $script:IsElevated) {
         $missing = Join-Path $script:profileDir 'does-not-exist.json'
 
         $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $missing)
@@ -66,7 +73,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $result.ExitCode | Should -Be 2
     }
 
-    It 'reads app targets from a profile and routes them through AppxAbsence' -Skip:(-not (Test-IsElevated)) {
+    It 'reads app targets from a profile and routes them through AppxAbsence' -Skip:(-not $script:IsElevated) {
         # A package name that cannot exist is necessarily absent, and absent is
         # the applied state for a removal feature. That makes this deterministic
         # while still proving the profile -> RemoveApps -> AppxAbsence path.
@@ -80,7 +87,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $result.ExitCode | Should -Be 0
     }
 
-    It 'refuses to verify without elevation' -Skip:(Test-IsElevated) {
+    It 'refuses to verify without elevation' -Skip:($script:IsElevated) {
         # The mirror of the case above: unelevated, the run must stop at the
         # admin guard rather than reaching the verification engine.
         $path = Join-Path $script:profileDir 'unelevated.json'

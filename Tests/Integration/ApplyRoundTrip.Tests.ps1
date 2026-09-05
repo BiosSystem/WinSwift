@@ -10,6 +10,13 @@
     of the round trip, is blocked; see the pending test at the bottom.
 #>
 
+BeforeDiscovery {
+    # -Skip: is evaluated during discovery, before any BeforeAll runs, so the
+    # elevation check has to be resolved here.
+    . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
+    $script:IsElevated = Test-IsElevated
+}
+
 Describe 'WinSwift apply round trip' -Tag 'Mutating' {
 
     BeforeAll {
@@ -23,7 +30,7 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
             Set-Content -LiteralPath $script:profilePath -Encoding utf8
     }
 
-    It 'applies a registry-backed feature and reports it compliant' -Skip:(-not (Test-IsElevated)) {
+    It 'applies a registry-backed feature and reports it compliant' -Skip:(-not $script:IsElevated) {
         $apply = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-DisableTelemetry') -TimeoutSeconds 300
         $apply.TimedOut | Should -BeFalse
 
@@ -33,7 +40,7 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
         $verify.ExitCode | Should -Be 0
     }
 
-    It 'wrote every value the feature registry file declares' -Skip:(-not (Test-IsElevated)) {
+    It 'wrote every value the feature registry file declares' -Skip:(-not $script:IsElevated) {
         # Verification reports one verdict for the feature. This checks the
         # individual values underneath it, so a partially applied .reg file
         # cannot pass as compliant.
