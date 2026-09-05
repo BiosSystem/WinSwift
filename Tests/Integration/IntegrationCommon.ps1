@@ -96,9 +96,9 @@ function Get-RegFileValueSnapshot {
 
     $snapshot = @{}
     foreach ($operation in @(Get-RegFileOperations -regFilePath $RegFilePath)) {
-        if ($operation.Type -ne 'SetValue') { continue }
+        if ($operation.OperationType -ne 'SetValue') { continue }
 
-        $psPath = $operation.Path `
+        $psPath = $operation.KeyPath `
             -replace '^HKEY_LOCAL_MACHINE', 'HKLM:' `
             -replace '^HKEY_CURRENT_USER', 'HKCU:' `
             -replace '^HKEY_CLASSES_ROOT', 'HKCR:' `
@@ -108,11 +108,15 @@ function Get-RegFileValueSnapshot {
         # is skipped rather than guessed at.
         if ($psPath -notmatch '^(HKLM|HKCU):') { continue }
 
-        $key = '{0}\{1}' -f $psPath, $operation.Name
+        # A .reg default value (@) has an empty name, which Get-ItemProperty
+        # cannot address by name.
+        if ([string]::IsNullOrEmpty($operation.ValueName)) { continue }
+
+        $key = '{0}\{1}' -f $psPath, $operation.ValueName
         $current = $null
         try {
-            $item = Get-ItemProperty -LiteralPath $psPath -Name $operation.Name -ErrorAction Stop
-            $current = $item.$($operation.Name)
+            $item = Get-ItemProperty -LiteralPath $psPath -Name $operation.ValueName -ErrorAction Stop
+            $current = $item.$($operation.ValueName)
         }
         catch {
             $current = $null

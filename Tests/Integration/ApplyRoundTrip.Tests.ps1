@@ -47,18 +47,18 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
         $missing = [System.Collections.Generic.List[string]]::new()
 
         foreach ($operation in @(Get-RegFileOperations -regFilePath $script:regFile)) {
-            if ($operation.Type -ne 'SetValue') { continue }
+            if ($operation.OperationType -ne 'SetValue') { continue }
 
-            $psPath = $operation.Path `
+            $psPath = $operation.KeyPath `
                 -replace '^HKEY_LOCAL_MACHINE', 'HKLM:' `
                 -replace '^HKEY_CURRENT_USER', 'HKCU:'
             if ($psPath -notmatch '^(HKLM|HKCU):') { continue }
 
             try {
-                $null = Get-ItemProperty -LiteralPath $psPath -Name $operation.Name -ErrorAction Stop
+                $null = Get-ItemProperty -LiteralPath $psPath -Name $operation.ValueName -ErrorAction Stop
             }
             catch {
-                $missing.Add(('{0}\{1}' -f $psPath, $operation.Name))
+                $missing.Add(('{0}\{1}' -f $psPath, $operation.ValueName))
             }
         }
 
