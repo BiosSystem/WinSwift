@@ -343,12 +343,12 @@ function Request-EdgeForceRemove {
         $result = Show-MessageBox -Message 'Unable to uninstall Microsoft Edge via WinGet. Would you like to forcefully uninstall it? NOT RECOMMENDED!' -Title 'Force Uninstall Microsoft Edge?' -Button 'YesNo' -Icon 'Warning'
         if ($result -eq 'Yes') {
             Write-Host ""
-            ForceRemoveEdge
+            $null = ForceRemoveEdge
         }
     }
     elseif ($(Read-Host -Prompt "Would you like to forcefully uninstall Microsoft Edge? NOT RECOMMENDED! (y/n)") -eq 'y') {
         Write-Host ""
-        ForceRemoveEdge
+        $null = ForceRemoveEdge
     }
 }
 
