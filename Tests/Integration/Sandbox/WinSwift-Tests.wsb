@@ -1,0 +1,24 @@
+<Configuration>
+  <!--
+    Windows Sandbox configuration for the mutating integration tests.
+
+    The repository is mapped read-only so a test cannot modify the working tree
+    it was launched from. Everything the tests write goes to the sandbox's own
+    registry and disappears when the window closes.
+
+    Update HostFolder if the repository does not live at this path, then open
+    this file to start the run.
+  -->
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>D:\Antigravity_Projects\WinSwift</HostFolder>
+      <SandboxFolder>C:\WinSwift</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\WinSwift\Tests\Integration\Sandbox\Start-SandboxRun.ps1</Command>
+  </LogonCommand>
+  <MemoryInMB>4096</MemoryInMB>
+  <Networking>Enable</Networking>
+</Configuration>
