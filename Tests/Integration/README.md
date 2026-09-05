@@ -36,9 +36,26 @@ Adding the dry-run checks, on a machine you can throw away:
 .\Tests\Integration\Invoke-IntegrationTests.ps1 -Ephemeral
 ```
 
-The full suite. Open `Sandbox\WinSwift-Tests.wsb`, which maps the repository in
-read-only, installs Pester, and runs everything inside Windows Sandbox. Edit
-`HostFolder` in that file if the repository is not at the default path.
+The full suite runs in Windows Sandbox. Open `Sandbox\WinSwift-Tests.wsb`: it
+maps the repository read-only, maps `Sandboxesults` writable, installs Pester,
+and runs everything inside the sandbox. Edit both `HostFolder` paths in that file
+if the repository is not at the default path.
+
+**Windows Sandbox has to be enabled first.** It ships with Windows 11 Pro and
+Enterprise but is off by default. From an elevated PowerShell:
+
+```powershell
+Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM -All
+```
+
+That needs a reboot. Check whether it is already on with
+`Test-Path C:\Windows\System32\WindowsSandbox.exe`.
+
+Results land in `Sandboxesults` on the host: `integration-results.xml` (NUnit),
+`integration-summary.json` (counts plus the name and message of every failure),
+and `sandbox-transcript.log`. Nothing else survives the sandbox closing, console
+output included, so a run whose bootstrap fails is still diagnosable from the
+transcript and the summary.
 
 Requires Pester 5.7.1 or later. WinSwift refuses to run without elevation, so an
 unelevated session will skip most cases and say so.

@@ -27,6 +27,11 @@
 .PARAMETER PassThru
     Returns the Pester result object instead of exiting.
 
+.PARAMETER ResultPath
+    Directory to write a NUnit XML result file and a JSON summary to. Use this
+    when the run happens somewhere the console output cannot be read afterwards,
+    such as inside Windows Sandbox, which discards everything on close.
+
 .EXAMPLE
     .\Invoke-IntegrationTests.ps1
     Read-only checks. Safe on a workstation.
@@ -39,7 +44,8 @@
 param(
     [switch]$Ephemeral,
     [switch]$Mutating,
-    [switch]$PassThru
+    [switch]$PassThru,
+    [string]$ResultPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -76,6 +82,15 @@ $configuration.Filter.Tag = $tags
 $configuration.Output.Verbosity = 'Detailed'
 $configuration.Run.PassThru = $true
 
+if (-not [string]::IsNullOrWhiteSpace($ResultPath)) {
+    if (-not (Test-Path -LiteralPath $ResultPath)) {
+        New-Item -ItemType Directory -Path $ResultPath -Force | Out-Null
+    }
+    $configuration.TestResult.Enabled = $true
+    $configuration.TestResult.OutputPath = Join-Path $ResultPath 'integration-results.xml'
+    Write-Host ("  results  : {0}" -f $ResultPath)
+}
+
 $result = $null
 try {
     $result = Invoke-Pester -Configuration $configuration
@@ -100,6 +115,31 @@ if ($null -eq $result -or $result.TotalCount -eq 0) {
 Write-Host ''
 Write-Host ("Integration suite: {0} passed, {1} failed, {2} skipped, {3} total." -f
     $result.PassedCount, $result.FailedCount, $result.SkippedCount, $result.TotalCount)
+
+if (-not [string]::IsNullOrWhiteSpace($ResultPath)) {
+    # A readable summary alongside the XML, including the name and message of
+    # every failure, so a Sandbox run can be diagnosed after the window is gone.
+    $failures = @($result.Tests | Where-Object { $_.Result -eq 'Failed' } | ForEach-Object {
+        [ordered]@{
+            Name = $_.ExpandedPath
+            Message = ($_.ErrorRecord | ForEach-Object { $_.ToString() }) -join "`n"
+        }
+    })
+
+    [ordered]@{
+        RanAt = (Get-Date).ToString('o')
+        ComputerName = $env:COMPUTERNAME
+        Tags = $tags
+        Elevated = $isElevated
+        Passed = $result.PassedCount
+        Failed = $result.FailedCount
+        Skipped = $result.SkippedCount
+        Total = $result.TotalCount
+        Failures = $failures
+    } | ConvertTo-Json -Depth 6 | Out-File -FilePath (Join-Path $ResultPath 'integration-summary.json') -Encoding UTF8 -Force
+
+    Write-Host ("Results written to {0}" -f $ResultPath)
+}
 
 if ($PassThru) {
     return $result

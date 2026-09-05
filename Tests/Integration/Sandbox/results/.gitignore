@@ -1,0 +1,4 @@
+# Windows Sandbox refuses to start when a mapped HostFolder is missing, so this
+# directory is tracked while its contents are not.
+*
+!.gitignore
