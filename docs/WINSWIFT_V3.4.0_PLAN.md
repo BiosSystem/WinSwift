@@ -106,46 +106,69 @@ registry rollback. Review both before finalizing the policy table — not to por
 since `InvokeChanges.ps1` is on the deferred-port list in `UPSTREAM.md` and has diverged,
 but to avoid a gratuitously different failure model.
 
-## 4. Track 2 — Verification coverage to 112/112
+## 4. Track 2 — Verification coverage to 112/112 (delivered)
 
-### 4.1 The gap
+### 4.1 The gap, as actually found
 
-Of 112 features in `Config/Features.json`, 93 verify through `RegistryKey` read-back and 9
-through a `VerificationAdapter`. Ten have neither and are silently unverifiable:
+The initial count of ten unverifiable features was measured from `Features.json` metadata
+alone, and that overstated the gap. Three of the ten were already verified at runtime by a
+hardcoded FeatureId list inside `Test-WinSwiftFeature`:
 
-| FeatureId | Why registry read-back cannot cover it |
-|---|---|
-| `RemoveApps`, `Apps`, `RemoveGamingApps`, `RemoveHPApps` | Package state, not a registry value |
-| `ForceRemoveEdge` | Package state plus filesystem leftovers |
-| `ClearStart`, `ClearStartAllUsers`, `ReplaceStart`, `ReplaceStartAllUsers` | Start layout lives in a per-user layout file |
-| `CreateRestorePoint` | An event, not a persistent desired state |
+```powershell
+if ($FeatureId -in @('RemoveApps', 'RemoveGamingApps', 'RemoveHPApps')) { ... }
+```
 
-### 4.2 Approach
+So the metadata was incomplete, not the coverage. That is its own problem — routing by a
+hardcoded list means `Features.json` does not describe how a feature is verified, and the
+unit suite cannot tell a declared gap from an undeclared one.
 
-There is already a precedent in the codebase. `Test-FeatureApplied` in
-`Scripts/Features/GetCurrentTweakState.ps1` handles `DisableWidgets` by querying
-`Get-AppxPackage` and treating package absence as the applied state. The four app-removal
-features and `ForceRemoveEdge` follow that pattern directly.
+The corrected picture:
 
-- **App removal features:** new `AppxAbsence` adapter resolving the feature's app list via
-  the existing `Get-WinSwiftFeatureAppIds`, then checking installed *and* provisioned
-  state. Provisioned state matters — a package can be uninstalled per-user while still
-  provisioned and due to return on the next servicing pass.
-- **`ForceRemoveEdge`:** extend the above with the leftover shortcut paths and autostart
-  values that `Remove-EdgeAutostartValue` already knows about.
-- **Start layout features:** new `StartLayout` adapter comparing the on-disk layout file
-  against the expected shape.
-- **`CreateRestorePoint`:** do not add an adapter. It is an action, not a desired state.
-  Mark it explicitly exempt in `Features.json` and have the verification engine report it
-  as `NotApplicable` rather than counting it as an unverifiable gap. Add a unit assertion
-  that this is the *only* permitted exemption, so the count cannot silently regress.
+| FeatureId | State before | Resolution |
+|---|---|---|
+| `RemoveApps`, `RemoveGamingApps`, `RemoveHPApps` | Verified, but by hardcoded list | Declared `AppxAbsence`; routing moved to metadata |
+| `ForceRemoveEdge` | Genuinely unverified | New `EdgeRemoved` adapter |
+| `ClearStart`, `ClearStartAllUsers`, `ReplaceStart`, `ReplaceStartAllUsers` | Genuinely unverified | New `StartLayout` adapter |
+| `Apps` | Genuinely unverified | Exempt — it is a value-carrying CLI parameter, not a toggle |
+| `CreateRestorePoint` | Genuinely unverified | Exempt — a one-shot action, not a desired state |
+
+Real new verification work was five features, not ten. Two are exemptions rather than gaps.
+
+### 4.2 What was built
+
+- **Metadata-driven routing.** The hardcoded FeatureId list is gone. `Test-WinSwiftFeature`
+  now dispatches on the declared `VerificationAdapter`, so `Features.json` is the single
+  source of truth for how every feature is verified.
+- **`AppxAbsence`** — resolves the app list through the existing `Get-WinSwiftFeatureAppIds`
+  and checks installed *and* provisioned state. Provisioned state matters: a package can be
+  uninstalled per-user while still provisioned and due to return on the next servicing pass.
+- **`EdgeRemoved`** — checks the Edge uninstall key in the 32-bit registry view, plus the
+  four autostart values `Remove-EdgeAutostartValue` clears. These are exactly the artifacts
+  `ForceRemoveEdge` manipulates, so absence is a true applied-state signal.
+- **`StartLayout`** — SHA-256 compares the on-disk `start2.bin` against the expected
+  template: the bundled blank template for `ClearStart*`, the caller-supplied one for
+  `ReplaceStart*`. The all-users variants check every user profile plus the default profile,
+  since new users inherit from it.
+- **`NotApplicable`** — a new verification status for entries with no persistent desired
+  state. It is reported distinctly and feeds neither the failure nor the error count, so it
+  cannot affect exit code `2`.
 
 ### 4.3 Acceptance criteria
 
-- `Test-FeaturesJson.ps1` asserts every feature has `RegistryKey`, `VerificationAdapter`,
-  or the explicit exemption — so a new feature cannot be added without a verification story.
-- `-Verify` reports a real verdict for all 111 verifiable features.
-- Exit code `2` continues to mean noncompliant, and `NotApplicable` never contributes to it.
+All met:
+
+- `Test-FeaturesJson.ps1` asserts every feature declares `RegistryKey` or a
+  `VerificationAdapter`, so a new feature cannot be added without a verification story.
+- A second assertion pins the exemption list to exactly `Apps` and `CreateRestorePoint`, so
+  `NotApplicable` cannot become a dumping ground for features nobody wanted to verify.
+- `NotApplicable` contributes to neither `FailedCount` nor `ErrorCount`.
+
+### 4.4 Not verified end to end
+
+`EdgeRemoved` and `StartLayout` were exercised directly against real registry and
+filesystem state, including the negative cases. What has *not* been observed is a full
+`-Verify` run across all 112 features on a live machine — that needs elevation and belongs
+to the Track 3 integration suite.
 
 ## 5. Track 3 — Integration tests
 

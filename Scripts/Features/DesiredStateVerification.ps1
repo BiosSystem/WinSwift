@@ -303,6 +303,103 @@ function Test-WinSwiftTelemetryFirewallState {
     return $true
 }
 
+function Test-WinSwiftStartLayoutState {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$FeatureId
+    )
+
+    # ClearStart* applies the bundled blank template; ReplaceStart* applies a caller-supplied one.
+    $template = switch ($FeatureId) {
+        'ClearStart' { "$script:AssetsPath\Start\start2.bin" }
+        'ClearStartAllUsers' { "$script:AssetsPath\Start\start2.bin" }
+        'ReplaceStart' { [string]$script:Params.Item('ReplaceStart') }
+        'ReplaceStartAllUsers' { [string]$script:Params.Item('ReplaceStartAllUsers') }
+        default { throw "Unknown start menu feature: $FeatureId" }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($template) -or -not (Test-Path -LiteralPath $template)) {
+        throw "Start menu template is unavailable for $($FeatureId): '$template'"
+    }
+
+    $expectedHash = (Get-FileHash -LiteralPath $template -Algorithm SHA256).Hash
+
+    $targets = @()
+    if ($FeatureId -in @('ClearStartAllUsers', 'ReplaceStartAllUsers')) {
+        $localState = 'AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState'
+
+        $userPathString = GetUserDirectory -userName '*' -fileName $localState
+        $targets += @(Get-ChildItem -Path $userPathString -ErrorAction SilentlyContinue |
+            ForEach-Object { Join-Path $_.FullName 'start2.bin' })
+
+        # New users inherit the default profile, so it has to match too.
+        $defaultStartMenuPath = GetUserDirectory -userName 'Default' -fileName $localState -exitIfPathNotFound $false
+        if (-not [string]::IsNullOrWhiteSpace($defaultStartMenuPath)) {
+            $targets += (Join-Path $defaultStartMenuPath 'start2.bin')
+        }
+    }
+    else {
+        $targets += (GetStartMenuBinPathForUser -UserName (GetUserName))
+    }
+
+    $targets = @($targets | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($targets.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($target in $targets) {
+        if (-not (Test-Path -LiteralPath $target)) {
+            return $false
+        }
+
+        if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $expectedHash) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-WinSwiftEdgeRemovedState {
+    [CmdletBinding()]
+    param()
+
+    # ForceRemoveEdge runs the uninstaller behind this key, so its absence is the applied state.
+    $regView = [Microsoft.Win32.RegistryView]::Registry32
+    $hklm = $null
+    $uninstallRegKey = $null
+
+    try {
+        $hklm = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, $regView)
+        $uninstallRegKey = $hklm.OpenSubKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge')
+        if ($null -ne $uninstallRegKey) {
+            return $false
+        }
+    }
+    finally {
+        if ($uninstallRegKey) { $uninstallRegKey.Dispose() }
+        if ($hklm) { $hklm.Dispose() }
+    }
+
+    # The same autostart values ForceRemoveEdge clears.
+    $autostartValues = @(
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'; Name = 'MicrosoftEdgeAutoLaunch_A9F6DCE4ABADF4F51CF45CD7129E3C6C' },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'; Name = 'Microsoft Edge Update' },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run'; Name = 'MicrosoftEdgeAutoLaunch_A9F6DCE4ABADF4F51CF45CD7129E3C6C' },
+        @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\StartupApproved\Run'; Name = 'Microsoft Edge Update' }
+    )
+
+    foreach ($autostartValue in $autostartValues) {
+        $properties = Get-ItemProperty -Path $autostartValue.Path -ErrorAction SilentlyContinue
+        if ($properties -and $properties.PSObject.Properties[$autostartValue.Name]) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
 function Test-WinSwiftCustomFeatureState {
     [CmdletBinding()]
     param(
@@ -318,6 +415,8 @@ function Test-WinSwiftCustomFeatureState {
         'ExtendedAIPurge' { return (Test-WinSwiftExtendedAIPurgeState) }
         'SecurityHardening' { return (Test-WinSwiftSecurityHardeningState) }
         'TelemetryFirewall' { return (Test-WinSwiftTelemetryFirewallState) }
+        'StartLayout' { return (Test-WinSwiftStartLayoutState -FeatureId $FeatureId) }
+        'EdgeRemoved' { return (Test-WinSwiftEdgeRemovedState) }
         default { throw "Unknown verification adapter: $Adapter" }
     }
 }
@@ -326,7 +425,7 @@ function New-WinSwiftVerificationResult {
     param(
         [string]$FeatureId,
         [string]$Target,
-        [ValidateSet('Compliant', 'NonCompliant', 'Unsupported', 'Error')]
+        [ValidateSet('Compliant', 'NonCompliant', 'NotApplicable', 'Unsupported', 'Error')]
         [string]$Status,
         [string]$Details
     )
@@ -353,7 +452,18 @@ function Test-WinSwiftFeature {
     }
 
     try {
-        if ($FeatureId -in @('RemoveApps', 'RemoveGamingApps', 'RemoveHPApps')) {
+        $feature = $script:Features[$FeatureId]
+        $adapter = if ($feature.RegistryKey) { 'CurrentFeatureState' } else { [string]$feature.VerificationAdapter }
+        if ([string]::IsNullOrWhiteSpace($adapter)) {
+            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'No desired-state test is defined for this custom feature.'
+        }
+
+        # Value-carrying parameters and one-shot actions leave no persistent state to read back.
+        if ($adapter -eq 'NotApplicable') {
+            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status NotApplicable -Details 'This entry carries no persistent desired state to verify.'
+        }
+
+        if ($adapter -eq 'AppxAbsence') {
             $targets = @(Get-WinSwiftFeatureAppIds -FeatureId $FeatureId -RequestedAppIds $AppIds)
             if ($targets.Count -eq 0) {
                 return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target 'Appx' -Status Unsupported -Details 'No Appx targets were supplied.'
@@ -374,12 +484,6 @@ function Test-WinSwiftFeature {
                 }
             }
             return @($results)
-        }
-
-        $feature = $script:Features[$FeatureId]
-        $adapter = if ($feature.RegistryKey) { 'CurrentFeatureState' } else { [string]$feature.VerificationAdapter }
-        if ([string]::IsNullOrWhiteSpace($adapter)) {
-            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'No desired-state test is defined for this custom feature.'
         }
 
         $isApplied = if ($script:Params.ContainsKey('Sysprep') -or $script:Params.ContainsKey('User')) {
@@ -487,21 +591,26 @@ function Invoke-WinSwiftVerification {
         $color = switch ($result.Status) {
             'Compliant' { 'Green' }
             'NonCompliant' { 'Yellow' }
+            'NotApplicable' { 'DarkGray' }
             default { 'Red' }
         }
         Write-Host ("[{0}] {1}: {2}" -f $result.Status, $result.Target, $result.Details) -ForegroundColor $color
     }
 
+    # NotApplicable is a deliberate exemption, not a failure, so it feeds neither count.
     $failedCount = @($results | Where-Object Status -eq 'NonCompliant').Count
     $errorCount = @($results | Where-Object Status -in @('Error', 'Unsupported')).Count
-    Write-Host ("Verification complete: {0} compliant, {1} noncompliant, {2} error or unsupported." -f
+    $notApplicableCount = @($results | Where-Object Status -eq 'NotApplicable').Count
+    Write-Host ("Verification complete: {0} compliant, {1} noncompliant, {2} error or unsupported, {3} not applicable." -f
         @($results | Where-Object Status -eq 'Compliant').Count,
         $failedCount,
-        $errorCount)
+        $errorCount,
+        $notApplicableCount)
 
     [PSCustomObject]@{
         Results = $results
         FailedCount = $failedCount
         ErrorCount = $errorCount
+        NotApplicableCount = $notApplicableCount
     }
 }

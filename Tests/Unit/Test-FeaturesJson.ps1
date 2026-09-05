@@ -91,12 +91,35 @@ Describe 'Features.json' {
             'GamingMode',
             'ExtendedAIPurge',
             'SecurityHardening',
-            'TelemetryFirewall'
+            'TelemetryFirewall',
+            'AppxAbsence',
+            'StartLayout',
+            'EdgeRemoved',
+            'NotApplicable'
         )
         $invalid = $script:features | Where-Object {
             $_.VerificationAdapter -and $_.VerificationAdapter -notin $supportedAdapters
         }
         $invalid.Count | Should -Be 0
+    }
+
+    It 'gives every feature a verification story' {
+        # A feature verifies through RegistryKey read-back or a declared adapter.
+        # Anything with neither is silently unverifiable, which is what this guards against.
+        $unverifiable = @($script:features | Where-Object {
+            [string]::IsNullOrWhiteSpace($_.RegistryKey) -and
+            [string]::IsNullOrWhiteSpace($_.VerificationAdapter)
+        })
+        $unverifiable.FeatureId | Should -BeNullOrEmpty -Because "Features with no verification story: $($unverifiable.FeatureId -join ', ')"
+    }
+
+    It 'exempts only the entries that carry no persistent desired state' {
+        # Apps is a value-carrying parameter and CreateRestorePoint is a one-shot action,
+        # so neither has a state to read back. Every other exemption is a coverage gap.
+        $permittedExemptions = @('Apps', 'CreateRestorePoint')
+        $exempt = @($script:features | Where-Object { $_.VerificationAdapter -eq 'NotApplicable' })
+        $unexpected = @($exempt.FeatureId | Where-Object { $_ -notin $permittedExemptions })
+        $unexpected | Should -BeNullOrEmpty -Because "Unexpected NotApplicable exemptions: $($unexpected -join ', ')"
     }
 
     It 'declares verification metadata for release custom modules' {
