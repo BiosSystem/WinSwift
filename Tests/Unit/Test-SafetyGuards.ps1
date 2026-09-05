@@ -73,6 +73,67 @@ Describe 'WinSwift startup safety guards' {
         $stdout | Should -Not -Match '\[WhatIf\]' -Because 'the apply pipeline must never be reached without elevation'
     }
 
+    It 'rolls back a failed apply before any undo work' {
+        $changes = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+
+        $rollbackPosition = $changes.IndexOf('Restore-RegistryBackupState')
+        $undoPosition = $changes.IndexOf('Invoke-UndoFeatures -FeatureIds')
+
+        $rollbackPosition | Should -BeGreaterThan -1
+        $undoPosition | Should -BeGreaterThan -1
+        $rollbackPosition | Should -BeLessThan $undoPosition -Because 'undo must not run on top of a half-applied system'
+    }
+
+    It 'catches apply failures so rollback is reachable' {
+        # Invoke-ApplyFeatures does not catch per-feature errors, and a missing
+        # .reg file throws. Without this the exception escapes Invoke-AllChanges
+        # and skips rollback, which is the case rollback exists for.
+        $changes = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+
+        $changes | Should -Match '(?s)try\s*\{\s*Invoke-ApplyFeatures.*?\}\s*catch\s*\{'
+        $changes | Should -Match '\$applyException'
+    }
+
+    It 'never rolls back on an app removal failure alone' {
+        # A registry restore cannot reinstall an uninstalled Appx package, so
+        # only registry import failures may trigger it.
+        $changes = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+
+        $changes | Should -Match '\$applyFailed\s*=\s*\(-not \$script:Params\.ContainsKey\("WhatIf"\)\)'
+        $changes | Should -Match '\$script:RegistryImportFailures -gt 0'
+        $changes | Should -Not -Match '\$applyFailed[^\r\n]*AppRemovalFailures'
+    }
+
+    It 'maps rollback outcomes to distinct exit codes' {
+        # 0 success, 1 generic, 2 verification drift, 3 rolled back,
+        # 4 rollback also failed. 4 is the only outcome needing a human.
+        $script:entryScript | Should -Match "'RolledBack'\s*\{\s*3\s*\}"
+        $script:entryScript | Should -Match "'RollbackFailed'\s*\{\s*4\s*\}"
+        $script:entryScript | Should -Match 'AwaitKeyToExit -ExitCode \$rollbackExitCode'
+    }
+
+    It 'produces a run summary so the rollback record exists' {
+        # The export is guarded on $script:RunStartTime, which nothing ever set,
+        # so no summary was written at all and rollback had nowhere to be recorded.
+        $changes = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+        $summaryScript = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\ExportRunSummary.ps1') -Raw
+
+        $assignPosition = $changes.IndexOf('$script:RunStartTime = Get-Date')
+        $guardPosition = $changes.IndexOf('if ($script:RunStartTime -and')
+
+        $assignPosition | Should -BeGreaterThan -1 -Because 'the summary guard is never true otherwise'
+        $assignPosition | Should -BeLessThan $guardPosition
+
+        # An apply-only run undoes nothing, and a mandatory string[] rejects @().
+        $summaryScript | Should -Match '(?s)AllowEmptyCollection\(\).*?\$UndoneFeatureIds'
+        $summaryScript | Should -Match 'Rollback\s*=\s*\[ordered\]'
+    }
+
+    It 'warns up front when -SkipRegistryBackup removes the safety net' {
+        $changes = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+        $changes | Should -Match '-SkipRegistryBackup disables automatic rollback'
+    }
+
     It 'quotes bound arrays and unbound arguments during elevation' {
         $script:adminScript | Should -Match 'paramValue -is \[array\]'
         $script:adminScript | Should -Match 'OriginalUnboundArguments'

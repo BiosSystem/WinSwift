@@ -1,4 +1,9 @@
 function AwaitKeyToExit {
+    param(
+        # Defaults to 0 so existing callers keep exiting successfully.
+        [int]$ExitCode = 0
+    )
+
     # Suppress prompt if Silent parameter was passed
     if (-not $Silent) {
         Write-Output ""
@@ -7,5 +12,5 @@ function AwaitKeyToExit {
     }
 
     Stop-Transcript
-    Exit
+    Exit $ExitCode
 }
