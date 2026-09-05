@@ -9,8 +9,9 @@ Backups/
 # Ignore user settings
 Config/LastUsedSettings.json
 
-# Ignore old releases
+# Ignore old releases and local build output
 *.zip
+Release/
 
 # Ignore scratch scripts and debug logs
 debug_out.txt
