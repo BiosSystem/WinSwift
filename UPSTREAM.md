@@ -4,10 +4,72 @@
 
 - Upstream repository: `Raphire/Win11Debloat`
 - Upstream branch: `master`
-- Reviewed commit: `fff1fcd0b21f6a2130baf0e5e9e790b2eec3f1c3`
-- Reviewed date: 2026-08-23
+- Reviewed commit: `6012b02` (upstream `master` head at review time)
+- Reviewed date: 2026-09-05
+- Previous baseline: `fff1fcd0b21f6a2130baf0e5e9e790b2eec3f1c3` (2026-08-23)
 - WinSwift release line: `3.3.0`
 - Upstream changelog review: July 11 2026 upstream release (dropped CustomAppsList format, retired legacy CLI app removal, fixed Copilot removal, dropped sunset apps)
+
+## Upstream Review Log
+
+### 2026-09-05 review: `fff1fcd` to `6012b02`
+
+Five upstream commits were assessed. Verdict per commit:
+
+| Upstream commit | Subject | Disposition |
+|---|---|---|
+| `ef8811d` | Improve error reporting & handling (#741) | Partially ported (see below) |
+| `f431c56` | Bump version | Not applicable, WinSwift maintains its own version line |
+| `9b75b1a`, `687ddea`, `6012b02` | CONTRIBUTING.md edits | Declined, WinSwift maintains its own contributor guide |
+
+#### Why `ef8811d` cannot be cherry-picked
+
+`git cherry-pick ef8811d` applies to zero files in this repository. WinSwift renamed every
+script touched by that commit when it moved off the upstream hyphenated `Verb-Noun.ps1`
+file convention, so the patch would create a parallel set of upstream-named files and
+duplicate every function they define. Attempting it would fail static validation on the
+duplicate-function check.
+
+| Upstream path | WinSwift path |
+|---|---|
+| `Scripts/AppRemoval/Invoke-ForceRemoveEdge.ps1` | `Scripts/AppRemoval/ForceRemoveEdge.ps1` |
+| `Scripts/AppRemoval/Remove-SelectedApps.ps1` | `Scripts/AppRemoval/RemoveApps.ps1` |
+| `Scripts/Features/Import-RegistryFile.ps1` | `Scripts/Features/ImportRegistryFile.ps1` |
+| `Scripts/Features/Invoke-Changes.ps1` | `Scripts/Features/InvokeChanges.ps1` |
+| `Scripts/Features/Invoke-SystemRestorePoint.ps1` | `Scripts/Features/CreateSystemRestorePoint.ps1` |
+| `Scripts/Features/Replace-StartMenu.ps1` | `Scripts/Features/ReplaceStartMenu.ps1` |
+| `Scripts/Features/Set-StoreSearchSuggestions.ps1` | `Scripts/Features/StoreSearchSuggestions.ps1` |
+| `Scripts/Features/Telemetry-ScheduledTasks.ps1` | `Scripts/Features/TelemetryScheduledTasks.ps1` |
+| `Scripts/Features/Windows-OptionalFeatures.ps1` | `Scripts/Features/WindowsOptionalFeatures.ps1` |
+| `Scripts/Helpers/Import-ConfigToParams.ps1` | `Scripts/Helpers/ImportConfigToParams.ps1` |
+
+#### Ported: `ForceRemoveEdge` hardening
+
+`ForceRemoveEdge.ps1` was the only file in `ef8811d` that had not also diverged in content,
+so its hardening was ported manually:
+
+- Added a `WhatIf` guard. The function is exposed as the `ForceRemoveEdge` FeatureId and
+  could previously run destructively when invoked directly under dry-run.
+- Wrapped the routine in `try`/`catch`/`finally` and disposed the three open registry keys.
+- Added `-Force -ErrorAction Stop` to Edge stub creation so a partial stub is not silently
+  skipped.
+- Captured the uninstaller exit code through `Invoke-NonBlocking` and reported nonzero.
+- Replaced silent leftover deletion with per-path error reporting.
+- Replaced four blind `reg delete ... *>$null` calls with `Remove-EdgeAutostartValue`,
+  which distinguishes an already-absent value from a failure to inspect or remove one.
+- Returned `$true`/`$false`. Both `Request-EdgeForceRemove` call sites discard the result
+  with `$null =` to keep the caller's pipeline output unchanged.
+
+#### Deferred
+
+The remaining `ef8811d` changes target files where WinSwift content has diverged
+substantially, so each needs an individual port rather than a patch application. Not
+scheduled, tracked here so the decision is not relitigated:
+
+`RemoveApps.ps1`, `ImportRegistryFile.ps1`, `InvokeChanges.ps1`,
+`CreateSystemRestorePoint.ps1`, `ReplaceStartMenu.ps1`, `StoreSearchSuggestions.ps1`,
+`TelemetryScheduledTasks.ps1`, `WindowsOptionalFeatures.ps1`, the GUI call sites, and the
+new upstream `Test-ConfigConsistency.ps1` helper.
 
 ## Integrated Safety Changes
 
