@@ -1,6 +1,6 @@
 # WinSwift Technical Wiki
 
-Welcome to the comprehensive technical documentation for **WinSwift**. This wiki covers the internal architecture, core features, deployment methods, and security practices of the WinSwift engine.
+Technical documentation for **WinSwift**. This wiki covers the internal architecture, core features, deployment methods, and security practices of the WinSwift engine.
 
 ## 🏗️ Architecture
 

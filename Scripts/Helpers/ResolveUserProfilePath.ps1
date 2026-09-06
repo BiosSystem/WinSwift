@@ -7,7 +7,7 @@ function NormalizeUserLookupValue {
         return ''
     }
 
-    # Remove zero-width characters and normalize whitespace for robust comparisons.
+    # Remove zero-width characters and normalize whitespace before comparing.
     $normalized = $Value -replace '[\u200B-\u200D\uFEFF]', ''
     $normalized = $normalized.Trim() -replace '\s+', ' '
     return $normalized

@@ -142,7 +142,7 @@ Upstream does not provide OOBE bypass tooling or silent software installation. W
 |---|---|---|---|---|---|
 | **Architecture** | Native PowerShell 5.1 modular engine | PowerShell 5.1 script | PowerShell + WPF GUI | PowerShell module suite | AME Playbook / stripped ISO |
 | **Execution footprint** | Pure in-memory, no install required | Pure in-memory | Web download + package manager | Local module import required | Full OS wipe + clean install |
-| **Gaming latency stack** | Comprehensive (0.5ms timer, BCD clock, Nagle, MMCSS, HAGS, core unparking) | None | Basic (power plan + Game Mode) | Service toggles only | Varies per build |
+| **Gaming latency stack** | Full stack (0.5ms timer, BCD clock, Nagle, MMCSS, HAGS, core unparking) | None | Basic (power plan + Game Mode) | Service toggles only | Varies per build |
 | **Anti-cheat compatibility** | 100% verified (Vanguard, EAC, BattlEye, FACEIT) | 100% safe | 100% safe | 100% safe | High risk (stripped components trigger bans) |
 | **24H2 BitLocker guard** | Dedicated registry fix | None | Partial (recent micro-patch) | Registry-based | Stripped at ISO level |
 | **24H2 AI purge depth** | Granular non-destructive GPO suppression | Basic Copilot removal | Recall and Copilot toggle | Granular service disables | Total binary removal (risk of shell crashes) |
