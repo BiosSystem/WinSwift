@@ -221,7 +221,7 @@ Unlock the full potential of your hardware with specialized tuning profiles.
 
 ## 📖 Technical Documentation
 
-For an in-depth look at our architecture, registry modifications, deployment methods, and security practices, please consult our comprehensive technical wiki.
+For an in-depth look at our architecture, registry modifications, deployment methods, and security practices, see the technical wiki.
 
 > 👉 **[Read the WinSwift Technical Wiki](docs/WIKI.md)**
 
