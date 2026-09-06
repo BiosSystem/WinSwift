@@ -11,7 +11,7 @@ Before any module executes, WinSwift validates the runtime environment:
 3. **Mark-of-the-Web handling** - Unblocks only marked PowerShell source files when Group Policy overrides the execution policy. Executable and data files are not unblocked.
 4. **Domain-join warning** - Detects domain-joined systems and warns that Group Policy may override applied registry changes after the next policy refresh.
 5. **Path and asset validation** - Confirms that all required directories (`Assets`, `Config`, `Regfiles`, `Schemas`, `Scripts`) are present before loading any module.
-6. **Registry backup** - Exports a timestamped `.reg` snapshot of all scheduled modification targets to `%TEMP%\WinSwift_Backup_<timestamp>` unless `-SkipRegistryBackup` is explicitly specified.
+6. **Registry backup** - Captures a timestamped JSON snapshot of all scheduled modification targets to `Backups\WinSwift-RegistryBackup-<timestamp>.json` unless `-SkipRegistryBackup` is explicitly specified. This snapshot is what automatic rollback restores from.
 7. **System restore point** - Creates a system restore point before executing any of the four high-impact custom modules: gaming optimization, extended AI purge, security hardening, or telemetry firewall.
 
 ## Feature Definition: Config/Features.json
@@ -82,19 +82,35 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -Verify -
 
 ## Rollback Protocols
 
-### Registry Rollback
+### Automatic Rollback
 
-Apply the timestamped `.reg` export via:
+When the apply phase fails, WinSwift restores the backup taken before the run. The backup is captured in phase 1, before anything is written, so the material needed to recover already exists at the moment of failure.
+
+A registry import failure triggers the restore, whether it was counted through `$script:RegistryImportFailures` or thrown as an exception. An app removal failure does not: a registry backup cannot reinstall a removed Appx package, so restoring there would claim a recovery that did not happen. Undo work is skipped after a rollback.
+
+Exit code `3` means the run failed and was rolled back cleanly. Exit code `4` means the rollback itself failed, and the run summary names the backup file so recovery can be finished by hand.
+
+Pass `-NoAutoRollback` to leave the failed state in place.
+
+### Manual Registry Rollback
+
+Backups are JSON, not `.reg` exports, and are restored through the engine rather than `reg import`:
 
 ```powershell
-reg import "%TEMP%\WinSwift_Backup_<timestamp>.reg"
+. .\Scripts\Features\RestoreRegistryBackup.ps1
+$backup = Load-RegistryBackupFromFile -FilePath '.\Backups\WinSwift-RegistryBackup-<timestamp>.json'
+Restore-RegistryBackupState -Backup $backup
 ```
 
-Or through the built-in revert flow:
+### Feature Undo
+
+Revert individual features by id:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -Revert
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -CLI -Silent -Undo DisableTelemetry
 ```
+
+Undo covers the 87 of 112 features that declare a `RegistryUndoKey` or have a case in `Invoke-FeatureUndo`. The rest are rejected rather than silently doing nothing.
 
 ### System Restore Rollback
 

@@ -57,7 +57,7 @@ WinSwift provides a dedicated, non-destructive low-latency optimization stack de
 | **Anti-Cheat Compatibility** | **100% Compatible** (Vanguard, EAC, BattlEye, FACEIT) | Often broken due to stripped security modules | Mixed (some scripts break Hyper-V / VBS dependencies) |
 | **Windows Update Support** | **Full Support** (Standard cumulative updates work normally) | Broken or permanently disabled | Supported |
 | **Execution Architecture** | Native PowerShell 5.1 in-memory execution | Modified ISO reinstall required (data wipe) | External package managers and third-party CLIs |
-| **Rollback & Safety** | Automatic state backup snapshot with instant `-Revert` | Impossible without full OS reinstallation | Manual registry inspection required |
+| **Rollback & Safety** | Pre-run snapshot, automatic rollback on a failed apply, and per-feature `-Undo` | Impossible without full OS reinstallation | Manual registry inspection required |
 | **Security Posture** | Retains core Defender & SmartScreen by default | Defender stripped completely (malware risk) | Toggles vary |
 | **Verification Auditing** | Built-in `-Verify` and `-VerifyProfile` audit engine | No automated state verification | None |
 
@@ -109,7 +109,7 @@ WinSwift implements a three-stage execution safety model before and after applyi
 
 ### Stage 1 - Pre-Execution Snapshot
 
-Before any registry key is written, WinSwift captures a point-in-time backup of all registry paths scheduled for modification. The backup is written to a timestamped `.reg` export under `%TEMP%\WinSwift_Backup_<timestamp>`. If `-SkipRegistryBackup` is not specified, this step is mandatory and blocks execution on failure. A System Restore point is created before any of the four high-impact custom modules run.
+Before any registry key is written, WinSwift captures a point-in-time backup of all registry paths scheduled for modification. The backup is written to `Backups\WinSwift-RegistryBackup-<timestamp>.json`. If `-SkipRegistryBackup` is not specified, this step is mandatory and blocks execution on failure. A System Restore point is created before any of the four high-impact custom modules run.
 
 ### Stage 2 - Feature Apply Engine
 
@@ -124,6 +124,28 @@ After applying changes, or at any time using `-Verify` or `-VerifyProfile`, WinS
 - Custom modules: verified through metadata-driven adapters for gaming, AI purge, security hardening, and telemetry firewall state.
 
 Exit code `0` signals full compliance. Exit code `2` signals drift, an unsupported feature state, or a verification failure. This enables automated rollout pipelines and endpoint compliance auditing without manual inspection.
+
+### Stage 4 - Automatic Rollback
+
+If the apply phase fails, WinSwift restores the Stage 1 backup on its own rather than leaving a half-applied system. A registry import failure triggers the restore; the run then stops without attempting any undo work, because undo on top of a restored or partially changed system makes the final state harder to reason about.
+
+An app removal failure does **not** trigger rollback. A registry backup cannot reinstall a removed Appx package, so restoring the registry there would report a recovery that did not happen while the apps stay gone.
+
+Pass `-NoAutoRollback` to leave a failed run in place for inspection. Note that `-SkipRegistryBackup` removes the material rollback depends on, so the two are mutually exclusive in practice.
+
+Rollback outcome, the condition that triggered it, and the backup file path are recorded in the run summary written to `%TEMP%\WinSwift_RunSummary_<timestamp>.json`.
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success, or verification fully compliant |
+| `1` | Generic failure |
+| `2` | Verification noncompliant, unsupported, or failed |
+| `3` | Apply failed and was rolled back cleanly |
+| `4` | Apply failed and the rollback itself also failed |
+
+Exit `4` is the only outcome that needs someone at the machine. A fleet script can retry on `3` and alert on `4`.
 
 ## ⚙️ How It Works
 
@@ -144,8 +166,10 @@ flowchart TD
     F --> I[Module: The AI Purge]
     F --> J[Module: Performance & Gaming]
     
-    G & H & I & J --> K[Commit Changes]
-    K --> L[Generate Summary Report]
+    G & H & I & J --> K{Apply Succeeded?}
+    K -- Yes --> L[Commit Changes]
+    K -- No --> M[Restore Snapshot]
+    L & M --> N[Generate Summary Report]
 ```
 
 ---
@@ -245,9 +269,17 @@ Check an exported configuration or preset:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
 ```
 
-Treat exit code `0` as compliant. Treat exit code `2` as noncompliant, unsupported, or failed verification. Review each result to identify registry values or Appx packages that remain outside the requested state.
+Treat exit code `0` as compliant. Treat exit code `2` as noncompliant, unsupported, or failed verification. Review each result to identify registry values or Appx packages that remain outside the requested state. See the exit code table above for the rollback codes `3` and `4`.
 
-Use `-SkipExplorerRestart` to defer the Explorer restart. Use `-SkipRegistryBackup` only in controlled disposable environments.
+Revert applied features without opening the GUI:
+
+```PowerShell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -CLI -Silent -Undo DisableTelemetry,DisableCopilot
+```
+
+`-Undo` accepts the 87 of 112 features that declare an undo registry file or have a dedicated undo routine. Anything else is rejected rather than reported as reverted.
+
+Use `-SkipExplorerRestart` to defer the Explorer restart. Use `-NoAutoRollback` to keep a failed run in place for inspection. Use `-SkipRegistryBackup` only in controlled disposable environments, and note that it disables automatic rollback.
 
 ---
 

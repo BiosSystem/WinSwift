@@ -8,7 +8,8 @@ WinSwift is a modular Windows 11 optimization and debloating toolkit. Because Wi
 
 | Version | Supported | Status |
 |---|---|---|
-| `3.3.x` | Yes | Active production release supporting Windows 11 23H2, 24H2, and 25H2 |
+| `3.4.x` | Yes | Active production release supporting Windows 11 23H2, 24H2, and 25H2 |
+| `3.3.x` | No | Superseded. Contains an elevation guard that did not stop a non-elevated run, fixed in 3.4.0 |
 | `< 3.3.0` | No | Legacy baseline |
 
 ---
@@ -32,3 +33,9 @@ Report vulnerabilities to `security@bios-system.net`. Do not open public GitHub 
 
 ### 4. Desired-State Verification
 - Integrated `-Verify` and `-VerifyProfile` audit modes allow administrators to inspect system state and verify drift with exit code `2` before applying changes.
+
+### 5. Elevation Enforcement
+- The administrator check stops the run before any runtime module loads. Versions before 3.4.0 printed the warning but continued into the apply pipeline, because `exit` inside a dot-sourced script does not terminate the caller. A non-elevated run could reach registry imports and scheduled task changes and fail partway through, leaving a partially applied system.
+
+### 6. Automatic Rollback
+- A failed apply restores the registry backup taken before the run instead of leaving the system half-changed. Exit code `3` reports a clean rollback, `4` reports a rollback that itself failed and names the backup file for manual recovery.

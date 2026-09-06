@@ -21,7 +21,8 @@ The main script acts as the orchestrator. It manages:
    - *Appx Package Removal*
    - *UI/UX Modifications*
    - *AI/Copilot Purge*
-5. **Completion & Summary:** The script outputs a detailed summary of all modified keys, services, and packages.
+5. **Rollback on Failure:** If the apply phase fails, the registry backup taken before the run is restored automatically and undo work is skipped. Exit code `3` reports a clean rollback, `4` a rollback that itself failed.
+6. **Completion & Summary:** The script outputs a detailed summary of all modified keys, services, and packages, and writes it to `%TEMP%\WinSwift_RunSummary_<timestamp>.json`.
 
 ## ✨ Features
 
@@ -80,7 +81,7 @@ System Administrators can deploy WinSwift using management tools (e.g., Intune, 
 
 WinSwift implements strict security guidelines to protect the host system:
 
-- **State Reversion:** Modifications are designed to be easily reversible. Users can undo changes via built-in revert scripts.
+- **State Reversion:** Modifications are reversible. Pass `-Undo <FeatureId>` to revert individual features from the command line, or use the GUI. A failed apply rolls itself back from the pre-run backup.
 - **Protocol Hardening:** Closes common attack vectors by disabling outdated protocols (SMBv1, TLS 1.0) and blocking AutoRun and Windows Script Host.
 - **Code Integrity:** All components are written in standard PowerShell. WinSwift strictly avoids downloading compiled binary executables (`.exe`) from untrusted third parties.
 - **Open Source Transparency:** The entire codebase is open-source, allowing for full security audits before deployment.
