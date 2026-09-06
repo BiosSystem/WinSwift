@@ -148,7 +148,7 @@ Upstream does not provide OOBE bypass tooling or silent software installation. W
 | **24H2 AI purge depth** | Granular non-destructive GPO suppression | Basic Copilot removal | Recall and Copilot toggle | Granular service disables | Total binary removal (risk of shell crashes) |
 | **Windows Update lifecycle** | Fully intact | Fully intact | Intact (unless update service killed) | Fully intact | Broken or frozen |
 | **Post-apply verification** | Built-in -Verify and -VerifyProfile engine with exit code 2 | None | None | None | None |
-| **Rollback capability** | Automatic registry snapshot + System Restore + -Revert | Basic registry backup | System Restore only | Detailed restore script | Impossible without OS reinstall |
+| **Rollback capability** | Pre-run snapshot, automatic rollback on failed apply, System Restore, per-feature `-Undo` | Basic registry backup | System Restore only | Detailed restore script | Impossible without OS reinstall |
 | **Standalone single-file build** | Yes (WinSwift-Standalone.ps1 bundles all modules) | No | No | No | N/A |
 
 ## Why WinSwift Uses Non-Destructive GPO Suppression
