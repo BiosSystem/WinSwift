@@ -175,6 +175,18 @@ WinSwift applies only policy and registry suppression that the Windows kernel ho
 
 ## Reconciliation Procedure
 
+WinSwift and upstream no longer share git ancestry. Branch-relative comparisons such as
+`git rev-list --count HEAD..upstream/master` report the whole of upstream's history and are
+meaningless here. Diff against the reviewed commit recorded above instead:
+
+```
+git fetch upstream
+git log --oneline <reviewed commit>..upstream/master
+```
+
+That range is accurate because the reviewed commit still exists in the upstream remote,
+whether or not it is reachable from this repository's history.
+
 1. Fetch `upstream/master`.
 2. Record the new upstream commit in this ledger.
 3. Review safety, app-removal, registry, user-hive, and deployment changes.
