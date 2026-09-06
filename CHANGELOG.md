@@ -83,6 +83,12 @@ Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Ve
 ### Changed
 
 - Validate 144 application records and the complete standalone payload before publication.
+- Remove 460 lines of duplicated function declarations from `Scripts/Features/InvokeChanges.ps1`.
+
+### Fixed
+
+- Correct the malformed Copilot `AppId` array in `Config/Apps.json`.
+- Fix invalid variable interpolation in `Scripts/Features/SoftwareInstaller.ps1`.
 
 ## [3.1.0] - 2026-07-25
 

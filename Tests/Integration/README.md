@@ -62,23 +62,23 @@ unelevated session will skip most cases and say so.
 
 ## What is covered
 
-**`VerifyContract.Tests.ps1`** — `ReadOnly`. Exit-code contract for `-Verify` and
+**`VerifyContract.Tests.ps1`** - `ReadOnly`. Exit-code contract for `-Verify` and
 profile parsing. Every case is deterministic on any machine: whether a real tweak
 is currently applied depends on how the host is configured, so none of these
 assert on one. The cases that are machine-independent are an exempt-only profile
 (`NotApplicable` must never fail a run), an unknown feature, an empty profile, a
 missing profile path, and an app id that cannot exist.
 
-**`DryRunSafety.Tests.ps1`** — `DryRun`. Proves `-DryRun` reaches the apply
+**`DryRunSafety.Tests.ps1`** - `DryRun`. Proves `-DryRun` reaches the apply
 pipeline and still changes nothing. The assertion targets the exact values the
 selected feature would write, read out of its `.reg` file, rather than sweeping
 the registry broadly.
 
-**`ApplyRoundTrip.Tests.ps1`** — `Mutating`. Applies a registry-backed feature and
+**`ApplyRoundTrip.Tests.ps1`** - `Mutating`. Applies a registry-backed feature and
 checks both the verification verdict and the individual values underneath it, so
 a partially applied `.reg` file cannot pass as compliant.
 
-**`RollbackContract.Tests.ps1`** — `Mutating`. The executable specification for
+**`RollbackContract.Tests.ps1`** - `Mutating`. The executable specification for
 Track 1 automatic rollback. Rollback does not exist yet, so the whole block skips
 itself until `InvokeChanges.ps1` references `Restore-RegistryBackupState`. When
 Track 1 wires that up, these activate on their own.

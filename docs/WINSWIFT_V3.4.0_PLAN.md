@@ -1,4 +1,4 @@
-# WinSwift v3.4.0 Plan — Recoverability and Proof
+# WinSwift v3.4.0 Plan - Recoverability and Proof
 
 ## 1. Context
 
@@ -27,7 +27,7 @@ introduced.
 - An integration test suite that exercises apply, failure, and rollback for real.
 - Field validation of the 24H2 DISM fallback repaired in #9.
 
-## 3. Track 1 — Automatic rollback on failed apply (delivered)
+## 3. Track 1 - Automatic rollback on failed apply (delivered)
 
 ### 3.1 Why this is mostly wiring
 
@@ -65,7 +65,7 @@ Proposed policy, to be confirmed:
 | Condition | Action |
 |---|---|
 | Any registry import failure | Prompt to roll back; roll back automatically under `-Unattend` |
-| App removal failure only | Do **not** roll back — removals are not restored by a registry backup, so rolling back the registry would misrepresent what was recovered |
+| App removal failure only | Do **not** roll back - removals are not restored by a registry backup, so rolling back the registry would misrepresent what was recovered |
 | User cancellation (`$script:CancelRequested`) | Roll back changes already applied in this run |
 | Failure during rollback itself | Abort, report loudly, leave the backup file in place and name it |
 
@@ -102,7 +102,7 @@ failed apply is not compounded by undo operations against a half-applied system.
 ### 3.5 Upstream note
 
 Upstream `Raphire/Win11Debloat` has an open issue (#612) and PR (#613) for automatic
-registry rollback. Review both before finalizing the policy table — not to port the code,
+registry rollback. Review both before finalizing the policy table - not to port the code,
 since `InvokeChanges.ps1` is on the deferred-port list in `UPSTREAM.md` and has diverged,
 but to avoid a gratuitously different failure model.
 
@@ -151,7 +151,7 @@ failure by copying the repository and deleting one feature's `.reg` file. Those 
 section was verified directly, both triggered and clean.
 
 
-## 4. Track 2 — Verification coverage to 112/112 (delivered)
+## 4. Track 2 - Verification coverage to 112/112 (delivered)
 
 ### 4.1 The gap, as actually found
 
@@ -163,7 +163,7 @@ hardcoded FeatureId list inside `Test-WinSwiftFeature`:
 if ($FeatureId -in @('RemoveApps', 'RemoveGamingApps', 'RemoveHPApps')) { ... }
 ```
 
-So the metadata was incomplete, not the coverage. That is its own problem — routing by a
+So the metadata was incomplete, not the coverage. That is its own problem - routing by a
 hardcoded list means `Features.json` does not describe how a feature is verified, and the
 unit suite cannot tell a declared gap from an undeclared one.
 
@@ -174,8 +174,8 @@ The corrected picture:
 | `RemoveApps`, `RemoveGamingApps`, `RemoveHPApps` | Verified, but by hardcoded list | Declared `AppxAbsence`; routing moved to metadata |
 | `ForceRemoveEdge` | Genuinely unverified | New `EdgeRemoved` adapter |
 | `ClearStart`, `ClearStartAllUsers`, `ReplaceStart`, `ReplaceStartAllUsers` | Genuinely unverified | New `StartLayout` adapter |
-| `Apps` | Genuinely unverified | Exempt — it is a value-carrying CLI parameter, not a toggle |
-| `CreateRestorePoint` | Genuinely unverified | Exempt — a one-shot action, not a desired state |
+| `Apps` | Genuinely unverified | Exempt - it is a value-carrying CLI parameter, not a toggle |
+| `CreateRestorePoint` | Genuinely unverified | Exempt - a one-shot action, not a desired state |
 
 Real new verification work was five features, not ten. Two are exemptions rather than gaps.
 
@@ -184,17 +184,17 @@ Real new verification work was five features, not ten. Two are exemptions rather
 - **Metadata-driven routing.** The hardcoded FeatureId list is gone. `Test-WinSwiftFeature`
   now dispatches on the declared `VerificationAdapter`, so `Features.json` is the single
   source of truth for how every feature is verified.
-- **`AppxAbsence`** — resolves the app list through the existing `Get-WinSwiftFeatureAppIds`
+- **`AppxAbsence`** - resolves the app list through the existing `Get-WinSwiftFeatureAppIds`
   and checks installed *and* provisioned state. Provisioned state matters: a package can be
   uninstalled per-user while still provisioned and due to return on the next servicing pass.
-- **`EdgeRemoved`** — checks the Edge uninstall key in the 32-bit registry view, plus the
+- **`EdgeRemoved`** - checks the Edge uninstall key in the 32-bit registry view, plus the
   four autostart values `Remove-EdgeAutostartValue` clears. These are exactly the artifacts
   `ForceRemoveEdge` manipulates, so absence is a true applied-state signal.
-- **`StartLayout`** — SHA-256 compares the on-disk `start2.bin` against the expected
+- **`StartLayout`** - SHA-256 compares the on-disk `start2.bin` against the expected
   template: the bundled blank template for `ClearStart*`, the caller-supplied one for
   `ReplaceStart*`. The all-users variants check every user profile plus the default profile,
   since new users inherit from it.
-- **`NotApplicable`** — a new verification status for entries with no persistent desired
+- **`NotApplicable`** - a new verification status for entries with no persistent desired
   state. It is reported distinctly and feeds neither the failure nor the error count, so it
   cannot affect exit code `2`.
 
@@ -212,10 +212,10 @@ All met:
 
 `EdgeRemoved` and `StartLayout` were exercised directly against real registry and
 filesystem state, including the negative cases. What has *not* been observed is a full
-`-Verify` run across all 112 features on a live machine — that needs elevation and belongs
+`-Verify` run across all 112 features on a live machine - that needs elevation and belongs
 to the Track 3 integration suite.
 
-## 5. Track 3 — Integration tests (delivered)
+## 5. Track 3 - Integration tests (delivered)
 
 `Tests/Integration/` has existed since July and is still empty. CI runs static validation
 and six unit files (470 lines total), none of which apply anything to a live system.
@@ -233,7 +233,7 @@ Target scenarios, in priority order:
 4. Inject an app removal failure, assert rollback does **not** trigger.
 5. `-WhatIf` over the full feature set mutates nothing.
 
-Scenarios 3 and 4 are the ones that give Track 1 its value — without them, auto-rollback
+Scenarios 3 and 4 are the ones that give Track 1 its value - without them, auto-rollback
 is an untested claim.
 
 ### 5.2 CI reality
@@ -248,7 +248,7 @@ Windows Sandbox is not available on GitHub-hosted runners. Options, in order of 
 Do not block this track on solving CI. A manually run suite with a documented procedure is
 worth more than no suite.
 
-## 6. Track 4 — Field validation of the DISM fallback
+## 6. Track 4 - Field validation of the DISM fallback
 
 The wildcard `/PackageName` bug fixed in #9 was never observed failing; it was diagnosed
 from DISM's documented contract and the tell-tale tolerance of exit code 87. The fix is
@@ -262,7 +262,7 @@ still provisioned:
 3. Confirm the package is gone from the provisioned list afterwards.
 4. Record the result in `CHANGELOG.md`.
 
-If the fallback still fails, that is a v3.4.0 blocker, not a footnote — it is the path that
+If the fallback still fails, that is a v3.4.0 blocker, not a footnote - it is the path that
 exists specifically for the packages 24H2 is most aggressive about reinstalling.
 
 ## 7. Explicitly out of scope
@@ -275,7 +275,7 @@ Deferred so they are not relitigated mid-release:
 - **Preset library.** Only `gaming-rig.json` exists. Cheap and user-visible, but it is
   breadth, not recoverability. Candidate headline for v3.5.0.
 - **The deferred `ef8811d` port backlog.** Nine files listed in `UPSTREAM.md`. Note that
-  `InvokeChanges.ps1` appears on both that list and Track 1 of this plan — see §8.
+  `InvokeChanges.ps1` appears on both that list and Track 1 of this plan - see §8.
 - **New tweaks from upstream enhancement issues** (#560, #482, #343, #267).
 
 ## 8. Sequencing and the one collision
