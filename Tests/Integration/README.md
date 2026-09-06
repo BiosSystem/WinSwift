@@ -37,8 +37,7 @@ Adding the dry-run checks, on a machine you can throw away:
 ```
 
 The full suite runs in Windows Sandbox. Open `Sandbox\WinSwift-Tests.wsb`: it
-maps the repository read-only, maps `Sandbox
-esults` writable, installs Pester,
+maps the repository read-only, maps `Sandbox\results` writable, installs Pester,
 and runs everything inside the sandbox. Edit both `HostFolder` paths in that file
 if the repository is not at the default path.
 
@@ -52,8 +51,7 @@ Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM
 That needs a reboot. Check whether it is already on with
 `Test-Path C:\Windows\System32\WindowsSandbox.exe`.
 
-Results land in `Sandbox
-esults` on the host: `integration-results.xml` (NUnit),
+Results land in `Sandbox\results` on the host: `integration-results.xml` (NUnit),
 `integration-summary.json` (counts plus the name and message of every failure),
 and `sandbox-transcript.log`. Nothing else survives the sandbox closing, console
 output included, so a run whose bootstrap fails is still diagnosable from the
