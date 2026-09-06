@@ -27,7 +27,7 @@ $script:RestoreBackupWindowSchema = Join-Path $schemasPath 'RestoreBackupWindow.
 $script:LoadAppsDetailsScriptPath = Join-Path (Join-Path $scriptsPath 'FileIO') 'LoadAppsDetailsFromJson.ps1'
 $script:TestAppInWingetListScriptPath = Join-Path (Join-Path $scriptsPath 'AppRemoval') 'Test-AppInWingetList.ps1'
 
-$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'SkipExplorerRestart', 'SkipRegistryBackup', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget', 'Preset', 'DryRun', 'Verify', 'VerifyProfile', 'SkipUpdateCheck', 'NoAutoRollback'
+$script:ControlParams = 'WhatIf', 'Confirm', 'Verbose', 'Debug', 'LogPath', 'Silent', 'Sysprep', 'User', 'SkipExplorerRestart', 'SkipRegistryBackup', 'RunDefaults', 'RunDefaultsLite', 'RunSavedSettings', 'Config', 'CLI', 'AppRemovalTarget', 'Preset', 'DryRun', 'Verify', 'VerifyProfile', 'SkipUpdateCheck', 'NoAutoRollback', 'Undo'
 
 # Script-level variables for GUI elements
 $script:GuiWindow = $null

@@ -37,7 +37,8 @@ Adding the dry-run checks, on a machine you can throw away:
 ```
 
 The full suite runs in Windows Sandbox. Open `Sandbox\WinSwift-Tests.wsb`: it
-maps the repository read-only, maps `Sandboxesults` writable, installs Pester,
+maps the repository read-only, maps `Sandbox
+esults` writable, installs Pester,
 and runs everything inside the sandbox. Edit both `HostFolder` paths in that file
 if the repository is not at the default path.
 
@@ -51,7 +52,8 @@ Enable-WindowsOptionalFeature -Online -FeatureName Containers-DisposableClientVM
 That needs a reboot. Check whether it is already on with
 `Test-Path C:\Windows\System32\WindowsSandbox.exe`.
 
-Results land in `Sandboxesults` on the host: `integration-results.xml` (NUnit),
+Results land in `Sandbox
+esults` on the host: `integration-results.xml` (NUnit),
 `integration-summary.json` (counts plus the name and message of every failure),
 and `sandbox-transcript.log`. Nothing else survives the sandbox closing, console
 output included, so a run whose bootstrap fails is still diagnosable from the
@@ -98,15 +100,16 @@ discovers nothing, because an empty suite otherwise reports success.
 
 ## Known gaps
 
-**Undo cannot be tested.** Scenario 2 of Track 3 was an apply/undo round trip.
-It is not writable yet. `WinSwift.ps1` initialises `$script:UndoParams` to an
-empty hashtable and the only code that ever populates it is
-`Scripts/GUI/Show-MainWindow.ps1`. `Invoke-UndoFeatures` and the per-feature
-`RegistryUndoKey` metadata all exist, and all 112 features declare undo text, but
-nothing on the command line can select a feature for undo.
+**Undo used to be untestable, and is no longer.** Scenario 2 of Track 3 needed an
+apply/undo round trip, but undo was reachable only from the GUI: `WinSwift.ps1`
+initialised `$script:UndoParams` empty and only `Show-MainWindow.ps1` ever
+populated it. `Invoke-UndoFeatures` and the per-feature `RegistryUndoKey`
+metadata existed, but nothing on the command line could select a feature for
+undo, so unattended deployments could apply changes and never revert them.
 
-The test is present and skipped, with the reason inline. The larger problem it
-stands in for is that an unattended deployment cannot revert either.
+The `-Undo` parameter closes that. It accepts the 87 of 112 features that declare
+a `RegistryUndoKey` or have a case in `Invoke-FeatureUndo`, and rejects the rest
+rather than reporting success while doing nothing.
 
 **CI runs more than the plan expected.** Section 5.2 assumed CI would be limited
 to non-mutating cases because Windows Sandbox is unavailable on hosted runners.

@@ -50,4 +50,40 @@ Describe 'WinSwift custom feature execution contracts' {
 
         Should -Invoke Invoke-BlockTelemetryFirewall -Times 1
     }
+
+    It 'keeps the custom undo list in step with Invoke-FeatureUndo' {
+        # Test-FeatureIsUndoable trusts this list. A case added to the switch but
+        # not listed here would be rejected by -Undo despite being undoable.
+        $source = Get-Content (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1') -Raw
+
+        # The list is declared immediately after the function, so the span
+        # between them is exactly the switch to check.
+        $start = $source.IndexOf('function Invoke-FeatureUndo')
+        $end = $source.IndexOf('$script:CustomUndoFeatureIds = @(')
+        $start | Should -BeGreaterThan -1
+        $end | Should -BeGreaterThan $start
+
+        $undoBody = $source.Substring($start, $end - $start)
+        $undoBody | Should -Not -BeNullOrEmpty
+
+        $switchCases = @([regex]::Matches($undoBody, "(?m)^\s{8}'(?<id>[^']+)'\s*\{") | ForEach-Object { $_.Groups['id'].Value })
+        $switchCases.Count | Should -BeGreaterThan 0
+
+        foreach ($caseId in $switchCases) {
+            $script:CustomUndoFeatureIds | Should -Contain $caseId -Because "Invoke-FeatureUndo handles $caseId, so -Undo must accept it"
+        }
+    }
+
+    It 'treats a feature with neither an undo reg file nor a custom case as not undoable' {
+        $script:Features = @{
+            HasUndoReg = [PSCustomObject]@{ FeatureId = 'HasUndoReg'; RegistryUndoKey = 'Undo_Something.reg' }
+            NoUndoPath = [PSCustomObject]@{ FeatureId = 'NoUndoPath'; RegistryUndoKey = $null }
+            DisableTelemetry = [PSCustomObject]@{ FeatureId = 'DisableTelemetry'; RegistryUndoKey = $null }
+        }
+
+        Test-FeatureIsUndoable -FeatureId 'HasUndoReg' | Should -BeTrue
+        Test-FeatureIsUndoable -FeatureId 'DisableTelemetry' | Should -BeTrue -Because 'it has a custom undo case'
+        Test-FeatureIsUndoable -FeatureId 'NoUndoPath' | Should -BeFalse
+        Test-FeatureIsUndoable -FeatureId 'DoesNotExist' | Should -BeFalse
+    }
 }

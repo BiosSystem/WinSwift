@@ -65,19 +65,37 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
         $missing | Should -BeNullOrEmpty -Because "values the feature should have written are absent: $($missing -join '; ')"
     }
 
-    It 'restores the pre-apply state through undo' -Skip {
-        # BLOCKED, not yet implementable.
+    It 'reverses the feature through -Undo' -Skip:(-not $script:IsElevated) {
+        # Scenario 2 of Track 3, unblocked by the -Undo parameter.
         #
-        # Undo is reachable only from the GUI. WinSwift.ps1 initialises
-        # $script:UndoParams to an empty hashtable and the only code that ever
-        # populates it is Scripts/GUI/Show-MainWindow.ps1. Invoke-UndoFeatures
-        # and the per-feature RegistryUndoKey metadata all exist and all 112
-        # features declare undo text, but nothing on the command line can select
-        # a feature for undo.
-        #
-        # Automating this needs a CLI undo surface first. Until then an
-        # unattended deployment cannot revert either, which is the larger
-        # problem this test is standing in for.
-        $true | Should -BeFalse -Because 'this test should not run until a CLI undo surface exists'
+        # The assertion is on the verification verdict rather than on the exact
+        # pre-apply values: an undo .reg restores the Windows default state,
+        # which is not necessarily what this machine had beforehand.
+        $applied = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
+        $applied.Stdout | Should -Match 'Compliant\] DisableTelemetry' -Because 'the previous test applied it'
+
+        $undo = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'DisableTelemetry') -TimeoutSeconds 300
+        $undo.TimedOut | Should -BeFalse
+        $undo.Stdout | Should -Not -Match 'completed without making any changes' -Because '-Undo names real work'
+
+        $after = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
+        $after.Stdout | Should -Match 'NonCompliant\] DisableTelemetry'
+        $after.ExitCode | Should -Be 2
+    }
+
+    It 'rejects a feature that cannot be undone' -Skip:(-not $script:IsElevated) {
+        # CreateRestorePoint is an action with no undo path. Accepting it would
+        # report success while doing nothing.
+        $result = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'CreateRestorePoint')
+
+        $result.ExitCode | Should -Not -Be 0
+        $result.Stderr | Should -Match 'cannot be undone'
+    }
+
+    It 'rejects an unknown feature passed to -Undo' -Skip:(-not $script:IsElevated) {
+        $result = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'NoSuchFeatureExists')
+
+        $result.ExitCode | Should -Not -Be 0
+        $result.Stderr | Should -Match 'Unknown feature'
     }
 }

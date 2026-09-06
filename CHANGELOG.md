@@ -4,6 +4,36 @@ Document all notable WinSwift changes in this file.
 
 Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.0] - 2026-09-06
+
+### Added
+
+- Roll back registry changes automatically when the apply phase fails, restoring the backup taken before the run.
+- Add `-NoAutoRollback` to keep a failed run in place for inspection.
+- Add `-Undo` to select features for undo from the command line. Undo was previously reachable only from the GUI, so unattended deployments could apply changes but never revert them.
+- Return exit code `3` when an apply failed and was rolled back, and `4` when the rollback itself failed.
+- Record rollback outcome, reason, and backup path in the run summary.
+- Add the `AppxAbsence`, `StartLayout`, and `EdgeRemoved` verification adapters, giving all 112 features a verification story.
+- Add the `NotApplicable` verification status for entries that carry no persistent desired state.
+- Add an integration test suite that runs WinSwift as a real process, tagged by what it can change on the host.
+- Add a Windows Sandbox harness for the mutating tests that writes results back to the host.
+
+### Changed
+
+- Route verification through the adapter declared in `Features.json` instead of a hardcoded feature list.
+- Skip undo work after a failed apply.
+- Pass exact provisioned package names to the 24H2 DISM fallback.
+- Advance the upstream reconciliation baseline to `6012b02`.
+
+### Fixed
+
+- Stop a non-elevated run from continuing past the administrator guard. `exit` inside a dot-sourced script does not terminate the caller, so every exit in the guard was inert and the run proceeded into the apply pipeline.
+- Catch apply-phase exceptions so rollback is reachable. A missing `.reg` file threw and escaped the run entirely.
+- Write the run summary at all. Its export was guarded on `$script:RunStartTime`, which nothing ever assigned.
+- Accept empty collections in `Export-RunSummary`, which rejected apply-only and undo-only runs.
+- Remove a duplicate 24H2 DISM fallback that re-ran the same removal without error handling.
+- Harden `ForceRemoveEdge` with a `WhatIf` guard, exit-code checking, and per-path cleanup reporting.
+
 ## [3.3.0] - 2026-08-23
 
 ### Added

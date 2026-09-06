@@ -226,6 +226,48 @@ function Invoke-FeatureUndo {
 }
 
 
+# Features whose undo lives in the Invoke-FeatureUndo switch above rather than
+# in a RegistryUndoKey. Test-CustomFeatureContracts asserts this stays in step
+# with the switch, so adding a case there without listing it here fails the suite.
+$script:CustomUndoFeatureIds = @(
+    'DisableStoreSearchSuggestions',
+    'EnableWindowsSandbox',
+    'EnableWindowsSubsystemForLinux',
+    'DisableTelemetry',
+    'DisableTelemetryServices',
+    'EnableFirewallTelemetryBlock'
+)
+
+<#
+    .SYNOPSIS
+        Reports whether a feature can be undone.
+
+    .DESCRIPTION
+        A feature is undoable when it declares a RegistryUndoKey or has a case in
+        Invoke-FeatureUndo. Selecting anything else for undo would report success
+        while doing nothing, so the caller is expected to reject it.
+
+    .OUTPUTS
+        System.Boolean.
+#>
+function Test-FeatureIsUndoable {
+    param(
+        [Parameter(Mandatory)]
+        [string]$FeatureId
+    )
+
+    if (-not $script:Features.ContainsKey($FeatureId)) {
+        return $false
+    }
+
+    $feature = $script:Features[$FeatureId]
+    if (-not [string]::IsNullOrWhiteSpace([string]$feature.RegistryUndoKey)) {
+        return $true
+    }
+
+    return ($FeatureId -in $script:CustomUndoFeatureIds)
+}
+
 <#
     .SYNOPSIS
         Resolves the path of an undo .reg file relative to $script:RegfilesPath.
