@@ -1,3 +1,21 @@
+## [v3.4.0] - 2026-09-06
+### Artifacts
+- **Release Package**: WinSwift-v3.4.0.zip
+- **Standalone**: WinSwift-Standalone.ps1
+- Both built and published by the release workflow on tag push. Checksums are on the release page.
+### Added
+- Automatic rollback of registry changes when the apply phase fails, restoring the snapshot taken before the run. Exit code 3 for a clean rollback, 4 when the rollback itself fails.
+- `-Undo` to revert features from the command line. Undo was previously reachable only from the GUI, so unattended deployments could apply changes but never revert them.
+- `-NoAutoRollback` to leave a failed run in place for inspection.
+- Verification coverage for every feature, up from 102 of 112, through the AppxAbsence, StartLayout and EdgeRemoved adapters.
+- Integration test suite that runs WinSwift as a real process, plus a Windows Sandbox harness for the destructive cases.
+### Fixed
+- The administrator guard printed its warning and then continued into the apply pipeline, because `exit` inside a dot-sourced script does not terminate the caller.
+- The 24H2 DISM fallback passed a wildcard to `/PackageName`, which rejects wildcards, so it had never removed anything.
+- Run summaries were never written. The export was guarded on a variable nothing assigned, which also left the GUI report button with nothing to open.
+### Known limitation
+- The rollback path has not been executed end to end. It is covered by source-level assertions in CI and by Sandbox tests that have not been run.
+
 ## 2026-08-20 - v3.2.0 release blocked by handoff audit
 
 The package checksum is correct, but release integrity is not. `Config/Apps.json` cannot be parsed,
