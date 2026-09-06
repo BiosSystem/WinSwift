@@ -215,7 +215,7 @@ filesystem state, including the negative cases. What has *not* been observed is 
 `-Verify` run across all 112 features on a live machine — that needs elevation and belongs
 to the Track 3 integration suite.
 
-## 5. Track 3 — Integration tests
+## 5. Track 3 — Integration tests (delivered)
 
 `Tests/Integration/` has existed since July and is still empty. CI runs static validation
 and six unit files (470 lines total), none of which apply anything to a live system.
@@ -298,12 +298,27 @@ harder to resolve than either change alone. Recommendation: write rollback again
 current code, then reconcile once, with the integration suite from Track 3 as the safety
 net.
 
-## 9. Open decisions
+## 9. Decisions, resolved
 
-These need answers before implementation, not during:
+1. **Failure policy.** Rollback is always automatic, with `-NoAutoRollback` to opt out. One
+   behaviour interactive and unattended; a prompt at failure time asks the user to decide
+   with the least information they will ever have.
+2. **Exit codes.** `3` means failed and rolled back cleanly, `4` means rollback itself
+   failed. `4` is the only outcome needing someone at the machine.
+3. **Integration tests inform, they do not gate.** CI runs the `ReadOnly` and `DryRun` tags
+   on every PR. `Mutating` needs Windows Sandbox, which hosted runners do not provide, so
+   it stays a pre-release step rather than a merge gate.
+4. **`InvokeChanges.ps1` ordering.** Rollback was written against the current code and the
+   deferred upstream port will be reconciled once, on top of it, with the integration suite
+   as the safety net.
 
-1. The failure policy table in §3.2 — specifically whether a registry import failure should
-   prompt or roll back silently in interactive mode.
-2. The new exit code value for "failed and rolled back".
-3. Whether integration tests gate releases or merely inform them (§5.2).
-4. The `InvokeChanges.ps1` ordering question in §8.
+## 10. What remains
+
+Both items need hardware this work could not reach:
+
+- **The rollback path has never executed.** It is covered by source-level assertions in CI
+  and by `RollbackContract.Tests.ps1`, which injects a real failure by copying the
+  repository and deleting one feature's `.reg` file. Those are tagged `Mutating` and need
+  Windows Sandbox. Running them is the gate before tagging.
+- **Track 4 field validation** needs a 24H2 machine with Copilot, Dev Home, or the new
+  Teams still provisioned.

@@ -6,7 +6,7 @@
     purge AI/Copilot integrations, and reclaim your Windows experience.
     Created by Bios-System | https://github.com/BiosSystem/WinSwift
 .VERSION
-    3.3.0
+    3.4.0
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param (
@@ -20,6 +20,7 @@ param (
     [switch]$CreateRestorePoint,
     [switch]$SkipRegistryBackup,
     [switch]$NoAutoRollback,
+    [string[]]$Undo,
     [switch]$RunDefaults,
     [switch]$RunDefaultsLite,
     [switch]$RunSavedSettings,
@@ -153,7 +154,7 @@ if ($PSVersionTable.PSEdition -eq 'Core') {
     exit 1
 }
 
-Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.3.0' -Option Constant
+Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.4.0' -Option Constant
 
 # Call Helper Scripts
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Ensure-Admin.ps1') -OriginalCommandPath $PSCommandPath -OriginalBoundParameters $PSBoundParameters -OriginalUnboundArguments $MyInvocation.UnboundArguments
@@ -397,6 +398,44 @@ $WinVersion = Get-ItemPropertyValue 'HKLM:\SOFTWARE\Microsoft\Windows NT\Current
 $script:Params = $PSBoundParameters
 $script:UndoParams = @{}
 
+# Undo was reachable only from the GUI: nothing else ever populated UndoParams,
+# so an unattended deployment could apply changes but never revert them.
+if ($script:Params.ContainsKey('Undo')) {
+    $unknownUndo = [System.Collections.Generic.List[string]]::new()
+    $notUndoable = [System.Collections.Generic.List[string]]::new()
+
+    foreach ($undoFeatureId in @($Undo)) {
+        $trimmedId = ([string]$undoFeatureId).Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmedId)) { continue }
+
+        if (-not $script:Features.ContainsKey($trimmedId)) {
+            $unknownUndo.Add($trimmedId)
+        }
+        elseif (-not (Test-FeatureIsUndoable -FeatureId $trimmedId)) {
+            # Accepting these would report success while doing nothing.
+            $notUndoable.Add($trimmedId)
+        }
+        else {
+            $script:UndoParams[$trimmedId] = $true
+        }
+    }
+
+    if ($unknownUndo.Count -gt 0) {
+        Write-Error "Unknown feature(s) passed to -Undo: $($unknownUndo -join ', ')"
+        exit 1
+    }
+
+    if ($notUndoable.Count -gt 0) {
+        Write-Error "Feature(s) passed to -Undo cannot be undone: $($notUndoable -join ', ')"
+        exit 1
+    }
+
+    if ($script:UndoParams.Count -eq 0) {
+        Write-Error "-Undo was passed without naming any feature to undo."
+        exit 1
+    }
+}
+
 # Auto-update check (queries GitHub API, silent if offline)
 if (-not $script:Params.ContainsKey("SkipUpdateCheck")) {
     Invoke-UpdateCheck -CurrentVersion $WINSWIFT_VERSION -Silent
@@ -513,8 +552,12 @@ if ($Verify -or $VerifyProfile) {
 # Default to CLI mode for deployment-targeted parameters.
 $launchInCLI = $CLI -or $script:Params.ContainsKey("User") -or $script:Params.ContainsKey("Sysprep") -or $script:Params.ContainsKey("AppRemovalTarget")
 
+# -Undo names the work directly, so a run carrying it is never "nothing selected"
+# even though Undo is itself a control parameter.
+$script:HasPendingUndo = $script:UndoParams.Count -gt 0
+
 # Change script execution based on provided parameters or user input
-if ((-not $script:Params.Count) -or $RunDefaults -or $RunDefaultsLite -or $RunSavedSettings -or $Config -or ($controlParamsCount -eq $script:Params.Count)) {
+if (((-not $script:Params.Count) -or $RunDefaults -or $RunDefaultsLite -or $RunSavedSettings -or $Config -or ($controlParamsCount -eq $script:Params.Count)) -and -not $script:HasPendingUndo) {
     if ($RunDefaults -or $RunDefaultsLite) {
         ShowCLIDefaultModeOptions
     }
@@ -594,7 +637,7 @@ else {
 
 # If the number of keys in ControlParams equals the number of keys in Params then no modifications/changes were selected
 #  or added by the user, and the script can exit without making any changes.
-if (($controlParamsCount -eq $script:Params.Keys.Count) -or ($script:Params.Keys.Count -eq 1 -and ($script:Params.Keys -contains 'CreateRestorePoint' -or $script:Params.Keys -contains 'Apps'))) {
+if ((($controlParamsCount -eq $script:Params.Keys.Count) -or ($script:Params.Keys.Count -eq 1 -and ($script:Params.Keys -contains 'CreateRestorePoint' -or $script:Params.Keys -contains 'Apps'))) -and -not $script:HasPendingUndo) {
     Write-Output "The script completed without making any changes."
     AwaitKeyToExit
 }
