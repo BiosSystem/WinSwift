@@ -143,6 +143,61 @@ Describe 'WinSwift localization' {
         }
     }
 
+    Context 'XAML chrome substitution' {
+
+        BeforeEach {
+            $script:Language = [PSCustomObject]@{
+                LanguageCode = 'xx-XX'
+                Chrome = [PSCustomObject]@{
+                    'Apply changes' = 'Aplicar cambios'
+                    'Risky & <bad>' = 'Peligro & <malo>'
+                }
+                Features = $null
+                Categories = $null
+                Fallback = $null
+            }
+            $script:sample = Join-Path $TestDrive 'sample.xaml'
+        }
+
+        It 'substitutes a translated attribute' {
+            '<Window><Button Content="Apply changes" /></Window>' |
+                Set-Content -LiteralPath $script:sample -Encoding utf8
+
+            Get-LocalizedXaml -Path $script:sample | Should -Match 'Content="Aplicar cambios"'
+        }
+
+        It 'leaves untranslated text alone' {
+            '<Window><Button Content="Not in catalogue" /></Window>' |
+                Set-Content -LiteralPath $script:sample -Encoding utf8
+
+            Get-LocalizedXaml -Path $script:sample | Should -Match 'Content="Not in catalogue"'
+        }
+
+        It 'does not touch bindings' {
+            '<Window><Button Content="{Binding Apply}" /></Window>' |
+                Set-Content -LiteralPath $script:sample -Encoding utf8
+
+            Get-LocalizedXaml -Path $script:sample | Should -BeLike '*{Binding Apply}*'
+        }
+
+        It 'XML-encodes a translation containing markup characters' {
+            '<Window><Button Content="Risky &amp; &lt;bad&gt;" /></Window>' |
+                Set-Content -LiteralPath $script:sample -Encoding utf8
+
+            $result = Get-LocalizedXaml -Path $script:sample
+            $result | Should -BeLike '*Peligro &amp; &lt;malo&gt;*'
+            $result | Should -Not -BeLike '*Peligro & <malo>*'
+        }
+
+        It 'returns the markup unchanged when no catalogue is loaded' {
+            $script:Language = $null
+            '<Window><Button Content="Apply changes" /></Window>' |
+                Set-Content -LiteralPath $script:sample -Encoding utf8
+
+            Get-LocalizedXaml -Path $script:sample | Should -BeLike '*Content="Apply changes"*'
+        }
+    }
+
     Context 'the shipped en-US catalogue' {
         It 'covers every feature in Features.json' {
             $catalogue = LoadJsonFile -filePath (Join-Path $script:realLanguagesPath 'en-US\Features.json')
@@ -186,6 +241,33 @@ Describe 'WinSwift localization' {
             $missing = @($categories | Where-Object { -not $catalogue.Categories.PSObject.Properties[$_] })
 
             $missing | Should -BeNullOrEmpty -Because "categories absent from the en-US catalogue: $($missing -join ', ')"
+        }
+
+        It 'covers every translatable string in the schemas' {
+            # Guards against a new XAML string being added without a catalogue
+            # entry. Glyph character references and bindings are not text.
+            $catalogue = LoadJsonFile -filePath (Join-Path $script:realLanguagesPath 'en-US\Chrome.json')
+            $schemasPath = Join-Path (Split-Path (Split-Path $script:realLanguagesPath -Parent) -Parent) 'Schemas'
+
+            $missing = [System.Collections.Generic.List[string]]::new()
+            foreach ($schema in Get-ChildItem $schemasPath -Filter *.xaml) {
+                $markup = Get-Content -LiteralPath $schema.FullName -Raw
+                foreach ($match in [regex]::Matches($markup, '(?:Content|Text|Header|ToolTip|Title)="([^"]*)"')) {
+                    $raw = $match.Groups[1].Value
+                    if ($raw.Length -lt 2) { continue }
+                    if ($raw -match '^\s*\{') { continue }
+                    if ($raw -match '^(&#x?[0-9A-Fa-f]+;\s*)+$') { continue }
+
+                    $decoded = [System.Net.WebUtility]::HtmlDecode($raw)
+                    if ($decoded -match '^[\W\d_]+$') { continue }
+
+                    if (-not $catalogue.Chrome.PSObject.Properties[$decoded]) {
+                        $missing.Add("$($schema.Name): $decoded")
+                    }
+                }
+            }
+
+            $missing | Should -BeNullOrEmpty -Because "schema strings absent from Chrome.json: $($missing -join '; ')"
         }
     }
 }

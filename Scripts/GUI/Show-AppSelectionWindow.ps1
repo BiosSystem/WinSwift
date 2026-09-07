@@ -17,7 +17,7 @@ function Show-AppSelectionWindow {
     }
 
     # Load XAML from file
-    $xaml = Get-Content -Path $script:AppSelectionSchema -Raw
+    $xaml = Get-LocalizedXaml -Path $script:AppSelectionSchema
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
         $window = [System.Windows.Markup.XamlReader]::Load($reader)

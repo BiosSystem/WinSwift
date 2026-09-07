@@ -62,6 +62,8 @@ function Import-LanguageContent {
     $folderPath = Join-Path $LanguagesPath $LanguageFolder
     $features = LoadJsonFile -filePath (Join-Path $folderPath 'Features.json') -optionalFile
     $categories = LoadJsonFile -filePath (Join-Path $folderPath 'Categories.json') -optionalFile
+    # Optional: a language may translate features without covering the GUI.
+    $chrome = LoadJsonFile -filePath (Join-Path $folderPath 'Chrome.json') -optionalFile
 
     if (-not $features -or -not $categories) {
         return $null
@@ -71,6 +73,7 @@ function Import-LanguageContent {
         LanguageCode = $LanguageFolder
         Features = $features.Features
         Categories = $categories.Categories
+        Chrome = if ($chrome) { $chrome.Chrome } else { $null }
         Fallback = $null
     }
 }
@@ -203,6 +206,77 @@ function Update-FeatureTextFromLanguage {
     }
 
     return $replaced
+}
+
+<#
+    .SYNOPSIS
+    Reads a XAML schema and returns it with its literal text translated.
+
+    .DESCRIPTION
+    Substitution happens on the markup before it is parsed, rather than by
+    walking the loaded window. A logical tree does not contain text that lives
+    inside a Style or a template, so a tree walk reaches only part of the
+    markup: MainWindow alone carries 113 literal strings but exposes 99 as
+    logical tree nodes.
+
+    Chrome entries are keyed by their English text, so reordering markup cannot
+    break them and an untranslated string resolves to itself. Values are read
+    XML-decoded and written back XML-encoded, so a translation containing an
+    ampersand or an angle bracket cannot corrupt the markup.
+
+    Only Content, Text, Header, ToolTip and Title are considered, and a value
+    that opens with a brace is left alone because it is a binding or a resource
+    reference rather than text.
+
+    .PARAMETER Path
+    The schema file to read.
+
+    .OUTPUTS
+    System.String. The markup, translated where a translation exists.
+#>
+function Get-LocalizedXaml {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $markup = Get-Content -LiteralPath $Path -Raw
+
+    $chrome = $null
+    foreach ($catalogue in @($script:Language, $script:Language.Fallback)) {
+        if ($catalogue -and $catalogue.Chrome) { $chrome = $catalogue.Chrome; break }
+    }
+
+    if (-not $chrome) {
+        return $markup
+    }
+
+    $evaluator = {
+        param($match)
+
+        $attribute = $match.Groups['attr'].Value
+        $raw = $match.Groups['value'].Value
+
+        # Bindings and resource references are not text.
+        if ($raw -match '^\s*\{') { return $match.Value }
+
+        $decoded = [System.Net.WebUtility]::HtmlDecode($raw)
+        $entry = $chrome.PSObject.Properties[$decoded]
+        if (-not $entry) { return $match.Value }
+
+        $translated = [string]$entry.Value
+        if ([string]::IsNullOrWhiteSpace($translated) -or $translated -eq $decoded) {
+            return $match.Value
+        }
+
+        # Encode before it goes back into markup, and escape the double quote
+        # that would otherwise close the attribute.
+        $encoded = [System.Security.SecurityElement]::Escape($translated)
+        return ('{0}="{1}"' -f $attribute, $encoded)
+    }
+
+    $pattern = '(?<attr>\b(?:Content|Text|Header|ToolTip|Title))="(?<value>[^"]*)"'
+    return [regex]::Replace($markup, $pattern, $evaluator)
 }
 
 <#
