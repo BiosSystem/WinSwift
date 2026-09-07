@@ -1,5 +1,13 @@
 # Define script-level variables & paths
-$script:Version = "3.3.0"
+# Mirrors the WINSWIFT_VERSION constant in WinSwift.ps1. The literal is only
+# used when this file is dot-sourced on its own, as the tests do.
+$script:Version = if (Get-Variable -Name WINSWIFT_VERSION -Scope Global -ErrorAction SilentlyContinue) {
+    $global:WINSWIFT_VERSION
+} elseif ($WINSWIFT_VERSION) {
+    $WINSWIFT_VERSION
+} else {
+    "3.4.0"
+}
 $script:AppVersion = $script:Version
 $rootDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $configPath = Join-Path $rootDir 'Config'
@@ -10,6 +18,7 @@ $scriptsPath = Join-Path $rootDir 'Scripts'
 $script:AppsListFilePath = Join-Path $configPath 'Apps.json'
 $script:DefaultSettingsFilePath = Join-Path $configPath 'DefaultSettings.json'
 $script:FeaturesFilePath = Join-Path $configPath 'Features.json'
+$script:LanguagesPath = Join-Path $configPath 'Languages'
 $script:SavedSettingsFilePath = Join-Path $configPath 'LastUsedSettings.json'
 $script:DefaultLogPath = Join-Path $logsPath 'WinSwift.log'
 $script:RegfilesPath = Join-Path $rootDir 'Regfiles'
