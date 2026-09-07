@@ -1,0 +1,17 @@
+{
+  "Version": "1",
+  "Categories": {
+    "AI": "IA",
+    "Appearance": "Apariencia",
+    "File Explorer": "Explorador de archivos",
+    "Gaming": "Juegos",
+    "Multi-tasking": "Multitarea",
+    "Optional Windows Features": "Caracteristicas opcionales de Windows",
+    "Other": "Otros",
+    "Privacy & Suggested Content": "Privacidad y contenido sugerido",
+    "Start Menu & Search": "Menu Inicio y busqueda",
+    "System": "Sistema",
+    "Taskbar": "Barra de tareas",
+    "Windows Update": "Windows Update"
+  }
+}

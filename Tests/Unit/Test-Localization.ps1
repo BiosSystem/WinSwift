@@ -198,6 +198,86 @@ Describe 'WinSwift localization' {
         }
     }
 
+    Context 'the shipped es-ES translation' {
+
+        BeforeEach {
+            $script:LanguagesPath = $script:realLanguagesPath
+            $script:Features = @{}
+            foreach ($f in (Get-Content (Join-Path (Split-Path $script:realLanguagesPath -Parent) 'Features.json') -Raw | ConvertFrom-Json).Features) {
+                $script:Features[$f.FeatureId] = $f
+            }
+            $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
+        }
+
+        It 'loads with an en-US fallback attached' {
+            $script:Language.LanguageCode | Should -Be 'es-ES'
+            $script:Language.Fallback.LanguageCode | Should -Be 'en-US'
+        }
+
+        It 'translates a feature that has an entry' {
+            Get-WinSwiftFeatureText -FeatureId 'DisableCopilot' -Key 'Label' |
+                Should -Be 'Desactivar Microsoft Copilot'
+        }
+
+        It 'falls back per key, not per feature' {
+            # DisableTelemetry is translated but carries no ToolTip.
+            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
+                Should -BeLike 'Desactivar telemetria*'
+            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' |
+                Should -BeLike 'This setting disables telemetry*'
+        }
+
+        It 'falls back entirely for an untranslated feature' {
+            Get-WinSwiftFeatureText -FeatureId 'DisableWidgets' -Key 'Label' |
+                Should -Be 'Disable widgets on the taskbar & lock screen'
+        }
+
+        It 'translates every category' {
+            Get-WinSwiftCategoryText -Category 'Gaming' | Should -Be 'Juegos'
+            Get-WinSwiftCategoryText -Category 'Privacy & Suggested Content' |
+                Should -Be 'Privacidad y contenido sugerido'
+        }
+
+        It 'resolves other Spanish regions to es-ES' {
+            Resolve-LanguageFolder -LanguageCode 'es-MX' | Should -Be 'es-ES'
+            Resolve-LanguageFolder -LanguageCode 'es-AR' | Should -Be 'es-ES'
+        }
+
+        It 'overlays Spanish onto the real feature table' {
+            $replaced = Update-FeatureTextFromLanguage
+
+            $replaced | Should -BeGreaterThan 0
+            $script:Features['DisableCopilot'].Label | Should -Be 'Desactivar Microsoft Copilot'
+            $script:Features['DisableWidgets'].Label | Should -Be 'Disable widgets on the taskbar & lock screen'
+        }
+
+        It 'defines no key that en-US does not' {
+            # A stale key would silently never be used.
+            foreach ($file in 'Chrome', 'Features', 'Categories') {
+                $section = @{ Chrome = 'Chrome'; Features = 'Features'; Categories = 'Categories' }[$file]
+                $en = (LoadJsonFile -filePath (Join-Path $script:realLanguagesPath "en-US\$file.json")).$section
+                $es = (LoadJsonFile -filePath (Join-Path $script:realLanguagesPath "es-ES\$file.json")).$section
+
+                $unknown = @($es.PSObject.Properties.Name | Where-Object { -not $en.PSObject.Properties[$_] })
+                $unknown | Should -BeNullOrEmpty -Because "es-ES $file.json has keys absent from en-US: $($unknown -join ', ')"
+            }
+        }
+
+        It 'leaves every schema parsable after substitution' -Skip:([System.Threading.Thread]::CurrentThread.GetApartmentState() -ne 'STA') {
+            # XamlReader needs STA. Pester may run MTA, in which case the
+            # string-level assertions above still cover substitution.
+            Add-Type -AssemblyName PresentationFramework
+            $schemasPath = Join-Path (Split-Path (Split-Path $script:realLanguagesPath -Parent) -Parent) 'Schemas'
+
+            foreach ($schema in Get-ChildItem $schemasPath -Filter *.xaml) {
+                $markup = Get-LocalizedXaml -Path $schema.FullName
+                { 
+                    $r = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($markup))
+                    try { $null = [Windows.Markup.XamlReader]::Load($r) } finally { $r.Close() }
+                } | Should -Not -Throw -Because "$($schema.Name) must still parse in Spanish"
+            }
+        }
+    }
     Context 'the shipped en-US catalogue' {
         It 'covers every feature in Features.json' {
             $catalogue = LoadJsonFile -filePath (Join-Path $script:realLanguagesPath 'en-US\Features.json')
