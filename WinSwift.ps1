@@ -224,6 +224,11 @@ if (-not ((Test-Path $script:DefaultSettingsFilePath) -and (Test-Path $script:Ap
     Exit 1
 }
 
+# Localization. Sourced here because the feature load below overlays
+# translated text, which needs both of these already defined.
+. "$PSScriptRoot/Scripts/FileIO/LoadJsonFile.ps1"
+. "$PSScriptRoot/Scripts/FileIO/LoadLanguageFile.ps1"
+
 # Load feature info from file
 $script:Features = @{}
 try {
@@ -235,6 +240,11 @@ try {
         }
         $script:Features[$feature.FeatureId] = $feature
     }
+
+    # Overlay localized text onto the loaded features. A missing or partial
+    # catalogue is not fatal: unresolved strings keep their English value.
+    $script:Language = Import-LanguageFile
+    $null = Update-FeatureTextFromLanguage
 }
 catch {
     Write-Error "Failed to load feature info from Features.json file"
@@ -312,7 +322,6 @@ if (-not $script:WingetInstalled -and -not $Silent) {
 . "$PSScriptRoot/Scripts/Features/AddDefenderGamingExclusions.ps1"
 
 # File I/O functions
-. "$PSScriptRoot/Scripts/FileIO/LoadJsonFile.ps1"
 . "$PSScriptRoot/Scripts/FileIO/SaveToFile.ps1"
 . "$PSScriptRoot/Scripts/FileIO/SaveSettings.ps1"
 . "$PSScriptRoot/Scripts/FileIO/LoadSettings.ps1"
