@@ -25,7 +25,12 @@ function Load-RegistryBackupFromFile {
     }
 
     try {
-        $rawBackup = Get-Content -LiteralPath $FilePath -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+        # -Encoding UTF8 is required. SaveToFile writes these with a BOM, so a
+        # WinSwift backup happens to read correctly without it, but a file
+        # produced anywhere else has no BOM and Windows PowerShell 5.1 would
+        # fall back to the ANSI codepage and mangle every non-ASCII value.
+        # Registry data holds such values, an accented profile path for one.
+        $rawBackup = Get-Content -LiteralPath $FilePath -Raw -Encoding UTF8 -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
     }
     catch {
         throw "Failed to read backup file '$FilePath'. The file is not valid JSON."

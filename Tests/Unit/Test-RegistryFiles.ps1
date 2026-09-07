@@ -46,4 +46,43 @@ Describe 'Registry files' {
 
         $failures | Should -BeNullOrEmpty -Because ($failures -join [Environment]::NewLine)
     }
+
+    Context 'backup file encoding' {
+
+        BeforeAll {
+            $root = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+            . (Join-Path $root 'Scripts\FileIO\SaveToFile.ps1')
+            $script:restoreSource = Get-Content (Join-Path $root 'Scripts\Features\RestoreRegistryBackup.ps1') -Raw
+        }
+
+        It 'reads backups as UTF8 rather than the ANSI codepage' {
+            # Registry data can hold non-ASCII, an accented profile path for one.
+            # SaveToFile writes a BOM so WinSwift's own backups would read either
+            # way, but a backup produced elsewhere has none.
+            $script:restoreSource | Should -Match 'Get-Content -LiteralPath \$FilePath -Raw -Encoding UTF8'
+        }
+
+        It 'round-trips a non-ASCII registry value through a BOM-less backup' {
+            $accented = 'C:\Users\Jos' + [char]0xE9 + '\AppData\Se' + [char]0xF1 + 'or'
+            $path = Join-Path $TestDrive 'nobom.json'
+            $json = @{ Version = '1'; RegistryKeys = @($accented) } | ConvertTo-Json -Depth 5
+            [System.IO.File]::WriteAllText($path, $json, (New-Object System.Text.UTF8Encoding $false))
+
+            $read = (Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json).RegistryKeys[0]
+
+            $read | Should -Be $accented
+        }
+
+        It 'leaves the reg file reader alone, since those are UTF-16LE' {
+            # Regedit writes .reg as UTF-16LE with a BOM. Get-Content detects it.
+            # Forcing UTF8 there would corrupt every registry file in the repo.
+            $root = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+            $regReader = Get-Content (Join-Path $root 'Scripts\Helpers\Get-RegFileOperations.ps1') -Raw
+            $regReader | Should -Not -Match 'Get-Content.*-Encoding UTF8'
+
+            $sample = Get-ChildItem (Join-Path $root 'Regfiles') -Filter *.reg | Select-Object -First 1
+            $bytes = [System.IO.File]::ReadAllBytes($sample.FullName)
+            "$($bytes[0]) $($bytes[1])" | Should -Be '255 254' -Because 'reg files are UTF-16LE with a BOM'
+        }
+    }
 }
