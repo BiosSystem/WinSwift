@@ -232,7 +232,7 @@ if (-not ((Test-Path $script:DefaultSettingsFilePath) -and (Test-Path $script:Ap
 # Load feature info from file
 $script:Features = @{}
 try {
-    $featuresData = Get-Content -Path $script:FeaturesFilePath -Raw | ConvertFrom-Json
+    $featuresData = Get-Content -Path $script:FeaturesFilePath -Raw -Encoding UTF8 | ConvertFrom-Json
     foreach ($feature in $featuresData.Features) {
         if ([string]::IsNullOrWhiteSpace([string]$feature.FeatureId) -or [string]::IsNullOrWhiteSpace([string]$feature.Label) -or [string]::IsNullOrWhiteSpace([string]$feature.ApplyText)) {
             Write-Warning "Feature '$($feature.FeatureId)' is missing a FeatureId, Label, or ApplyText in Features.json and will be skipped."

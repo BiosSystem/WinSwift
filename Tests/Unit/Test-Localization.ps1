@@ -198,6 +198,51 @@ Describe 'WinSwift localization' {
         }
     }
 
+    Context 'non-ASCII encoding' {
+
+        It 'reads a UTF-8 file with no BOM without mangling accents' {
+            # Windows PowerShell 5.1 falls back to the ANSI codepage for a
+            # UTF-8 file with no BOM, which double-encodes accented text.
+            # LoadJsonFile passes -Encoding UTF8 to prevent that.
+            $expected = 'Configuraci' + [char]0xF3 + 'n telemetr' + [char]0xED + 'a a' + [char]0xF1 + 'o'
+            $path = Join-Path $TestDrive 'accents.json'
+            $json = '{ "Version": "1", "Categories": { "k": "' + $expected + '" } }'
+            [System.IO.File]::WriteAllText($path, $json, (New-Object System.Text.UTF8Encoding $false))
+
+            (LoadJsonFile -filePath $path).Categories.k | Should -Be $expected
+        }
+
+        It 'reads a UTF-8 file with a BOM without mangling accents' {
+            $expected = 'Men' + [char]0xFA + ' Inicio y b' + [char]0xFA + 'squeda'
+            $path = Join-Path $TestDrive 'accents-bom.json'
+            $json = '{ "Version": "1", "Categories": { "k": "' + $expected + '" } }'
+            [System.IO.File]::WriteAllText($path, $json, (New-Object System.Text.UTF8Encoding $true))
+
+            (LoadJsonFile -filePath $path).Categories.k | Should -Be $expected
+        }
+
+        It 'keeps accents through the shipped es-ES catalogue' {
+            $script:LanguagesPath = $script:realLanguagesPath
+            $script:Features = @{}
+            $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
+
+            Get-WinSwiftCategoryText -Category 'Start Menu & Search' |
+                Should -Be ('Men' + [char]0xFA + ' Inicio y b' + [char]0xFA + 'squeda')
+            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
+                Should -BeLike ('*telemetr' + [char]0xED + 'a*')
+        }
+
+        It 'carries accents into substituted markup' {
+            $script:LanguagesPath = $script:realLanguagesPath
+            $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
+            $schemasPath = Join-Path (Split-Path (Split-Path $script:realLanguagesPath -Parent) -Parent) 'Schemas'
+
+            $markup = Get-LocalizedXaml -Path (Join-Path $schemasPath 'MainWindow.xaml')
+
+            $markup | Should -BeLike ('*Configuraci' + [char]0xF3 + 'n*')
+            $markup | Should -BeLike ('*' + [char]0xBF + '*')
+        }
+    }
     Context 'the shipped es-ES translation' {
 
         BeforeEach {
