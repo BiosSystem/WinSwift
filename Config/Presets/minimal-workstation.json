@@ -1,0 +1,24 @@
+{
+  "PresetName": "Minimal Workstation",
+  "Author": "Bios-System",
+  "Description": "A quiet office machine. Removes noise from the taskbar and Start menu and turns off suggestions, keeping defaults everywhere else.",
+  "Switches": [
+    "DisableTelemetry",
+    "DisableAdvertisingID",
+    "DisableSuggestions",
+    "DisableLockscreenTips",
+    "DisableBing",
+    "DisableStoreSearchSuggestions",
+    "DisableStartRecommended",
+    "DisableStartPhoneLink",
+    "DisableWidgets",
+    "HideChat",
+    "HideTaskview",
+    "TaskbarAlignLeft",
+    "ShowKnownFileExt",
+    "ExplorerToThisPC",
+    "DisableCopilot",
+    "DisableRecall",
+    "RemoveApps"
+  ]
+}

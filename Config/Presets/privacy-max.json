@@ -1,0 +1,28 @@
+{
+  "PresetName": "Privacy Maximum",
+  "Author": "Bios-System",
+  "Description": "Strips telemetry, tracking, advertising and AI data collection. Makes no performance or interface changes.",
+  "Switches": [
+    "DisableTelemetry",
+    "DisableTelemetryServices",
+    "DisableAdvertisingID",
+    "DisableLocationServices",
+    "DisableFindMyDevice",
+    "DisableVoiceActivation",
+    "DisableSuggestions",
+    "DisableLockscreenTips",
+    "DisableDesktopSpotlight",
+    "DisableEdgeAds",
+    "DisableSettings365Ads",
+    "DisableSettingsHome",
+    "DisableBing",
+    "DisableStoreSearchSuggestions",
+    "DisableCopilot",
+    "DisableRecall",
+    "DisableClickToDo",
+    "DisableAISvcAutoStart",
+    "EnableExtendedAIPurge",
+    "EnableFirewallTelemetryBlock",
+    "DisableDeliveryOptimization"
+  ]
+}

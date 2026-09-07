@@ -228,6 +228,7 @@ if (-not ((Test-Path $script:DefaultSettingsFilePath) -and (Test-Path $script:Ap
 # translated text, which needs both of these already defined.
 . "$PSScriptRoot/Scripts/FileIO/LoadJsonFile.ps1"
 . "$PSScriptRoot/Scripts/FileIO/LoadLanguageFile.ps1"
+. "$PSScriptRoot/Scripts/FileIO/LoadPreset.ps1"
 
 # Load feature info from file
 $script:Features = @{}
@@ -243,6 +244,9 @@ try {
 
     # Overlay localized text onto the loaded features. A missing or partial
     # catalogue is not fatal: unresolved strings keep their English value.
+    # UiGroups declares which switches are mutually exclusive. Presets are
+    # validated against it.
+    $script:FeatureUiGroups = @($featuresData.UiGroups)
     $script:Language = Import-LanguageFile
     $null = Update-FeatureTextFromLanguage
 }
@@ -455,23 +459,22 @@ $script:ModernStandbySupported = CheckModernStandbySupport
 
 # Handle Community Preset Profiles
 if ($script:Params.ContainsKey("Preset")) {
-    $presetPath = $script:Params["Preset"]
-    if (Test-Path $presetPath) {
-        Write-Host "> Loading preset profile: $presetPath" -ForegroundColor Cyan
-        try {
-            $presetData = Get-Content $presetPath -Raw | ConvertFrom-Json
-            if ($presetData.Switches) {
-                foreach ($sw in $presetData.Switches) {
-                    if (-not $script:Params.ContainsKey($sw)) {
-                        $script:Params.Add($sw, $true)
-                    }
-                }
-            }
-        } catch {
-            Write-Host "  [WARN] Failed to load preset JSON: $_" -ForegroundColor Yellow
+    # A bad preset stops the run. Previously a missing file or a mistyped
+    # switch only warned, and the apply phase then dropped what it did not
+    # recognise, so the run reported success having changed nothing.
+    try {
+        $presetSwitches = Import-PresetSwitches -Preset $script:Params["Preset"]
+    }
+    catch {
+        Write-Error $_.Exception.Message
+        exit 1
+    }
+
+    Write-Host "> Loaded preset: $($script:Params["Preset"]) ($($presetSwitches.Count) switches)" -ForegroundColor Cyan
+    foreach ($sw in $presetSwitches) {
+        if (-not $script:Params.ContainsKey($sw)) {
+            $script:Params.Add($sw, $true)
         }
-    } else {
-        Write-Host "  [WARN] Preset file not found: $presetPath" -ForegroundColor Yellow
     }
 }
 

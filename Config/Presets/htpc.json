@@ -1,0 +1,24 @@
+{
+  "PresetName": "Home Theatre PC",
+  "Author": "Bios-System",
+  "Description": "For a media box left running unattended. Quiets the interface and stops Windows Update rebooting mid-playback. Keeps animations, since the screen is being watched.",
+  "Switches": [
+    "DisableTelemetry",
+    "DisableAdvertisingID",
+    "DisableSuggestions",
+    "DisableLockscreenTips",
+    "DisableDesktopSpotlight",
+    "DisableBing",
+    "DisableWidgets",
+    "HideChat",
+    "HideTaskview",
+    "DisableStartRecommended",
+    "EnableDarkMode",
+    "PreventUpdateAutoReboot",
+    "DisableDeliveryOptimization",
+    "DisableWUDriverSearch",
+    "DisableCopilot",
+    "DisableRecall",
+    "DisableFastStartup"
+  ]
+}
