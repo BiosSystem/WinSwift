@@ -1,11 +1,11 @@
-{
+﻿{
   "Version": "1",
   "Features": {
     "DisableTelemetry": {
-      "Label": "Desactivar telemetria, seguimiento y anuncios personalizados",
-      "ApplyText": "Desactivando la telemetria y la recopilacion de datos de diagnostico",
-      "UndoLabel": "Activar telemetria, seguimiento y anuncios personalizados",
-      "ApplyUndoText": "Activando la telemetria y la recopilacion de datos de diagnostico"
+      "Label": "Desactivar telemetría, seguimiento y anuncios personalizados",
+      "ApplyText": "Desactivando la telemetría y la recopilación de datos de diagnóstico",
+      "UndoLabel": "Activar telemetría, seguimiento y anuncios personalizados",
+      "ApplyUndoText": "Activando la telemetría y la recopilación de datos de diagnóstico"
     },
     "DisableCopilot": {
       "Label": "Desactivar Microsoft Copilot",
@@ -28,12 +28,12 @@
       "ApplyUndoText": "Desactivando el modo oscuro para el sistema y las aplicaciones"
     },
     "RemoveGamingApps": {
-      "Label": "Eliminar la aplicacion Xbox y la barra de juegos de Xbox",
+      "Label": "Eliminar la aplicación Xbox y la barra de juegos de Xbox",
       "ApplyText": "Eliminando las aplicaciones relacionadas con los juegos"
     },
     "CreateRestorePoint": {
-      "Label": "Crear un punto de restauracion del sistema",
-      "ApplyText": "Creando el punto de restauracion del sistema"
+      "Label": "Crear un punto de restauración del sistema",
+      "ApplyText": "Creando el punto de restauración del sistema"
     },
     "EnableGamingMode": {
       "Label": "Activar el perfil de juego de WinSwift",

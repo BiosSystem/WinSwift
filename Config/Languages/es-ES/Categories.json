@@ -1,4 +1,4 @@
-{
+﻿{
   "Version": "1",
   "Categories": {
     "AI": "IA",
@@ -6,10 +6,10 @@
     "File Explorer": "Explorador de archivos",
     "Gaming": "Juegos",
     "Multi-tasking": "Multitarea",
-    "Optional Windows Features": "Caracteristicas opcionales de Windows",
+    "Optional Windows Features": "Características opcionales de Windows",
     "Other": "Otros",
     "Privacy & Suggested Content": "Privacidad y contenido sugerido",
-    "Start Menu & Search": "Menu Inicio y busqueda",
+    "Start Menu & Search": "Menú Inicio y búsqueda",
     "System": "Sistema",
     "Taskbar": "Barra de tareas",
     "Windows Update": "Windows Update"

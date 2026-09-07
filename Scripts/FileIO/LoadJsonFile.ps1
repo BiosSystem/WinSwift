@@ -15,7 +15,10 @@ function LoadJsonFile {
     }
     
     try {
-        $jsonContent = Get-Content -Path $filePath -Raw | ConvertFrom-Json
+        # -Encoding UTF8 is required. Windows PowerShell 5.1 falls back to the
+        # ANSI codepage for a UTF-8 file with no BOM, which double-encodes any
+        # accented character in a translation catalogue.
+        $jsonContent = Get-Content -Path $filePath -Raw -Encoding UTF8 | ConvertFrom-Json
         
         # Validate version if specified
         if ($expectedVersion -and $jsonContent.Version -and $jsonContent.Version -ne $expectedVersion) {
