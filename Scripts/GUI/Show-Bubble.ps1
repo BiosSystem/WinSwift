@@ -103,7 +103,7 @@ function Show-Bubble {
 
     Hide-Bubble -Immediate
 
-    $xaml = Get-Content -Path $script:BubbleHintSchema -Raw
+    $xaml = Get-LocalizedXaml -Path $script:BubbleHintSchema
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
         $bubblePanel = [System.Windows.Markup.XamlReader]::Load($reader)

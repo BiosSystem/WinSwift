@@ -26,7 +26,7 @@ function Show-ApplyModal {
     }
     
     # Load XAML from file
-    $xaml = Get-Content -Path $script:ApplyChangesWindowSchema -Raw
+    $xaml = Get-LocalizedXaml -Path $script:ApplyChangesWindowSchema
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
         $applyWindow = [System.Windows.Markup.XamlReader]::Load($reader)

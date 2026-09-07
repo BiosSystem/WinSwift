@@ -35,7 +35,7 @@ function Show-ImportExportConfigWindow {
         return $null
     }
 
-    $xaml = Get-Content -Path $schemaPath -Raw
+    $xaml = Get-LocalizedXaml -Path $schemaPath
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
         $dlg = [System.Windows.Markup.XamlReader]::Load($reader)

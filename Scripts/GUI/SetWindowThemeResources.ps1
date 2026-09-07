@@ -124,7 +124,7 @@ function SetWindowThemeResources {
 
     # Load and merge shared styles
     if ($script:SharedStylesSchema -and (Test-Path $script:SharedStylesSchema)) {
-        $sharedXaml = Get-Content -Path $script:SharedStylesSchema -Raw
+        $sharedXaml = Get-LocalizedXaml -Path $script:SharedStylesSchema
         $sharedReader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($sharedXaml))
         try {
             $sharedDict = [System.Windows.Markup.XamlReader]::Load($sharedReader)

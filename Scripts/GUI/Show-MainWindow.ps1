@@ -5,7 +5,7 @@ function Show-MainWindow {
     $usesDarkMode = GetSystemUsesDarkMode
 
     # ---- Load XAML ----
-    $xaml = Get-Content -Path $script:MainWindowSchema -Raw
+    $xaml = Get-LocalizedXaml -Path $script:MainWindowSchema
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
         $window = [System.Windows.Markup.XamlReader]::Load($reader)

@@ -49,7 +49,7 @@ function Show-RestoreBackupDialog {
         throw 'Restore backup window schema file could not be found.'
     }
 
-    $xaml = Get-Content -Path $schemaPath -Raw
+    $xaml = Get-LocalizedXaml -Path $schemaPath
 
     $reader = [System.Xml.XmlReader]::Create([System.IO.StringReader]::new($xaml))
     try {
