@@ -1,0 +1,43 @@
+{
+  "Version": "1",
+  "Features": {
+    "DisableTelemetry": {
+      "Label": "Desactivar telemetria, seguimiento y anuncios personalizados",
+      "ApplyText": "Desactivando la telemetria y la recopilacion de datos de diagnostico",
+      "UndoLabel": "Activar telemetria, seguimiento y anuncios personalizados",
+      "ApplyUndoText": "Activando la telemetria y la recopilacion de datos de diagnostico"
+    },
+    "DisableCopilot": {
+      "Label": "Desactivar Microsoft Copilot",
+      "ToolTip": "Desactiva y desinstala Microsoft Copilot, el asistente de IA integrado en Windows.",
+      "ApplyText": "Desactivando Microsoft Copilot",
+      "UndoLabel": "Activar Microsoft Copilot",
+      "ApplyUndoText": "Activando Microsoft Copilot"
+    },
+    "DisableRecall": {
+      "Label": "Desactivar Windows Recall",
+      "ApplyText": "Desactivando Windows Recall",
+      "UndoLabel": "Activar Windows Recall",
+      "ApplyUndoText": "Activando Windows Recall"
+    },
+    "EnableDarkMode": {
+      "Label": "Activar el tema oscuro para el sistema y las aplicaciones",
+      "ToolTip": "Establece el tema del sistema y de las aplicaciones en modo oscuro.",
+      "ApplyText": "Activando el modo oscuro para el sistema y las aplicaciones",
+      "UndoLabel": "Desactivar el tema oscuro para el sistema y las aplicaciones",
+      "ApplyUndoText": "Desactivando el modo oscuro para el sistema y las aplicaciones"
+    },
+    "RemoveGamingApps": {
+      "Label": "Eliminar la aplicacion Xbox y la barra de juegos de Xbox",
+      "ApplyText": "Eliminando las aplicaciones relacionadas con los juegos"
+    },
+    "CreateRestorePoint": {
+      "Label": "Crear un punto de restauracion del sistema",
+      "ApplyText": "Creando el punto de restauracion del sistema"
+    },
+    "EnableGamingMode": {
+      "Label": "Activar el perfil de juego de WinSwift",
+      "ApplyText": "Activando el perfil de juego de WinSwift"
+    }
+  }
+}
