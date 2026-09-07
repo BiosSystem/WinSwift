@@ -267,7 +267,7 @@ Describe 'WinSwift localization' {
         It 'falls back per key, not per feature' {
             # DisableTelemetry is translated but carries no ToolTip.
             Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
-                Should -BeLike 'Desactivar telemetria*'
+                Should -BeLike ('Desactivar telemetr' + [char]0xED + 'a*')
             Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' |
                 Should -BeLike 'This setting disables telemetry*'
         }
