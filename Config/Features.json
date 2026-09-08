@@ -707,6 +707,32 @@
       "MaxVersion": null
     },
     {
+      "FeatureId": "DisableSearchHistory",
+      "Label": "Disable device search history",
+      "ToolTip": "This will stop Windows from storing your recent searches on this device, so previous search terms are no longer suggested in the search box.",
+      "Category": "Start Menu & Search",
+      "RegistryKey": "Disable_Search_History.reg",
+      "ApplyText": "Disabling device search history",
+      "UndoLabel": "Enable device search history",
+      "ApplyUndoText": "Enabling device search history",
+      "RegistryUndoKey": "Enable_Search_History.reg",
+      "MinVersion": null,
+      "MaxVersion": null
+    },
+    {
+      "FeatureId": "DisableSearchHighlights",
+      "Label": "Disable search highlights",
+      "ToolTip": "This will turn off search highlights, the dynamic and branded content Microsoft shows in the Windows search box and search home.",
+      "Category": "Start Menu & Search",
+      "RegistryKey": "Disable_Search_Highlights.reg",
+      "ApplyText": "Disabling search highlights in Windows search",
+      "UndoLabel": "Enable search highlights",
+      "ApplyUndoText": "Enabling search highlights in Windows search",
+      "RegistryUndoKey": "Enable_Search_Highlights.reg",
+      "MinVersion": null,
+      "MaxVersion": null
+    },
+    {
       "FeatureId": "DisableStoreSearchSuggestions",
       "Label": "Disable Microsoft Store app suggestions in search",
       "ToolTip": "This will disable the Microsoft Store app suggestions in Windows search.",

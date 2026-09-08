@@ -184,6 +184,20 @@
       "UndoLabel": "Enable Bing web search & Copilot integration in search",
       "ApplyUndoText": "Enabling Bing web search & Copilot integration in Windows search"
     },
+    "DisableSearchHistory": {
+      "Label": "Disable device search history",
+      "ToolTip": "This will stop Windows from storing your recent searches on this device, so previous search terms are no longer suggested in the search box.",
+      "ApplyText": "Disabling device search history",
+      "UndoLabel": "Enable device search history",
+      "ApplyUndoText": "Enabling device search history"
+    },
+    "DisableSearchHighlights": {
+      "Label": "Disable search highlights",
+      "ToolTip": "This will turn off search highlights, the dynamic and branded content Microsoft shows in the Windows search box and search home.",
+      "ApplyText": "Disabling search highlights in Windows search",
+      "UndoLabel": "Enable search highlights",
+      "ApplyUndoText": "Enabling search highlights in Windows search"
+    },
     "DisableStoreSearchSuggestions": {
       "Label": "Disable Microsoft Store app suggestions in search",
       "ToolTip": "This will disable the Microsoft Store app suggestions in Windows search.",
