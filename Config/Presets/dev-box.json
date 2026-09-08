@@ -1,0 +1,24 @@
+{
+  "PresetName": "Developer Workstation",
+  "Author": "Bios-System",
+  "Description": "Turns on the developer features, restores the full context menu and shows what Explorer hides by default. Leaves gaming and media settings alone.",
+  "Switches": [
+    "ShowKnownFileExt",
+    "ShowHiddenFolders",
+    "ExplorerToThisPC",
+    "EnableWindowsSubsystemForLinux",
+    "EnableWindowsSandbox",
+    "RevertContextMenu",
+    "EnableEndTask",
+    "EnableLastActiveClick",
+    "DisableTelemetry",
+    "DisableAdvertisingID",
+    "DisableSuggestions",
+    "DisableBing",
+    "DisableStoreSearchSuggestions",
+    "DisableWidgets",
+    "HideChat",
+    "DisableCopilot",
+    "DisableRecall"
+  ]
+}
