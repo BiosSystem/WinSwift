@@ -69,14 +69,19 @@ Describe 'WinSwift presets' {
 
     Context 'validation' {
 
-        BeforeEach {
-            $script:presetFile = Join-Path $TestDrive 'candidate.json'
+        BeforeAll {
+            # Defined in BeforeAll, not the Context body. Pester runs the body
+            # during discovery, so a function declared there does not exist by
+            # the time the tests execute.
+            function Set-Preset {
+                param([string[]]$Switches)
+                @{ PresetName = 'Candidate'; Description = 'test'; Switches = $Switches } |
+                    ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $script:presetFile -Encoding UTF8
+            }
         }
 
-        function Set-Preset {
-            param([string[]]$Switches)
-            @{ PresetName = 'Candidate'; Description = 'test'; Switches = $Switches } |
-                ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $script:presetFile -Encoding UTF8
+        BeforeEach {
+            $script:presetFile = Join-Path $TestDrive 'candidate.json'
         }
 
         It 'rejects a switch that does not exist' {
