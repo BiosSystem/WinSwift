@@ -76,9 +76,20 @@ function RemoveApps {
     # Check whether any winget-removed apps are still present, and report errors for each one.
     if ($wingetRemovedApps.Count -gt 0 -or $edgeAppsInList.Count -gt 0) {
         $postRemovalList = if ($script:WingetInstalled) { GetInstalledAppsViaWinget -TimeOut 10 -NonBlocking } else { $null }
+        if ($null -eq $postRemovalList -and $wingetRemovedApps.Count -gt 0) {
+            # Could not read the post-removal list, so these removals cannot be
+            # confirmed either way. Flag it rather than reporting false success.
+            $script:AppRemovalVerificationUnavailable = $true
+        }
         foreach ($app in $wingetRemovedApps) {
+            if ($null -eq $postRemovalList) { continue }
             if (Test-AppStillInstalled -appId $app -InstalledList $postRemovalList) {
                 Write-Host "Unable to uninstall $app via WinGet" -ForegroundColor Red
+                $script:AppRemovalFailures++
+                $script:AppRemovalFailedApps += $app
+            }
+            else {
+                $script:AppRemovalRemovedApps += $app
             }
         }
 

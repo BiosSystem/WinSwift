@@ -535,7 +535,7 @@
                 </TabItem>
 
                 <!-- App Removal Tab -->
-                <TabItem Header="App Removal">
+                <TabItem Header="App Removal" x:Name="AppRemovalTab">
                     <DockPanel>
                         <Border DockPanel.Dock="Top" Padding="20,4,20,0">
                             <StackPanel>
@@ -739,7 +739,7 @@
                 </TabItem>
 
                 <!-- Tweaks Tab -->
-                <TabItem Header="Tweaks">
+                <TabItem Header="Tweaks" x:Name="TweaksTab">
                     <DockPanel>
                         <Border DockPanel.Dock="Top" Padding="20,4,20,0" Background="{DynamicResource AppBgColor}">
                             <StackPanel>

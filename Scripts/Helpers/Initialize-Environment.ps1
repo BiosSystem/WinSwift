@@ -47,6 +47,10 @@ $script:ApplySubStepCallback = $null
 $script:RegistryImportFailures = 0
 $script:AppRemovalFailures = 0
 $script:AppRemovalVerificationUnavailable = $false
+# Names collected during app removal so the run summary and the completion
+# screens report what actually happened instead of a hardcoded empty list.
+$script:AppRemovalRemovedApps = @()
+$script:AppRemovalFailedApps = @()
 
 # Rollback state for the current run. The backup path is captured in phase 1 so
 # the apply phase can restore from it without re-reading the Backups folder.

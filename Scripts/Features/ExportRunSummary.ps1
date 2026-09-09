@@ -24,6 +24,10 @@ function Export-RunSummary {
 
         [string[]]$RemovedApps = @(),
 
+        [string[]]$FailedApps = @(),
+
+        [bool]$AppVerificationUnavailable = $false,
+
         [hashtable[]]$FeatureErrors = @(),
 
         [Parameter(Mandatory)]
@@ -76,8 +80,13 @@ function Export-RunSummary {
         FeaturesApplied      = @($appliedDetails)
         FeaturesUndone       = @($undoneDetails)
         AppsRemoved          = @($RemovedApps)
+        AppRemoval           = [ordered]@{
+            Removed                 = @($RemovedApps)
+            Failed                  = @($FailedApps)
+            VerificationUnavailable = $AppVerificationUnavailable
+        }
         TotalFeaturesChanged = $AppliedFeatureIds.Count + $UndoneFeatureIds.Count
-        ErrorCount           = $FeatureErrors.Count
+        ErrorCount           = $FeatureErrors.Count + @($FailedApps).Count
         Rollback             = [ordered]@{
             # None, RolledBack, RollbackFailed, or Skipped.
             Outcome    = if ($script:RunRollbackOutcome) { $script:RunRollbackOutcome } else { 'None' }
