@@ -45,8 +45,27 @@ function ForceRemoveEdge {
             return $process.ExitCode
         } -ArgumentList $uninstallString
 
+        if ($exitCode -eq 532) {
+            # Microsoft hardened the command-line uninstall on 24H2 (build 26100+)
+            # and 25H2: setup.exe --force-uninstall returns 532 and removes nothing.
+            Write-Host "Microsoft blocked command-line Edge removal on this Windows build (uninstaller exit code 532)." -ForegroundColor Red
+            Write-Host "  Edge could not be force-removed here. On EU/EEA installs, uninstall it from Settings > Apps; on other builds it is not removable this way." -ForegroundColor Yellow
+            return $false
+        }
         if ($exitCode -ne 0) {
             Write-Warning "Microsoft Edge uninstaller failed with exit code $exitCode."
+            return $false
+        }
+
+        # The uninstaller can report success yet leave Edge in place on hardened
+        # builds, so confirm the binary is gone before claiming the removal worked.
+        $edgeBinaries = @(
+            (Join-Path ${env:ProgramFiles(x86)} 'Microsoft\Edge\Application\msedge.exe'),
+            (Join-Path $env:ProgramFiles 'Microsoft\Edge\Application\msedge.exe')
+        )
+        $edgeStillPresent = @($edgeBinaries | Where-Object { $_ -and (Test-Path -LiteralPath $_) })
+        if ($edgeStillPresent.Count -gt 0) {
+            Write-Host "The Edge uninstaller returned success but Edge is still installed ($($edgeStillPresent[0])); it was not removed." -ForegroundColor Red
             return $false
         }
 
