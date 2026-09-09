@@ -407,7 +407,11 @@ function Invoke-AllChanges {
         $feature = $script:Features[$_]
         $feature -and $feature.RequiresRestorePoint -eq $true
     }).Count -gt 0
-    if ($requiresRestorePoint -or $applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
+    # The extended gaming modules run outside the Features.json engine and make
+    # low-level changes (BCD, HVCI/VBS, power plan) with no undo path, so force a
+    # restore point when they are requested even though they are not FeatureIds.
+    $invasiveExtended = $script:Params.ContainsKey('EnableCompetitiveGaming') -or $script:Params.ContainsKey('DisableMemoryIntegrity')
+    if ($requiresRestorePoint -or $invasiveExtended -or $applyIds -contains 'RemoveApps' -or $applyIds -contains 'RemoveGamingApps' -or $applyIds -contains 'RemoveHPApps') {
         if (-not $script:Params.ContainsKey("CreateRestorePoint")) { $script:Params.Add("CreateRestorePoint", $true) }
     }
     $undoIds = @($script:UndoParams.Keys)
@@ -596,6 +600,14 @@ function Invoke-AllChanges {
         Write-Host ""
         Write-Host "$($script:RegistryImportFailures) registry import change(s) failed. See output above for details." -ForegroundColor Yellow
     }
+    if ($script:AppRemovalFailures -gt 0) {
+        Write-Host ""
+        Write-Host "$($script:AppRemovalFailures) app removal(s) failed: $($script:AppRemovalFailedApps -join ', '). See output above for details." -ForegroundColor Yellow
+    }
+    if ($script:AppRemovalVerificationUnavailable) {
+        Write-Host ""
+        Write-Host "  [WARN] App removals could not be verified (winget list unavailable); some may not have succeeded." -ForegroundColor Yellow
+    }
 
     # Export run summary JSON to %TEMP% for later review
     if ($script:RunStartTime -and (Get-Command Export-RunSummary -ErrorAction SilentlyContinue)) {
@@ -603,7 +615,9 @@ function Invoke-AllChanges {
         Export-RunSummary `
             -AppliedFeatureIds $applyIds `
             -UndoneFeatureIds  $undoIds `
-            -RemovedApps       @() `
+            -RemovedApps       @($script:AppRemovalRemovedApps) `
+            -FailedApps        @($script:AppRemovalFailedApps) `
+            -AppVerificationUnavailable $script:AppRemovalVerificationUnavailable `
             -FeatureErrors     @() `
             -StartTime         $script:RunStartTime `
             -WinSwiftVersion   $version

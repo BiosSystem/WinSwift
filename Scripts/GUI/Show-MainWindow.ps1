@@ -497,11 +497,13 @@ function Show-MainWindow {
         if ($e.Key -eq [System.Windows.Input.Key]::F -and
             ([System.Windows.Input.Keyboard]::Modifiers -band [System.Windows.Input.ModifierKeys]::Control)) {
             $currentTab = $tabControl.SelectedItem
-            if ($currentTab.Header -eq "App Removal" -and $appSearchBox) {
+            # Match on x:Name, not Header. Get-LocalizedXaml rewrites the header
+            # text, so comparing English strings breaks the shortcut in es-ES.
+            if ($currentTab.Name -eq "AppRemovalTab" -and $appSearchBox) {
                 $appSearchBox.Focus()
                 $e.Handled = $true
             }
-            elseif ($currentTab.Header -eq "Tweaks" -and $tweakSearchBox) {
+            elseif ($currentTab.Name -eq "TweaksTab" -and $tweakSearchBox) {
                 $tweakSearchBox.Focus()
                 $e.Handled = $true
             }
@@ -669,10 +671,13 @@ function Show-MainWindow {
 
             $selectedScopeItem = $appRemovalScopeCombo.SelectedItem
             if ($selectedScopeItem) {
-                switch ($selectedScopeItem.Content) {
-                    "All users" { AddParameter 'AppRemovalTarget' 'AllUsers' }
-                    "Current user only" { AddParameter 'AppRemovalTarget' 'CurrentUser' }
-                    "Target user only" { AddParameter 'AppRemovalTarget' ($otherUsernameTextBox.Text.Trim()) }
+                # Switch on the item's x:Name, not its Content. Content is
+                # translated by Get-LocalizedXaml, so matching English text
+                # silently dropped the scope under any non-English UI.
+                switch ($selectedScopeItem.Name) {
+                    'AppRemovalScopeAllUsers' { AddParameter 'AppRemovalTarget' 'AllUsers' }
+                    'AppRemovalScopeCurrentUser' { AddParameter 'AppRemovalTarget' 'CurrentUser' }
+                    'AppRemovalScopeTargetUser' { AddParameter 'AppRemovalTarget' ($otherUsernameTextBox.Text.Trim()) }
                 }
             }
         }

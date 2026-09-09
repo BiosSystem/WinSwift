@@ -8,7 +8,7 @@
     System.Boolean. $true when Edge is uninstalled and cleanup succeeds; otherwise $false.
 #>
 function ForceRemoveEdge {
-    if ($script:Params.ContainsKey("WhatIf")) {
+    if ($script:Params.ContainsKey("WhatIf") -or $script:Params.ContainsKey("DryRun")) {
         Write-Host "[WhatIf] Forcefully uninstall Microsoft Edge" -ForegroundColor Cyan
         return $true
     }

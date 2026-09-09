@@ -659,30 +659,53 @@ if ((($controlParamsCount -eq $script:Params.Keys.Count) -or ($script:Params.Key
 Invoke-AllChanges
 
 # --- WinSwift Extended Features (Bios-System) ---
-if ($script:Params.ContainsKey("EnablePerformanceTweaks")) { Enable-PerformanceTweaks }
-if ($script:Params.ContainsKey("DisableWindowsAds"))      { Disable-WindowsAds }
+# These run outside the Features.json verify/rollback engine. Only run them when
+# the main apply completed cleanly: after a rollback, a skipped rollback, or a
+# user cancel, applying more (often invasive) changes would fight the recovery
+# the pipeline just performed.
+$applyWasClean = ($script:RunRollbackOutcome -eq 'None') -and (-not $script:CancelRequested)
+if (-not $applyWasClean) {
+    Write-Output ""
+    Write-Output "Skipping extended modules because the main apply did not complete cleanly (outcome: $($script:RunRollbackOutcome))."
+}
+else {
+    # -DryRun sets $WhatIfPreference; fold in a bare -WhatIf as well so neither
+    # makes real changes here (SYSTEM task registration, file writes, Edge
+    # uninstall). The ShouldProcess modules below already inherit $WhatIfPreference.
+    $extendedWhatIf = $script:Params.ContainsKey("DryRun") -or $WhatIfPreference
 
-# --- WinSwift v2.2.0 Features (Bios-System) ---
-if ($script:Params.ContainsKey("EnableCompetitiveGaming")) {
-    Enable-CompetitiveGaming -DisableMemoryIntegrity:($script:Params.ContainsKey("DisableMemoryIntegrity"))
-}
-if ($script:Params.ContainsKey("DisableSettingsAds"))     { Disable-SettingsAds }
-if ($script:Params.ContainsKey("DisableWidgetsDeep"))     { Disable-WidgetsDeep }
+    if ($script:Params.ContainsKey("EnablePerformanceTweaks")) { Enable-PerformanceTweaks }
+    if ($script:Params.ContainsKey("DisableWindowsAds"))      { Disable-WindowsAds }
 
-# --- WinSwift v2.3.0 & v2.4.0 Features (Bios-System) ---
-if ($script:Params.ContainsKey("InstallSoftware")) {
-    Install-Software -SoftwareList $script:Params["SoftwareList"]
-}
-if ($script:Params.ContainsKey("GenerateUnattend")) {
-    Generate-UnattendXML -OutputPath $script:Params["UnattendOutPath"]
-}
+    # --- WinSwift v2.2.0 Features (Bios-System) ---
+    if ($script:Params.ContainsKey("EnableCompetitiveGaming")) {
+        Enable-CompetitiveGaming -DisableMemoryIntegrity:($script:Params.ContainsKey("DisableMemoryIntegrity"))
+    }
+    if ($script:Params.ContainsKey("DisableSettingsAds"))     { Disable-SettingsAds }
+    if ($script:Params.ContainsKey("DisableWidgetsDeep"))     { Disable-WidgetsDeep }
 
-# --- WinSwift v3.0.0 Features (Bios-System) ---
-if ($script:Params.ContainsKey("EnableUpdateWatchdog")) {
-    Invoke-InstallUpdateWatchdog -WhatIf:$script:Params.ContainsKey("DryRun")
-}
-if ($script:Params.ContainsKey("AddDefenderGamingExclusions")) {
-    Invoke-AddDefenderGamingExclusions -WhatIf:$script:Params.ContainsKey("DryRun")
+    # Force-remove Edge when the switch is passed. ForceRemoveEdge is the
+    # non-interactive routine and honours -WhatIf/-DryRun itself; the switch is
+    # an explicit request, so it runs without the y/n prompt.
+    if ($script:Params.ContainsKey("ForceRemoveEdge")) {
+        $null = ForceRemoveEdge
+    }
+
+    # --- WinSwift v2.3.0 & v2.4.0 Features (Bios-System) ---
+    if ($script:Params.ContainsKey("InstallSoftware")) {
+        Install-Software -SoftwareList $script:Params["SoftwareList"]
+    }
+    if ($script:Params.ContainsKey("GenerateUnattend")) {
+        Generate-UnattendXML -OutputPath $script:Params["UnattendOutPath"]
+    }
+
+    # --- WinSwift v3.0.0 Features (Bios-System) ---
+    if ($script:Params.ContainsKey("EnableUpdateWatchdog")) {
+        Invoke-InstallUpdateWatchdog -WhatIf:$extendedWhatIf
+    }
+    if ($script:Params.ContainsKey("AddDefenderGamingExclusions")) {
+        Invoke-AddDefenderGamingExclusions -WhatIf:$extendedWhatIf
+    }
 }
 
 RestartExplorer
@@ -696,10 +719,17 @@ Write-Output "Script completed! Please check above for any errors."
 # 3 apply failed and was rolled back, 4 apply failed and rollback failed too.
 # 4 is the only outcome that needs someone at the machine, so it stays distinct
 # from 3 rather than folding into a single "rolled back" code.
+# 'Skipped' means the apply failed but no rollback ran (-NoAutoRollback, or no
+# backup) so changes may persist: that is a failure, not success. A clean run
+# that still had registry-import or app-removal failures also exits 1 rather
+# than claiming success.
 $rollbackExitCode = switch ($script:RunRollbackOutcome) {
     'RolledBack' { 3 }
     'RollbackFailed' { 4 }
-    default { 0 }
+    'Skipped' { 1 }
+    default {
+        if (([int]$script:RegistryImportFailures + [int]$script:AppRemovalFailures) -gt 0) { 1 } else { 0 }
+    }
 }
 
 AwaitKeyToExit -ExitCode $rollbackExitCode

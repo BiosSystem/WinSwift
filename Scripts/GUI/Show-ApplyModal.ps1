@@ -105,7 +105,9 @@ function Show-ApplyModal {
             Invoke-AllChanges
 
             $registryImportFailureCount = [int]$script:RegistryImportFailures
-            
+            $appRemovalFailureCount     = [int]$script:AppRemovalFailures
+            $totalFailureCount          = $registryImportFailureCount + $appRemovalFailureCount
+
             # Restart explorer if requested
             if ($RestartExplorer -and -not $script:CancelRequested) {
                 RestartExplorer
@@ -120,7 +122,7 @@ function Show-ApplyModal {
             Write-Host ""
             if ($script:CancelRequested) {
                 Write-Host "Script execution was cancelled by the user. Some changes may not have been applied."
-            } elseif ($registryImportFailureCount -eq 0) {
+            } elseif ($totalFailureCount -eq 0 -and -not $script:AppRemovalVerificationUnavailable) {
                 Write-Host "All changes have been applied successfully!"
             }
             
@@ -134,11 +136,15 @@ function Show-ApplyModal {
                 $script:ApplyCompletionIconEl.Foreground = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#e8912d"))
                 $script:ApplyCompletionTitleEl.Text = "Cancelled"
                 $script:ApplyCompletionMessageEl.Text = "Script execution was cancelled by the user."
-            } elseif ($registryImportFailureCount -gt 0) {
+            } elseif ($totalFailureCount -gt 0 -or $script:AppRemovalVerificationUnavailable) {
                 $script:ApplyCompletionIconEl.Text = [char]0xE7BA
                 $script:ApplyCompletionIconEl.Foreground = [System.Windows.Media.SolidColorBrush]::new([System.Windows.Media.ColorConverter]::ConvertFromString("#e8912d"))
                 $script:ApplyCompletionTitleEl.Text = "Changes Applied with Errors"
-                $script:ApplyCompletionMessageEl.Text = "$registryImportFailureCount registry change(s) failed. See console for details."
+                $failureParts = @()
+                if ($registryImportFailureCount -gt 0) { $failureParts += "$registryImportFailureCount registry change(s) failed" }
+                if ($appRemovalFailureCount -gt 0)     { $failureParts += "$appRemovalFailureCount app removal(s) failed" }
+                if ($script:AppRemovalVerificationUnavailable) { $failureParts += "some app removals could not be verified" }
+                $script:ApplyCompletionMessageEl.Text = "$($failureParts -join '; '). See console for details."
             } else {
                 $script:ApplyCompletionTitleEl.Text = "Changes Applied"
 
