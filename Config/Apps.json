@@ -91,11 +91,11 @@
     },
     {
       "FriendlyName": "Microsoft Copilot",
-      "AppId": ["XP9CXNGPPJ97XX", "Microsoft.Windows.AI.Copilot.Provider"],
+      "AppId": ["Microsoft.Copilot", "Microsoft.Windows.AI.Copilot.Provider"],
       "Description": "AI assistant integrated into Windows",
       "SelectedByDefault": true,
       "Recommendation": "safe",
-      "RemovalMethod": "WinGet"
+      "RemovalMethod": "Appx"
     },
     {
       "FriendlyName": "Copilot+ AI Hub",
@@ -260,7 +260,7 @@
     {
       "FriendlyName": "Dev Home",
       "AppId": "Microsoft.Windows.DevHome",
-      "Description": "Developer dashboard and tool configuration utility (Discontinued)",
+      "Description": "Developer dashboard (deprecated 2025, no longer preinstalled; kept for older images)",
       "SelectedByDefault": true,
       "Recommendation": "safe",
       "RemovalMethod": "Appx"

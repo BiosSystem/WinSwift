@@ -85,6 +85,26 @@ function Disable-ExtendedAIPurge {
         Write-Host "  [OK] Windows Recall snapshots fully disabled"
     }
 
+    # 6b. Remove the Recall optional component where present. Since KB5041865
+    # Recall is a removable Windows feature on Copilot+ builds; the policies above
+    # leave it installed. Guarded so it no-ops on SKUs where the feature is absent,
+    # and one-way: re-adding the component needs its payload and a restart.
+    if ($PSCmdlet.ShouldProcess("Windows optional feature 'Recall'", "Remove component")) {
+        try {
+            $recallFeature = Get-WindowsOptionalFeature -Online -FeatureName 'Recall' -ErrorAction Stop
+            if ($recallFeature -and $recallFeature.State -eq 'Enabled') {
+                Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -Remove -NoRestart -ErrorAction Stop | Out-Null
+                Write-Host "  [OK] Recall optional component removed (restart required to complete)"
+            }
+            else {
+                Write-Host "  [SKIP] Recall optional component not present on this edition" -ForegroundColor DarkGray
+            }
+        }
+        catch {
+            Write-Host "  [WARN] Could not remove the Recall component: $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+
     # 7. Disable Photos app Generative Fill (24H2 AI image editing)
     if ($PSCmdlet.ShouldProcess("Registry", "Disable Photos Generative Fill")) {
         $photosPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Photos"
