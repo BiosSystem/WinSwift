@@ -47,6 +47,28 @@ Describe 'Registry files' {
         $failures | Should -BeNullOrEmpty -Because ($failures -join [Environment]::NewLine)
     }
 
+    It 'ships a Sysprep variant for every root reg file that writes HKEY_CURRENT_USER' {
+        # In Sysprep/User mode HKCU keys must target the offline Default hive
+        # (hkey_users\default), so any tweak that writes HKEY_CURRENT_USER needs a
+        # Sysprep variant. Without one the resolver falls back to the root file and
+        # writes the live admin hive instead of the target user's.
+        $root = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
+        $regfilesRoot = Join-Path $root 'Regfiles'
+        $missing = [System.Collections.Generic.List[string]]::new()
+
+        foreach ($regFile in @(Get-ChildItem -Path $regfilesRoot -Filter '*.reg')) {
+            $content = Get-Content -LiteralPath $regFile.FullName -Raw
+            if ($content -match '(?im)^\[-?HKEY_CURRENT_USER\\') {
+                $sysprepPath = Join-Path (Join-Path $regfilesRoot 'Sysprep') $regFile.Name
+                if (-not (Test-Path -LiteralPath $sysprepPath)) {
+                    $missing.Add($regFile.Name)
+                }
+            }
+        }
+
+        $missing | Should -BeNullOrEmpty -Because ('these HKCU reg files need a Regfiles\Sysprep variant: ' + ($missing -join ', '))
+    }
+
     Context 'backup file encoding' {
 
         BeforeAll {

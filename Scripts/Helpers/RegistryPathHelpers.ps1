@@ -76,7 +76,17 @@ function Get-RegistryFilePathForFeature {
 
     $useSysprepLayout = $UseSysprepRegFiles -or $script:Params.ContainsKey('Sysprep') -or $script:Params.ContainsKey('User')
     if ($useSysprepLayout) {
-        return Join-Path (Join-Path $script:RegfilesPath 'Sysprep') $RegistryKey
+        $sysprepPath = Join-Path (Join-Path $script:RegfilesPath 'Sysprep') $RegistryKey
+        if (Test-Path -LiteralPath $sysprepPath) {
+            return $sysprepPath
+        }
+        # No Sysprep variant exists. Fall back to the root file instead of
+        # returning a path that does not exist (which made ImportRegistryFile
+        # throw for the eight root files with no Sysprep variant, and for every
+        # undo file, since there is no Sysprep\Undo tree). This is correct for
+        # HKLM-only tweaks, which are machine-wide and identical under Sysprep.
+        # HKCU tweaks that need a per-user rewrite ship a Sysprep variant and are
+        # matched above; Test-RegistryFiles enforces that they exist.
     }
 
     return Join-Path $script:RegfilesPath $RegistryKey
