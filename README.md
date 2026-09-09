@@ -184,7 +184,7 @@ Regain control over your data. WinSwift cuts off diagnostics, tracking, and adve
 | Feature | Description | Impact Level |
 |---|---|---|
 | **Diagnostic Data** | Disables Windows diagnostic data collection and activity history. | High |
-| **Telemetry Endpoints** | Applies hardcoded firewall and HOSTS file rules to block telemetry servers. | High |
+| **Telemetry Endpoints** | Applies outbound firewall rules to block telemetry servers, with HOSTS-file entries as a fallback when DNS resolution fails. | High |
 | **Advertising IDs** | Turns off targeted advertising IDs and system-wide ad tracking. | Medium |
 | **Ad Blocker** | Disables Start Menu suggested apps, Settings banners, and Lock Screen ads. | Medium |
 
@@ -277,7 +277,7 @@ Revert applied features without opening the GUI:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -CLI -Silent -Undo DisableTelemetry,DisableCopilot
 ```
 
-`-Undo` accepts the 87 of 112 features that declare an undo registry file or have a dedicated undo routine. Anything else is rejected rather than reported as reverted.
+`-Undo` accepts the 89 of 114 features that declare an undo registry file or have a dedicated undo routine. Anything else is rejected rather than reported as reverted.
 
 Use `-SkipExplorerRestart` to defer the Explorer restart. Use `-NoAutoRollback` to keep a failed run in place for inspection. Use `-SkipRegistryBackup` only in controlled disposable environments, and note that it disables automatic rollback.
 

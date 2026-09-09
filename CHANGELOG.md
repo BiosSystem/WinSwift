@@ -13,7 +13,7 @@ Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Ve
 - Add `-Undo` to select features for undo from the command line. Undo was previously reachable only from the GUI, so unattended deployments could apply changes but never revert them.
 - Return exit code `3` when an apply failed and was rolled back, and `4` when the rollback itself failed.
 - Record rollback outcome, reason, and backup path in the run summary.
-- Add the `AppxAbsence`, `StartLayout`, and `EdgeRemoved` verification adapters, giving all 112 features a verification story.
+- Add the `AppxAbsence`, `StartLayout`, and `EdgeRemoved` verification adapters, giving all 114 features a verification story.
 - Add the `NotApplicable` verification status for entries that carry no persistent desired state.
 - Add an integration test suite that runs WinSwift as a real process, tagged by what it can change on the host.
 - Add a Windows Sandbox harness for the mutating tests that writes results back to the host.
