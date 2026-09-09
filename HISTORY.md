@@ -1,3 +1,21 @@
+## [v3.5.0] - 2026-09-09
+### Artifacts
+- **Release Package**: WinSwift-v3.5.0.zip
+- **Standalone**: WinSwift-Standalone.ps1
+- Both built and published by the release workflow on tag push. Checksums are on the release page.
+### Added
+- Localization framework with per-language catalogues under `Config/Languages` and per-key fallback to en-US, plus a Spanish (es-ES) translation of the feature text and the GUI chrome.
+- Preset library under `Config/Presets`, validated before a run so a bad profile fails fast instead of applying nothing.
+- Recall optional-component removal during the extended AI purge, and real registry actions behind `DisableSearchHistory` and `DisableSearchHighlights`.
+### Fixed
+- Runs reported success when app removals or features failed; failures are now counted and surfaced everywhere, and the exit code reflects them.
+- `-WhatIf` made real changes for the watchdog and Defender steps; `-ForceRemoveEdge` was a dead switch; the app-removal scope and Ctrl+F broke under a translated UI. All fixed.
+- The Update Watchdog now triggers on Windows Update install events and re-applies telemetry settings instead of only warning.
+- Edge force-remove handles the 24H2/25H2 exit-532 block and verifies removal; Copilot removal no longer depends on WinGet.
+- Eight features and all undo files threw in `-Sysprep`/`-User` mode; the resolver now falls back to the root file and the missing HKCU Sysprep variants were added.
+### Known limitation
+- The hardware-dependent paths (rollback, Edge 532, Recall removal, the watchdog event trigger, an offline-hive Sysprep pass) have not been run on a real 24H2/25H2 machine, and the es-ES layout has not had a visual pass.
+
 ## [v3.4.0] - 2026-09-06
 ### Artifacts
 - **Release Package**: WinSwift-v3.4.0.zip

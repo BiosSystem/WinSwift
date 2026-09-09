@@ -4,6 +4,38 @@ Document all notable WinSwift changes in this file.
 
 Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.5.0] - 2026-09-09
+
+### Added
+
+- Localization framework. Feature text, categories, and the GUI chrome are read from per-language catalogues under `Config/Languages`, with per-key fallback to en-US and then to `Features.json`.
+- Spanish (es-ES) translation, including the window chrome, with correct accents.
+- Preset library under `Config/Presets`. A preset names a set of switches and is validated before the run starts: an unknown switch, a duplicate, or two values from one mutually exclusive group is rejected rather than silently applying nothing.
+- `DisableSearchHistory` and `DisableSearchHighlights` are now wired to real registry changes; both switches previously did nothing.
+- The extended AI purge removes the Recall optional component where present, instead of only setting the disable policies.
+
+### Changed
+
+- The Update Watchdog (`-EnableUpdateWatchdog`) now triggers on the Windows Update install events and re-applies the telemetry settings an update most often resets, instead of running a daily check that only warned. It re-asserts the `AllowTelemetry` policy and the `DiagTrack` service.
+- Copilot is removed through the Appx/DISM path rather than WinGet, so the app-list removal works when WinGet is broken or absent.
+- The extended gaming, ads, software-install, and watchdog modules run only after a clean apply, and a restore point is forced before the competitive-gaming module.
+- Registry backups are read as UTF-8 so accented profile paths round-trip.
+
+### Fixed
+
+- A run reported success when app removals or features failed. App-removal failures are now counted and surfaced in the CLI, the GUI completion screen, the run summary, and the exit code; unverifiable removals are flagged rather than assumed to have worked. A skipped rollback or any surviving failure now exits non-zero.
+- `-WhatIf` made real changes for the watchdog and Defender-exclusion steps, which were gated on `-DryRun` only.
+- `-ForceRemoveEdge` was declared but never invoked; the switch now runs the force-remove.
+- The Edge force-remove treated the 24H2/25H2 uninstaller block (exit code 532) as a generic warning and could report success while Edge stayed installed. It now reports the block explicitly and verifies Edge is gone before claiming success.
+- The app-removal scope selection and the Ctrl+F shortcut were dropped under a translated UI because they matched on English text that localization rewrites.
+- Eight features threw in `-Sysprep`/`-User` mode, and every undo file failed there, because the resolver only looked under `Regfiles\Sysprep`. It now falls back to the root file, and the four HKCU tweaks that were missing a Sysprep variant now ship one.
+- Corrected stale documentation: undo counts, the watchdog description, and the upstream-parity claims in `UPSTREAM.md`.
+
+### Known limitations
+
+- The hardware-dependent paths have not been executed on a real 24H2/25H2 machine: automatic rollback, the Edge exit-532 handling, Recall component removal, the watchdog event trigger, and a Sysprep pass against an offline hive. They are covered by source-level assertions, unit tests, and the resolver checks in CI.
+- The es-ES layout has not had a visual pass; Spanish strings run longer than English, so some controls may need width adjustment.
+
 ## [3.4.0] - 2026-09-06
 
 ### Added
