@@ -98,19 +98,15 @@ Upstream Win11Debloat covers only basic UI-level gaming tweaks (disabling GameDV
 
 ### Extended AI Purge (24H2 and 25H2)
 
-Upstream provides basic Copilot removal. WinSwift extends the AI suppression surface to cover all components introduced in 24H2 and 25H2 without performing binary deletion that would destabilize `explorer.exe` or `SearchHost.exe`:
+Most of the granular AI-suppression regfiles are shared with upstream (verified identical at `6012b02`): `Disable_AI_Recall.reg`, `Disable_AI_Service_Auto_Start.reg`, `Disable_Click_to_Do.reg`, `Disable_Edge_AI_Features.reg`, `Disable_Paint_AI_Features.reg`, and `Disable_Notepad_AI_Features.reg`. WinSwift's own additions to the AI surface, without the binary deletion that would destabilize `explorer.exe` or `SearchHost.exe`, are:
 
-- `Disable_AI_Recall.reg` - suppresses Recall snapshot scheduling
-- `Disable_AI_Service_Auto_Start.reg` - prevents AI inference service background startup
-- `Disable_Click_to_Do.reg` - disables contextual desktop AI analysis on cursor hover
-- `Disable_Edge_AI_Features.reg` - disables Edge background AI inference workers
-- `Disable_Narrator_AI_Voices.reg` - removes online AI voice packs
-- `Disable_Paint_AI_Features.reg` and `Disable_Notepad_AI_Features.reg` - removes embedded generative features
-- `ExtendedAIPurge.ps1` - orchestrates the full AI suppression sequence
+- `Disable_Narrator_AI_Voices.reg` - removes online AI voice packs (not in upstream)
+- `Disable_Photos_Generative_Fill.reg` - blocks Photos generative fill (not in upstream)
+- `ExtendedAIPurge.ps1` - orchestrates the full sequence and adds the 24H2/25H2 GPO suppressions (Phone Link, Ink AI, cloud clipboard, Recall optional-component removal, M365 auto-install block, Narrator online voices, and more)
 
 ### 24H2 BitLocker Auto-Encryption Guard
 
-Upstream does not address the 24H2 change that enables software BitLocker XTS-AES 128 silently on clean installations. WinSwift adds `Disable_Bitlocker_Auto_Encryption.reg` to set `PreventDeviceEncryption = 1` under `HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker` before the first-run encryption trigger fires.
+The 24H2 change that enables software BitLocker XTS-AES 128 silently on clean installations is handled by `Disable_Bitlocker_Auto_Encryption.reg`, which sets `PreventDeviceEncryption = 1` under `HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker` before the first-run encryption trigger fires. This regfile is shared with upstream (identical content at `6012b02`), not a WinSwift-only addition.
 
 ### Telemetry Firewall and Scheduler Block
 
@@ -144,7 +140,7 @@ Upstream does not provide OOBE bypass tooling or silent software installation. W
 | **Execution footprint** | Pure in-memory, no install required | Pure in-memory | Web download + package manager | Local module import required | Full OS wipe + clean install |
 | **Gaming latency stack** | Full stack (0.5ms timer, BCD clock, Nagle, MMCSS, HAGS, core unparking) | None | Basic (power plan + Game Mode) | Service toggles only | Varies per build |
 | **Anti-cheat compatibility** | 100% verified (Vanguard, EAC, BattlEye, FACEIT) | 100% safe | 100% safe | 100% safe | High risk (stripped components trigger bans) |
-| **24H2 BitLocker guard** | Dedicated registry fix | None | Partial (recent micro-patch) | Registry-based | Stripped at ISO level |
+| **24H2 BitLocker guard** | Registry fix (shared with upstream) | Same registry fix | Partial (recent micro-patch) | Registry-based | Stripped at ISO level |
 | **24H2 AI purge depth** | Granular non-destructive GPO suppression | Basic Copilot removal | Recall and Copilot toggle | Granular service disables | Total binary removal (risk of shell crashes) |
 | **Windows Update lifecycle** | Fully intact | Fully intact | Intact (unless update service killed) | Fully intact | Broken or frozen |
 | **Post-apply verification** | Built-in -Verify and -VerifyProfile engine with exit code 2 | None | None | None | None |
