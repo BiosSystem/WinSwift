@@ -6,7 +6,7 @@ $script:Version = if (Get-Variable -Name WINSWIFT_VERSION -Scope Global -ErrorAc
 } elseif ($WINSWIFT_VERSION) {
     $WINSWIFT_VERSION
 } else {
-    "3.4.0"
+    "3.5.0"
 }
 $script:AppVersion = $script:Version
 $rootDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent

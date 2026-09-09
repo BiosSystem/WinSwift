@@ -7,7 +7,7 @@
 - Reviewed commit: `6012b02` (upstream `master` head at review time)
 - Reviewed date: 2026-09-05
 - Previous baseline: `fff1fcd0b21f6a2130baf0e5e9e790b2eec3f1c3` (2026-08-23)
-- WinSwift release line: `3.4.0`
+- WinSwift release line: `3.5.0`
 - Upstream changelog review: July 11 2026 upstream release (dropped CustomAppsList format, retired legacy CLI app removal, fixed Copilot removal, dropped sunset apps)
 
 ## Upstream Review Log
