@@ -68,9 +68,9 @@ WinSwift provides a dedicated, non-destructive low-latency optimization stack de
 ## 🛡️ Windows 11 24H2 / 25H2 Compatibility Matrix
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Windows%2011%2024H2-Verified-00ff72?style=flat-square&logo=windows11" alt="24H2 Verified">
-  <img src="https://img.shields.io/badge/Windows%2011%2025H2-Verified-00ff72?style=flat-square&logo=windows11" alt="25H2 Verified">
-  <img src="https://img.shields.io/badge/Anti--Cheat-100%25%20Safe-00ff72?style=flat-square" alt="Anti-Cheat Safe">
+  <img src="https://img.shields.io/badge/Windows%2011%2024H2-Supported-00ff72?style=flat-square&logo=windows11" alt="24H2 Supported">
+  <img src="https://img.shields.io/badge/Windows%2011%2025H2-Supported-00ff72?style=flat-square&logo=windows11" alt="25H2 Supported">
+  <img src="https://img.shields.io/badge/Anti--Cheat-Safe-00ff72?style=flat-square" alt="Anti-Cheat Safe">
   <img src="https://img.shields.io/badge/Update%20Lifecycle-Intact-00ff72?style=flat-square" alt="Update Lifecycle">
 </p>
 
