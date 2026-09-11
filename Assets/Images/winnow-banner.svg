@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-label="Winnow - keep the grain, lose the bloat">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#151b24"/>
+      <stop offset="1" stop-color="#0c1016"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#00ff72"/>
+      <stop offset="1" stop-color="#19b3ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="1" y="1" width="1198" height="318" rx="22" fill="url(#bg)" stroke="#20293580" stroke-width="2"/>
+
+  <!-- winnowing mark: the grain you keep, with chaff carried off on the wind -->
+  <g transform="translate(150 160)">
+    <!-- kept grain: a solid seed -->
+    <ellipse cx="0" cy="0" rx="26" ry="40" fill="url(#accent)"/>
+    <ellipse cx="0" cy="0" rx="26" ry="40" fill="none" stroke="#0c1016" stroke-width="3"/>
+    <line x1="0" y1="-30" x2="0" y2="30" stroke="#0c1016" stroke-width="3"/>
+    <!-- wind strokes -->
+    <path d="M 45 -34 q 120 -18 250 4" fill="none" stroke="#8a94a6" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+    <path d="M 45 38 q 130 22 250 -2" fill="none" stroke="#8a94a6" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+    <!-- chaff (bloat) blown away, fading as it goes -->
+    <g fill="#00ff72">
+      <rect x="60"  y="-10" width="16" height="16" rx="3" transform="rotate(20 68 -2)" opacity="0.9"/>
+      <rect x="110" y="-42" width="14" height="14" rx="3" transform="rotate(-15 117 -35)" opacity="0.7"/>
+      <rect x="150" y="18"  width="13" height="13" rx="3" transform="rotate(30 156 24)" opacity="0.55"/>
+      <rect x="205" y="-24" width="11" height="11" rx="3" transform="rotate(10 210 -18)" opacity="0.4"/>
+      <rect x="250" y="6"   width="10" height="10" rx="2" transform="rotate(-20 255 11)" opacity="0.28"/>
+      <circle cx="185" cy="-4" r="4" opacity="0.5"/>
+      <circle cx="235" cy="-40" r="3" opacity="0.35"/>
+      <circle cx="285" cy="-14" r="3" opacity="0.22"/>
+    </g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="470" y="150" text-anchor="middle" font-family="Segoe UI, system-ui, Helvetica, Arial, sans-serif" font-size="104" font-weight="700" fill="#edeff2" letter-spacing="-1">Winno<tspan fill="#00ff72">w</tspan></text>
+
+  <!-- tagline -->
+  <text x="472" y="202" text-anchor="middle" font-family="Segoe UI, system-ui, Helvetica, Arial, sans-serif" font-size="30" font-weight="400" fill="#8a94a6">Keep the grain, lose the bloat.</text>
+
+  <!-- qualifier -->
+  <text x="472" y="244" text-anchor="middle" font-family="Segoe UI, system-ui, Helvetica, Arial, sans-serif" font-size="19" font-weight="600" letter-spacing="3" fill="#5f6b7a">DEBLOAT · VERIFY · ROLL BACK  —  WINDOWS 11</text>
+</svg>
