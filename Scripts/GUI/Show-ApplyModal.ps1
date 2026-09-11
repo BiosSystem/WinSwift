@@ -171,7 +171,7 @@ function Show-ApplyModal {
                         $applyRebootPanel.Visibility = 'Visible'
                     }
                     else {
-                        $script:ApplyCompletionMessageEl.Text = "Your system is ready. Thanks for using WinSwift!"
+                        $script:ApplyCompletionMessageEl.Text = "Your system is ready. Thanks for using Winnow!"
                     }
                 }
             }
@@ -217,7 +217,7 @@ function Show-ApplyModal {
 
     $applyKofiBtn.Add_Click({
         if ($script:ApplyModalInErrorState) {
-            Start-Process "https://github.com/BiosSystem/WinSwift/issues/new"
+            Start-Process "https://github.com/BiosSystem/Winnow/issues/new"
         } else {
             Start-Process "https://ko-fi.com/BiosSystem"
         }

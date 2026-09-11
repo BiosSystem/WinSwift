@@ -1,4 +1,4 @@
-function Invoke-WinSwiftFeature {
+function Invoke-WinnowFeature {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -6,13 +6,13 @@ function Invoke-WinSwiftFeature {
     )
 
     if (-not $script:Features.ContainsKey($FeatureId)) {
-        throw "Unknown WinSwift feature: $FeatureId"
+        throw "Unknown Winnow feature: $FeatureId"
     }
 
     Invoke-FeatureApply -FeatureId $FeatureId
 }
 
-function Undo-WinSwiftFeature {
+function Undo-WinnowFeature {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -20,7 +20,7 @@ function Undo-WinSwiftFeature {
     )
 
     if (-not $script:Features.ContainsKey($FeatureId)) {
-        throw "Unknown WinSwift feature: $FeatureId"
+        throw "Unknown Winnow feature: $FeatureId"
     }
 
     $feature = $script:Features[$FeatureId]
@@ -32,7 +32,7 @@ function Undo-WinSwiftFeature {
     Invoke-FeatureUndo -FeatureId $FeatureId
 }
 
-function Get-WinSwiftFeatureAppIds {
+function Get-WinnowFeatureAppIds {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -80,7 +80,7 @@ function Get-WinSwiftFeatureAppIds {
     }
 }
 
-function Test-WinSwiftAppRemoved {
+function Test-WinnowAppRemoved {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -112,7 +112,7 @@ function Test-WinSwiftAppRemoved {
     return ($installed.Count -eq 0 -and $provisioned.Count -eq 0)
 }
 
-function Test-WinSwiftRegistryExpectations {
+function Test-WinnowRegistryExpectations {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -135,7 +135,7 @@ function Test-WinSwiftRegistryExpectations {
     return $true
 }
 
-function Test-WinSwiftGamingModeState {
+function Test-WinnowGamingModeState {
     $expectations = @(
         @{ Path = 'HKCU:\Control Panel\Mouse'; Name = 'MouseSpeed'; Value = '0' },
         @{ Path = 'HKCU:\Control Panel\Mouse'; Name = 'MouseThreshold1'; Value = '0' },
@@ -147,7 +147,7 @@ function Test-WinSwiftGamingModeState {
         @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\GraphicsDrivers'; Name = 'HwSchMode'; Value = 2 },
         @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\Maintenance'; Name = 'MaintenanceDisabled'; Value = 1 }
     )
-    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+    if (-not (Test-WinnowRegistryExpectations -Expectations $expectations)) {
         return $false
     }
 
@@ -160,7 +160,7 @@ function Test-WinSwiftGamingModeState {
             @{ Path = $interfaceKey.PSPath; Name = 'TcpAckFrequency'; Value = 1 },
             @{ Path = $interfaceKey.PSPath; Name = 'TCPNoDelay'; Value = 1 }
         )
-        if (-not (Test-WinSwiftRegistryExpectations -Expectations $interfaceExpectations)) {
+        if (-not (Test-WinnowRegistryExpectations -Expectations $interfaceExpectations)) {
             return $false
         }
     }
@@ -175,7 +175,7 @@ function Test-WinSwiftGamingModeState {
     }
 }
 
-function Test-WinSwiftExtendedAIPurgeState {
+function Test-WinnowExtendedAIPurgeState {
     $expectations = @(
         @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Mobility'; Name = 'PhoneLinkEnabled'; Value = 0 },
         @{ Path = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Mobility'; Name = 'OptedIn'; Value = 0 },
@@ -192,19 +192,19 @@ function Test-WinSwiftExtendedAIPurgeState {
         @{ Path = 'HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\outlook\options\mail'; Name = 'DisableCopilot'; Value = 1 },
         @{ Path = 'HKCU:\Software\Microsoft\Narrator\NoRoam'; Name = 'OnlineVoicesEnabled'; Value = 0 }
     )
-    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+    if (-not (Test-WinnowRegistryExpectations -Expectations $expectations)) {
         return $false
     }
 
     if (Test-Path -LiteralPath 'HKCU:\Software\Microsoft\OneDrive') {
-        if (-not (Test-WinSwiftRegistryExpectations -Expectations @(
+        if (-not (Test-WinnowRegistryExpectations -Expectations @(
             @{ Path = 'HKCU:\Software\Microsoft\OneDrive'; Name = 'DisablePersonalSync'; Value = 1 }
         ))) {
             return $false
         }
     }
     if (Test-Path -LiteralPath 'HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService') {
-        if (-not (Test-WinSwiftRegistryExpectations -Expectations @(
+        if (-not (Test-WinnowRegistryExpectations -Expectations @(
             @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Services\UIFlowService'; Name = 'Start'; Value = 4 }
         ))) {
             return $false
@@ -227,7 +227,7 @@ function Test-WinSwiftExtendedAIPurgeState {
     return $true
 }
 
-function Test-WinSwiftSecurityHardeningState {
+function Test-WinnowSecurityHardeningState {
     $expectations = @(
         @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server'; Name = 'fDenyTSConnections'; Value = 1 },
         @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'; Name = 'NoDriveTypeAutoRun'; Value = 255 },
@@ -241,7 +241,7 @@ function Test-WinSwiftSecurityHardeningState {
         @{ Path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server'; Name = 'DisabledByDefault'; Value = 1 },
         @{ Path = 'HKLM:\SOFTWARE\Microsoft\Windows Script Host\Settings'; Name = 'Enabled'; Value = 0 }
     )
-    if (-not (Test-WinSwiftRegistryExpectations -Expectations $expectations)) {
+    if (-not (Test-WinnowRegistryExpectations -Expectations $expectations)) {
         return $false
     }
 
@@ -281,7 +281,7 @@ function Test-WinSwiftSecurityHardeningState {
     return $true
 }
 
-function Test-WinSwiftTelemetryFirewallState {
+function Test-WinnowTelemetryFirewallState {
     $hostsPath = Join-Path $env:SystemRoot 'System32\drivers\etc\hosts'
     $hostsContent = if (Test-Path -LiteralPath $hostsPath) {
         Get-Content -LiteralPath $hostsPath -Raw -ErrorAction SilentlyContinue
@@ -290,8 +290,8 @@ function Test-WinSwiftTelemetryFirewallState {
         ''
     }
 
-    foreach ($domain in @(Get-WinSwiftTelemetryDomains)) {
-        $ruleName = "WinSwift_BlockTelemetry_$domain"
+    foreach ($domain in @(Get-WinnowTelemetryDomains)) {
+        $ruleName = "Winnow_BlockTelemetry_$domain"
         $firewallMatch = @(Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue |
             Where-Object { $_.Enabled -eq $true -and $_.Direction -eq 'Outbound' -and $_.Action -eq 'Block' }).Count -gt 0
         $hostsMatch = $hostsContent -match ("(?m)^\s*0\.0\.0\.0\s+{0}\s*$" -f [regex]::Escape($domain))
@@ -303,7 +303,7 @@ function Test-WinSwiftTelemetryFirewallState {
     return $true
 }
 
-function Test-WinSwiftStartLayoutState {
+function Test-WinnowStartLayoutState {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -361,7 +361,7 @@ function Test-WinSwiftStartLayoutState {
     return $true
 }
 
-function Test-WinSwiftEdgeRemovedState {
+function Test-WinnowEdgeRemovedState {
     [CmdletBinding()]
     param()
 
@@ -400,7 +400,7 @@ function Test-WinSwiftEdgeRemovedState {
     return $true
 }
 
-function Test-WinSwiftCustomFeatureState {
+function Test-WinnowCustomFeatureState {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -411,17 +411,17 @@ function Test-WinSwiftCustomFeatureState {
 
     switch ($Adapter) {
         'CurrentFeatureState' { return (Test-FeatureApplied -FeatureId $FeatureId) }
-        'GamingMode' { return (Test-WinSwiftGamingModeState) }
-        'ExtendedAIPurge' { return (Test-WinSwiftExtendedAIPurgeState) }
-        'SecurityHardening' { return (Test-WinSwiftSecurityHardeningState) }
-        'TelemetryFirewall' { return (Test-WinSwiftTelemetryFirewallState) }
-        'StartLayout' { return (Test-WinSwiftStartLayoutState -FeatureId $FeatureId) }
-        'EdgeRemoved' { return (Test-WinSwiftEdgeRemovedState) }
+        'GamingMode' { return (Test-WinnowGamingModeState) }
+        'ExtendedAIPurge' { return (Test-WinnowExtendedAIPurgeState) }
+        'SecurityHardening' { return (Test-WinnowSecurityHardeningState) }
+        'TelemetryFirewall' { return (Test-WinnowTelemetryFirewallState) }
+        'StartLayout' { return (Test-WinnowStartLayoutState -FeatureId $FeatureId) }
+        'EdgeRemoved' { return (Test-WinnowEdgeRemovedState) }
         default { throw "Unknown verification adapter: $Adapter" }
     }
 }
 
-function New-WinSwiftVerificationResult {
+function New-WinnowVerificationResult {
     param(
         [string]$FeatureId,
         [string]$Target,
@@ -439,7 +439,7 @@ function New-WinSwiftVerificationResult {
     }
 }
 
-function Test-WinSwiftFeature {
+function Test-WinnowFeature {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -448,25 +448,25 @@ function Test-WinSwiftFeature {
     )
 
     if (-not $script:Features.ContainsKey($FeatureId)) {
-        return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'Feature metadata is unavailable.'
+        return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'Feature metadata is unavailable.'
     }
 
     try {
         $feature = $script:Features[$FeatureId]
         $adapter = if ($feature.RegistryKey) { 'CurrentFeatureState' } else { [string]$feature.VerificationAdapter }
         if ([string]::IsNullOrWhiteSpace($adapter)) {
-            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'No desired-state test is defined for this custom feature.'
+            return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Unsupported -Details 'No desired-state test is defined for this custom feature.'
         }
 
         # Value-carrying parameters and one-shot actions leave no persistent state to read back.
         if ($adapter -eq 'NotApplicable') {
-            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status NotApplicable -Details 'This entry carries no persistent desired state to verify.'
+            return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status NotApplicable -Details 'This entry carries no persistent desired state to verify.'
         }
 
         if ($adapter -eq 'AppxAbsence') {
-            $targets = @(Get-WinSwiftFeatureAppIds -FeatureId $FeatureId -RequestedAppIds $AppIds)
+            $targets = @(Get-WinnowFeatureAppIds -FeatureId $FeatureId -RequestedAppIds $AppIds)
             if ($targets.Count -eq 0) {
-                return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target 'Appx' -Status Unsupported -Details 'No Appx targets were supplied.'
+                return New-WinnowVerificationResult -FeatureId $FeatureId -Target 'Appx' -Status Unsupported -Details 'No Appx targets were supplied.'
             }
 
             $appRemovalScope = if ($script:Params.ContainsKey('AppRemovalTarget')) {
@@ -476,11 +476,11 @@ function Test-WinSwiftFeature {
                 'AllUsers'
             }
             $results = foreach ($appId in $targets) {
-                if (Test-WinSwiftAppRemoved -AppId $appId -Scope $appRemovalScope) {
-                    New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $appId -Status Compliant -Details 'Appx package and provisioned package are absent.'
+                if (Test-WinnowAppRemoved -AppId $appId -Scope $appRemovalScope) {
+                    New-WinnowVerificationResult -FeatureId $FeatureId -Target $appId -Status Compliant -Details 'Appx package and provisioned package are absent.'
                 }
                 else {
-                    New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $appId -Status NonCompliant -Details 'Appx package or provisioned package is present.'
+                    New-WinnowVerificationResult -FeatureId $FeatureId -Target $appId -Status NonCompliant -Details 'Appx package or provisioned package is present.'
                 }
             }
             return @($results)
@@ -491,25 +491,25 @@ function Test-WinSwiftFeature {
             $verificationRequest = [PSCustomObject]@{ FeatureId = $FeatureId; Adapter = $adapter }
             Invoke-WithTargetUserHive -TargetUserName $targetUserName -ArgumentObject $verificationRequest -ScriptBlock {
                 param($Request)
-                Test-WinSwiftCustomFeatureState -FeatureId $Request.FeatureId -Adapter $Request.Adapter
+                Test-WinnowCustomFeatureState -FeatureId $Request.FeatureId -Adapter $Request.Adapter
             }
         }
         else {
-            Test-WinSwiftCustomFeatureState -FeatureId $FeatureId -Adapter $adapter
+            Test-WinnowCustomFeatureState -FeatureId $FeatureId -Adapter $adapter
         }
 
         if ($isApplied) {
-            return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Compliant -Details 'The current state matches the feature definition.'
+            return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Compliant -Details 'The current state matches the feature definition.'
         }
 
-        return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status NonCompliant -Details 'The current state does not match the feature definition.'
+        return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status NonCompliant -Details 'The current state does not match the feature definition.'
     }
     catch {
-        return New-WinSwiftVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Error -Details $_.Exception.Message
+        return New-WinnowVerificationResult -FeatureId $FeatureId -Target $FeatureId -Status Error -Details $_.Exception.Message
     }
 }
 
-function Get-WinSwiftVerificationInput {
+function Get-WinnowVerificationInput {
     [CmdletBinding()]
     param(
         [AllowEmptyString()]
@@ -572,7 +572,7 @@ function Get-WinSwiftVerificationInput {
     }
 }
 
-function Invoke-WinSwiftVerification {
+function Invoke-WinnowVerification {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
@@ -581,12 +581,12 @@ function Invoke-WinSwiftVerification {
     )
 
     $results = foreach ($featureId in $FeatureIds) {
-        Test-WinSwiftFeature -FeatureId $featureId -AppIds $AppIds
+        Test-WinnowFeature -FeatureId $featureId -AppIds $AppIds
     }
     $results = @($results)
 
     Write-Host ''
-    Write-Host 'WinSwift desired-state verification' -ForegroundColor Cyan
+    Write-Host 'Winnow desired-state verification' -ForegroundColor Cyan
     foreach ($result in $results) {
         $color = switch ($result.Status) {
             'Compliant' { 'Green' }

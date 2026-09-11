@@ -4,7 +4,7 @@
 .DESCRIPTION
     Kills lock screen ads, File Explorer banners, Start menu suggested apps,
     device usage personalization, and other Microsoft promotional injections.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Disable-WindowsAds {

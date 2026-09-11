@@ -43,7 +43,7 @@ function CreateSystemRestorePoint {
 
                 if ($recentRestorePoints.Count -eq 0) {
                     try {
-                        Checkpoint-Computer -Description "Restore point created by WinSwift" -RestorePointType "MODIFY_SETTINGS"
+                        Checkpoint-Computer -Description "Restore point created by Winnow" -RestorePointType "MODIFY_SETTINGS"
                         return [PSCustomObject]@{ Success = $true; Message = "System restore point created successfully" }
                     }
                     catch {

@@ -1,27 +1,27 @@
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=WinSwift;The+Ultimate+Windows+Debloater;Powered+by+BiosSystem" alt="WinSwift Title" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Winnow;The+Ultimate+Windows+Debloater;Powered+by+BiosSystem" alt="Winnow Title" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/BiosSystem/WinSwift?color=00ff72&style=flat-square" alt="Version">
+  <img src="https://img.shields.io/github/v/release/BiosSystem/Winnow?color=00ff72&style=flat-square" alt="Version">
   <img src="https://img.shields.io/badge/PowerShell-5.1+-blue?style=flat-square&logo=powershell" alt="PowerShell">
-  <img src="https://img.shields.io/github/license/BiosSystem/WinSwift?style=flat-square" alt="License">
-  <img src="https://img.shields.io/github/stars/BiosSystem/WinSwift?style=flat-square&color=00ff72" alt="Stars">
+  <img src="https://img.shields.io/github/license/BiosSystem/Winnow?style=flat-square" alt="License">
+  <img src="https://img.shields.io/github/stars/BiosSystem/Winnow?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
 <p align="center">
-  <img src="Assets/Images/winswift-hero-banner.png" alt="WinSwift Optimization Engine" width="100%" />
+  <img src="Assets/Images/winnow-hero-banner.png" alt="Winnow Optimization Engine" width="100%" />
 </p>
 
-> **Notice:** WinSwift is a rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). Preserve all original credits and upstream attribution.
+> **Notice:** Winnow is a rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). Preserve all original credits and upstream attribution.
 
 ---
 
 ## 🚀 The Ultimate Windows Optimization Engine
 
-WinSwift is a lightweight, highly modular PowerShell engine engineered to instantly declutter, customize, and harden Windows 11 without requiring any installation or permanent background services. 
+Winnow is a lightweight, highly modular PowerShell engine engineered to instantly declutter, customize, and harden Windows 11 without requiring any installation or permanent background services. 
 
-Whether you are provisioning enterprise workstations, configuring a dedicated competitive gaming rig, or simply reclaiming your privacy from invasive telemetry, WinSwift executes rapid, surgical strikes on OS bloatware.
+Whether you are provisioning enterprise workstations, configuring a dedicated competitive gaming rig, or simply reclaiming your privacy from invasive telemetry, Winnow executes rapid, surgical strikes on OS bloatware.
 
 ---
 
@@ -29,10 +29,10 @@ Whether you are provisioning enterprise workstations, configuring a dedicated co
 
 Stock Windows 11 ships with default scheduling intervals, background telemetry pipelines, and continuous recording hooks that introduce input lag, frame pacing jitter, and 1% low drops in competitive titles (Valorant, CS2, Apex Legends, Call of Duty, Fortnite).
 
-WinSwift provides a dedicated, non-destructive low-latency optimization stack designed to eliminate OS-level microstutters while maintaining 100% compatibility with kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates.
+Winnow provides a dedicated, non-destructive low-latency optimization stack designed to eliminate OS-level microstutters while maintaining 100% compatibility with kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates.
 
 <p align="center">
-  <img src="Assets/Images/winswift-gaming-hud.png" alt="WinSwift Esports Low Latency HUD" width="100%" />
+  <img src="Assets/Images/winnow-gaming-hud.png" alt="Winnow Esports Low Latency HUD" width="100%" />
 </p>
 
 ### 🕹️ Gaming Performance Stack
@@ -50,9 +50,9 @@ WinSwift provides a dedicated, non-destructive low-latency optimization stack de
 | **1:1 Raw Input Parity** | Disables Windows pointer precision acceleration curves | Delivers true linear 1:1 hardware sensor tracking without erratic OS mouse acceleration |
 | **Hardware GPU Scheduling** | Enables `HwSchMode = 2` (HAGS) in graphics driver registry | Offloads high-frequency scheduling tasks directly to GPU memory management hardware |
 
-### ⚖️ Why WinSwift vs. Alternatives?
+### ⚖️ Why Winnow vs. Alternatives?
 
-| Feature / Criteria | WinSwift | Stripped Custom ISOs (AtlasOS, ReviOS, Tiny11) | Generic Script Suites (Chris Titus, Sophia) |
+| Feature / Criteria | Winnow | Stripped Custom ISOs (AtlasOS, ReviOS, Tiny11) | Generic Script Suites (Chris Titus, Sophia) |
 |---|---|---|---|
 | **Anti-Cheat Compatibility** | **100% Compatible** (Vanguard, EAC, BattlEye, FACEIT) | Often broken due to stripped security modules | Mixed (some scripts break Hyper-V / VBS dependencies) |
 | **Windows Update Support** | **Full Support** (Standard cumulative updates work normally) | Broken or permanently disabled | Supported |
@@ -74,9 +74,9 @@ WinSwift provides a dedicated, non-destructive low-latency optimization stack de
   <img src="https://img.shields.io/badge/Update%20Lifecycle-Intact-00ff72?style=flat-square" alt="Update Lifecycle">
 </p>
 
-Microsoft introduced six structural changes in Windows 11 24H2 that directly affect gamers and power users. WinSwift handles each with a non-destructive, policy-level fix that preserves update integrity and kernel anti-cheat trust chains.
+Microsoft introduced six structural changes in Windows 11 24H2 that directly affect gamers and power users. Winnow handles each with a non-destructive, policy-level fix that preserves update integrity and kernel anti-cheat trust chains.
 
-| Windows 11 Change | Impact Without WinSwift | WinSwift Fix | Implementation |
+| Windows 11 Change | Impact Without Winnow | Winnow Fix | Implementation |
 |---|---|---|---|
 | **BitLocker Auto-Encryption** | Software BitLocker enabled silently on clean install - SSD write throughput reduced by up to 45% with risk of recovery-key lockout | Prevents auto-encryption before it activates | `Disable_Bitlocker_Auto_Encryption.reg` sets `PreventDeviceEncryption = 1` |
 | **Windows Recall Snapshots** | Continuous NPU/CPU screenshot indexing consumes 3-8% CPU headroom during gaming sessions | Non-destructive policy suppression - no file deletion that could destabilize explorer.exe | `Disable_AI_Recall.reg` and `Disable_AI_Service_Auto_Start.reg` suppress Recall scheduling without touching CoreAIComponents binaries |
@@ -86,38 +86,38 @@ Microsoft introduced six structural changes in Windows 11 24H2 that directly aff
 | **Click To Do and Edge AI** | Contextual AI analysis on cursor hover and Edge background AI inference workers consume idle CPU | Disables all context AI workers and Edge AI features | `Disable_Click_to_Do.reg`, `Disable_Edge_AI_Features.reg`, and `ExtendedAIPurge.ps1` |
 
 > [!IMPORTANT]
-> WinSwift uses non-destructive GPO and registry policy suppression for all AI components. Aggressive binary deletion of `CoreAIComponents` causes `explorer.exe` and `SearchHost.exe` crash loops in 24H2 builds. WinSwift never performs binary stripping.
+> Winnow uses non-destructive GPO and registry policy suppression for all AI components. Aggressive binary deletion of `CoreAIComponents` causes `explorer.exe` and `SearchHost.exe` crash loops in 24H2 builds. Winnow never performs binary stripping.
 
 ### Anti-Cheat Safety Guarantee
 
-Kernel anti-cheats (Riot Vanguard, Epic EAC, BattlEye, FACEIT) verify the integrity of specific Windows security components at driver initialization. WinSwift is validated safe across all four:
+Kernel anti-cheats (Riot Vanguard, Epic EAC, BattlEye, FACEIT) verify the integrity of specific Windows security components at driver initialization. Winnow is validated safe across all four:
 
-| Anti-Cheat | Kernel Dependencies Preserved by WinSwift |
+| Anti-Cheat | Kernel Dependencies Preserved by Winnow |
 |---|---|
 | **Riot Vanguard** | Xbox Identity Provider, Windows Security Center API, Code Integrity services |
 | **Epic EAC** | Windows Update service chain, UWP certificate stores, AppModel host |
 | **BattlEye** | Windows Firewall service bindings, WMI repository, kernel patch guard |
 | **FACEIT** | Hypervisor-Protected Code Integrity (HVCI), Secure Boot chain, TPM attestation |
 
-WinSwift disables only background behavior (DVR recording buffers, telemetry scheduled tasks, advertising ID generation) while keeping all security service binaries and registrations intact.
+Winnow disables only background behavior (DVR recording buffers, telemetry scheduled tasks, advertising ID generation) while keeping all security service binaries and registrations intact.
 
 ---
 
 ## 🔁 State Snapshot, Verification and Rollback Architecture
 
-WinSwift implements a three-stage execution safety model before and after applying any system modification.
+Winnow implements a three-stage execution safety model before and after applying any system modification.
 
 ### Stage 1 - Pre-Execution Snapshot
 
-Before any registry key is written, WinSwift captures a point-in-time backup of all registry paths scheduled for modification. The backup is written to `Backups\WinSwift-RegistryBackup-<timestamp>.json`. If `-SkipRegistryBackup` is not specified, this step is mandatory and blocks execution on failure. A System Restore point is created before any of the four high-impact custom modules run.
+Before any registry key is written, Winnow captures a point-in-time backup of all registry paths scheduled for modification. The backup is written to `Backups\Winnow-RegistryBackup-<timestamp>.json`. If `-SkipRegistryBackup` is not specified, this step is mandatory and blocks execution on failure. A System Restore point is created before any of the four high-impact custom modules run.
 
 ### Stage 2 - Feature Apply Engine
 
-The apply engine dispatches each feature through `Invoke-WinSwiftFeature`, which reads the registry target, expected value, and optional service or Appx action from `Config/Features.json`. Each operation is wrapped in `ShouldProcess` for `-WhatIf` support. No binary files are deleted. No Windows service registrations are removed from the service control manager database.
+The apply engine dispatches each feature through `Invoke-WinnowFeature`, which reads the registry target, expected value, and optional service or Appx action from `Config/Features.json`. Each operation is wrapped in `ShouldProcess` for `-WhatIf` support. No binary files are deleted. No Windows service registrations are removed from the service control manager database.
 
 ### Stage 3 - Desired-State Verification
 
-After applying changes, or at any time using `-Verify` or `-VerifyProfile`, WinSwift reads the actual system state and compares it against the requested configuration:
+After applying changes, or at any time using `-Verify` or `-VerifyProfile`, Winnow reads the actual system state and compares it against the requested configuration:
 
 - Registry values: read back via `Get-ItemPropertyValue` and compared to the expected target.
 - Appx packages: checked via `Get-AppxPackage` and `Get-AppxProvisionedPackage` to confirm removal across user and system contexts.
@@ -127,13 +127,13 @@ Exit code `0` signals full compliance. Exit code `2` signals drift, an unsupport
 
 ### Stage 4 - Automatic Rollback
 
-If the apply phase fails, WinSwift restores the Stage 1 backup on its own rather than leaving a half-applied system. A registry import failure triggers the restore; the run then stops without attempting any undo work, because undo on top of a restored or partially changed system makes the final state harder to reason about.
+If the apply phase fails, Winnow restores the Stage 1 backup on its own rather than leaving a half-applied system. A registry import failure triggers the restore; the run then stops without attempting any undo work, because undo on top of a restored or partially changed system makes the final state harder to reason about.
 
 An app removal failure does **not** trigger rollback. A registry backup cannot reinstall a removed Appx package, so restoring the registry there would report a recovery that did not happen while the apps stay gone.
 
 Pass `-NoAutoRollback` to leave a failed run in place for inspection. Note that `-SkipRegistryBackup` removes the material rollback depends on, so the two are mutually exclusive in practice.
 
-Rollback outcome, the condition that triggered it, and the backup file path are recorded in the run summary written to `%TEMP%\WinSwift_RunSummary_<timestamp>.json`.
+Rollback outcome, the condition that triggered it, and the backup file path are recorded in the run summary written to `%TEMP%\Winnow_RunSummary_<timestamp>.json`.
 
 ### Exit codes
 
@@ -149,7 +149,7 @@ Exit `4` is the only outcome that needs someone at the machine. A fleet script c
 
 ## ⚙️ How It Works
 
-WinSwift operates entirely in memory using standard PowerShell protocols. It takes a backup snapshot of your state, parses your configuration, and surgically removes or alters OS components.
+Winnow operates entirely in memory using standard PowerShell protocols. It takes a backup snapshot of your state, parses your configuration, and surgically removes or alters OS components.
 
 ```mermaid
 flowchart TD
@@ -176,10 +176,10 @@ flowchart TD
 
 ## ✨ Core Capabilities
 
-WinSwift is divided into powerful, self-contained modules that target specific operational areas of the Windows environment. 
+Winnow is divided into powerful, self-contained modules that target specific operational areas of the Windows environment. 
 
 ### 1. Privacy & Telemetry Hardening
-Regain control over your data. WinSwift cuts off diagnostics, tracking, and advertising pipelines at the root.
+Regain control over your data. Winnow cuts off diagnostics, tracking, and advertising pipelines at the root.
 
 | Feature | Description | Impact Level |
 |---|---|---|
@@ -223,7 +223,7 @@ Unlock the full potential of your hardware with specialized tuning profiles.
 
 For an in-depth look at our architecture, registry modifications, deployment methods, and security practices, see the technical wiki.
 
-> 👉 **[Read the WinSwift Technical Wiki](docs/WIKI.md)**
+> 👉 **[Read the Winnow Technical Wiki](docs/WIKI.md)**
 
 ---
 
@@ -232,8 +232,8 @@ For an in-depth look at our architecture, registry modifications, deployment met
 Download the standalone release asset when you need a single-file deployment. The standalone script contains the complete modular payload and launches it through Windows PowerShell 5.1.
 
 ```PowerShell
-$scriptPath = Join-Path $env:TEMP 'WinSwift-Standalone.ps1'
-Invoke-WebRequest 'https://github.com/BiosSystem/WinSwift/releases/latest/download/WinSwift-Standalone.ps1' -OutFile $scriptPath
+$scriptPath = Join-Path $env:TEMP 'Winnow-Standalone.ps1'
+Invoke-WebRequest 'https://github.com/BiosSystem/Winnow/releases/latest/download/Winnow-Standalone.ps1' -OutFile $scriptPath
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File $scriptPath
 Remove-Item -LiteralPath $scriptPath -Force
 ```
@@ -241,12 +241,12 @@ Remove-Item -LiteralPath $scriptPath -Force
 Clone the complete repository when you need modular source, configuration files, registry definitions, or development tools:
 
 ```PowerShell
-git clone https://github.com/BiosSystem/WinSwift.git
-Set-Location .\WinSwift
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1
+git clone https://github.com/BiosSystem/Winnow.git
+Set-Location .\Winnow
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1
 ```
 
-Do not download and run `WinSwift.ps1` by itself. The modular entry point requires the `Assets`, `Config`, `Regfiles`, `Schemas`, and `Scripts` directories.
+Do not download and run `Winnow.ps1` by itself. The modular entry point requires the `Assets`, `Config`, `Regfiles`, `Schemas`, and `Scripts` directories.
 
 > [!WARNING]
 > While designed to be safe and reversible, modifying OS features carries inherent risks. Use at your own risk. Check out the [Wiki](docs/WIKI.md) for instructions on how to revert changes.
@@ -255,18 +255,18 @@ Do not download and run `WinSwift.ps1` by itself. The modular entry point requir
 
 ## Requirements and verification
 
-Run WinSwift with Windows PowerShell 5.1 through `powershell.exe`. Do not run the tool with PowerShell 7 because Appx removal and system restore cmdlets cannot complete correctly there.
+Run Winnow with Windows PowerShell 5.1 through `powershell.exe`. Do not run the tool with PowerShell 7 because Appx removal and system restore cmdlets cannot complete correctly there.
 
 Check selected feature state without applying changes:
 
 ```PowerShell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -Verify -DisableTelemetry -DisableCopilot -Silent
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -Verify -DisableTelemetry -DisableCopilot -Silent
 ```
 
 Check an exported configuration or preset:
 
 ```PowerShell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
 ```
 
 Treat exit code `0` as compliant. Treat exit code `2` as noncompliant, unsupported, or failed verification. Review each result to identify registry values or Appx packages that remain outside the requested state. See the exit code table above for the rollback codes `3` and `4`.
@@ -274,7 +274,7 @@ Treat exit code `0` as compliant. Treat exit code `2` as noncompliant, unsupport
 Revert applied features without opening the GUI:
 
 ```PowerShell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -CLI -Silent -Undo DisableTelemetry,DisableCopilot
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -CLI -Silent -Undo DisableTelemetry,DisableCopilot
 ```
 
 `-Undo` accepts the 89 of 114 features that declare an undo registry file or have a dedicated undo routine. Anything else is rejected rather than reported as reverted.
@@ -289,4 +289,4 @@ Read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull req
 
 Review [upstream credits](CREDITS.md) before redistributing a modified build.
 
-WinSwift is released under the MIT license.
+Winnow is released under the MIT license.

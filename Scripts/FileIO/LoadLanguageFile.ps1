@@ -1,7 +1,7 @@
 # Loads the localized text catalogue from Config/Languages.
 #
 # Function names match upstream Raphire/Win11Debloat PR 764 so the two can be
-# reconciled later without renaming. The file name follows WinSwift's own
+# reconciled later without renaming. The file name follows Winnow's own
 # convention. Feature and category text is keyed by FeatureId and by the English
 # category name, both of which are stable identifiers already used elsewhere.
 
@@ -135,7 +135,7 @@ function Import-LanguageFile {
     .OUTPUTS
     System.String, or $null when no source defines the key.
 #>
-function Get-WinSwiftFeatureText {
+function Get-WinnowFeatureText {
     param(
         [Parameter(Mandatory)]
         [string]$FeatureId,
@@ -179,7 +179,7 @@ function Get-WinSwiftFeatureText {
 
     Category is deliberately not overlaid. It is both a display string and the
     key features are grouped by, so translating it in place would break
-    grouping. The GUI resolves it for display through Get-WinSwiftCategoryText.
+    grouping. The GUI resolves it for display through Get-WinnowCategoryText.
 
     .OUTPUTS
     System.Int32. The number of strings replaced, for logging and tests.
@@ -197,7 +197,7 @@ function Update-FeatureTextFromLanguage {
             $current = [string]$feature.$key
             if ([string]::IsNullOrWhiteSpace($current)) { continue }
 
-            $localized = Get-WinSwiftFeatureText -FeatureId $featureId -Key $key
+            $localized = Get-WinnowFeatureText -FeatureId $featureId -Key $key
             if ([string]::IsNullOrWhiteSpace($localized) -or $localized -eq $current) { continue }
 
             $feature.$key = $localized
@@ -287,7 +287,7 @@ function Get-LocalizedXaml {
     System.String. The English category name when no translation exists, so an
     untranslated category still groups correctly.
 #>
-function Get-WinSwiftCategoryText {
+function Get-WinnowCategoryText {
     param(
         [Parameter(Mandatory)]
         [AllowEmptyString()]

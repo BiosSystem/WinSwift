@@ -1,17 +1,17 @@
 ﻿# Execution Architecture
 
-WinSwift is a modular, extensible PowerShell 5.1 engine. The core orchestrator reads JSON feature definitions at runtime, dispatches work to self-contained module scripts, captures system state before and after execution, and verifies compliance through a desired-state engine.
+Winnow is a modular, extensible PowerShell 5.1 engine. The core orchestrator reads JSON feature definitions at runtime, dispatches work to self-contained module scripts, captures system state before and after execution, and verifies compliance through a desired-state engine.
 
 ## Pre-Execution Safety Gate
 
-Before any module executes, WinSwift validates the runtime environment:
+Before any module executes, Winnow validates the runtime environment:
 
 1. **PowerShell version guard** - Halts if the host is not Windows PowerShell 5.1. PowerShell 7 cannot reliably invoke Appx removal cmdlets or system restore APIs.
 2. **Administrator elevation** - Checks `[Security.Principal.WindowsPrincipal]` and restarts under `Start-Process powershell -Verb RunAs` if elevation is absent. UAC arguments are quoted using Win32-safe escaping.
 3. **Mark-of-the-Web handling** - Unblocks only marked PowerShell source files when Group Policy overrides the execution policy. Executable and data files are not unblocked.
 4. **Domain-join warning** - Detects domain-joined systems and warns that Group Policy may override applied registry changes after the next policy refresh.
 5. **Path and asset validation** - Confirms that all required directories (`Assets`, `Config`, `Regfiles`, `Schemas`, `Scripts`) are present before loading any module.
-6. **Registry backup** - Captures a timestamped JSON snapshot of all scheduled modification targets to `Backups\WinSwift-RegistryBackup-<timestamp>.json` unless `-SkipRegistryBackup` is explicitly specified. This snapshot is what automatic rollback restores from.
+6. **Registry backup** - Captures a timestamped JSON snapshot of all scheduled modification targets to `Backups\Winnow-RegistryBackup-<timestamp>.json` unless `-SkipRegistryBackup` is explicitly specified. This snapshot is what automatic rollback restores from.
 7. **System restore point** - Creates a system restore point before executing any of the four high-impact custom modules: gaming optimization, extended AI purge, security hardening, or telemetry firewall.
 
 ## Feature Definition: Config/Features.json
@@ -32,7 +32,7 @@ All tweaks are defined declaratively in `Config/Features.json`. The schema allow
 
 ## Core Apply Engine
 
-`Scripts/Features/InvokeChanges.ps1` dispatches each enabled feature through `Invoke-WinSwiftFeature`. The engine:
+`Scripts/Features/InvokeChanges.ps1` dispatches each enabled feature through `Invoke-WinnowFeature`. The engine:
 
 1. Reads the feature definition from the in-memory parsed JSON.
 2. Calls `ShouldProcess` before every registry write, Appx removal, or service change, enabling full `-WhatIf` dry-run support.
@@ -46,7 +46,7 @@ No Windows binary files are deleted. No Windows service registrations are remove
 
 ## Custom Modules
 
-Four WinSwift-owned modules extend beyond the upstream feature set and are invoked through a unified routing layer:
+Four Winnow-owned modules extend beyond the upstream feature set and are invoked through a unified routing layer:
 
 | Module | Script | Key Operations |
 |---|---|---|
@@ -71,20 +71,20 @@ Verification can be triggered three ways:
 
 ```powershell
 # Inline after apply
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -DisableTelemetry -DisableCopilot -Verify -Silent
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -DisableTelemetry -DisableCopilot -Verify -Silent
 
 # Standalone compliance audit against a profile
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -VerifyProfile .\Config\DefaultSettings.json -Silent
 
 # Parameter-driven verification of specific features
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -Verify -DisableRecall -DisableGameDVR -Silent
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -Verify -DisableRecall -DisableGameDVR -Silent
 ```
 
 ## Rollback Protocols
 
 ### Automatic Rollback
 
-When the apply phase fails, WinSwift restores the backup taken before the run. The backup is captured in phase 1, before anything is written, so the material needed to recover already exists at the moment of failure.
+When the apply phase fails, Winnow restores the backup taken before the run. The backup is captured in phase 1, before anything is written, so the material needed to recover already exists at the moment of failure.
 
 A registry import failure triggers the restore, whether it was counted through `$script:RegistryImportFailures` or thrown as an exception. An app removal failure does not: a registry backup cannot reinstall a removed Appx package, so restoring there would claim a recovery that did not happen. Undo work is skipped after a rollback.
 
@@ -98,7 +98,7 @@ Backups are JSON, not `.reg` exports, and are restored through the engine rather
 
 ```powershell
 . .\Scripts\Features\RestoreRegistryBackup.ps1
-$backup = Load-RegistryBackupFromFile -FilePath '.\Backups\WinSwift-RegistryBackup-<timestamp>.json'
+$backup = Load-RegistryBackupFromFile -FilePath '.\Backups\Winnow-RegistryBackup-<timestamp>.json'
 Restore-RegistryBackupState -Backup $backup
 ```
 
@@ -107,7 +107,7 @@ Restore-RegistryBackupState -Backup $backup
 Revert individual features by id:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -CLI -Silent -Undo DisableTelemetry
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -CLI -Silent -Undo DisableTelemetry
 ```
 
 Undo covers the 89 of 114 features that declare a `RegistryUndoKey` or have a case in `Invoke-FeatureUndo`. The rest are rejected rather than silently doing nothing.
@@ -125,7 +125,7 @@ Removed Appx packages can be reinstalled from the Microsoft Store. Provisioned p
 Pass `-DryRun` to engage WhatIf mode across all apply operations:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\WinSwift.ps1 -DisableTelemetry -DisableCopilot -DryRun
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Winnow.ps1 -DisableTelemetry -DisableCopilot -DryRun
 ```
 
 All registry writes, Appx removals, and service configuration calls will log what they would do without modifying the system. The run summary at completion shows the full list of planned operations.

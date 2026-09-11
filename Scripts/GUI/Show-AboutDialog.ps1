@@ -61,7 +61,7 @@ function Show-AboutDialog {
     
     # Project link click handler
     $projectLink.Add_MouseLeftButtonDown({
-        Start-Process "https://github.com/BiosSystem/WinSwift"
+        Start-Process "https://github.com/BiosSystem/Winnow"
     })
     
     # Ko-fi link click handler

@@ -13,18 +13,18 @@
   -->
   <MappedFolders>
     <MappedFolder>
-      <HostFolder>D:\Antigravity_Projects\WinSwift</HostFolder>
-      <SandboxFolder>C:\WinSwift</SandboxFolder>
+      <HostFolder>D:\Antigravity_Projects\Winnow</HostFolder>
+      <SandboxFolder>C:\Winnow</SandboxFolder>
       <ReadOnly>true</ReadOnly>
     </MappedFolder>
     <MappedFolder>
-      <HostFolder>D:\Antigravity_Projects\WinSwift\Tests\Integration\Sandbox\results</HostFolder>
-      <SandboxFolder>C:\WinSwift-Results</SandboxFolder>
+      <HostFolder>D:\Antigravity_Projects\Winnow\Tests\Integration\Sandbox\results</HostFolder>
+      <SandboxFolder>C:\Winnow-Results</SandboxFolder>
       <ReadOnly>false</ReadOnly>
     </MappedFolder>
   </MappedFolders>
   <LogonCommand>
-    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\WinSwift\Tests\Integration\Sandbox\Start-SandboxRun.ps1</Command>
+    <Command>powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Winnow\Tests\Integration\Sandbox\Start-SandboxRun.ps1</Command>
   </LogonCommand>
   <MemoryInMB>4096</MemoryInMB>
   <Networking>Enable</Networking>

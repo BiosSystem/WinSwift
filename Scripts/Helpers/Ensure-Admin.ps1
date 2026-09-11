@@ -8,7 +8,7 @@ param(
 # This script is dot-sourced, and `exit` inside a dot-sourced script does not
 # terminate the caller. Relying on it let a non-elevated run continue into the
 # apply pipeline. The outcome is reported through $script:ElevationOutcome
-# instead, and WinSwift.ps1 exits on anything other than 'Elevated'.
+# instead, and Winnow.ps1 exits on anything other than 'Elevated'.
 $script:ElevationOutcome = 'Elevated'
 
 $isAdmin = ([Security.Principal.WindowsPrincipal] `
@@ -16,7 +16,7 @@ $isAdmin = ([Security.Principal.WindowsPrincipal] `
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 if (-not $isAdmin) {
-    Write-Host "WinSwift must be run as Administrator." -ForegroundColor Red
+    Write-Host "Winnow must be run as Administrator." -ForegroundColor Red
 
     # Prompting is pointless when nothing can answer, and a redirected read
     # returns immediately, which previously read as a declined prompt.
@@ -24,7 +24,7 @@ if (-not $isAdmin) {
     try { $inputIsRedirected = [Console]::IsInputRedirected } catch { }
 
     if ($inputIsRedirected) {
-        Write-Host "No interactive console is available to confirm elevation. Re-run WinSwift from an elevated session." -ForegroundColor Red
+        Write-Host "No interactive console is available to confirm elevation. Re-run Winnow from an elevated session." -ForegroundColor Red
         $script:ElevationOutcome = 'Denied'
         return
     }
@@ -71,7 +71,7 @@ if (-not $isAdmin) {
             Start-Process powershell.exe -ArgumentList $elevatedArgs -Verb RunAs -ErrorAction Stop
         }
         catch {
-            Write-Error "Failed to start WinSwift as Administrator: $_"
+            Write-Error "Failed to start Winnow as Administrator: $_"
             $script:ElevationOutcome = 'Failed'
             return
         }

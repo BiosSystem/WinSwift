@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Competitive & Ultimate Gaming tweaks for WinSwift.
+    Competitive & Ultimate Gaming tweaks for Winnow.
 .DESCRIPTION
     Deep system-level optimizations used by the competitive gaming community:
     timer resolution, MMCSS tuning, BCD platform tick, network throttle kill,
     and the hidden Ultimate Performance power plan.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Enable-CompetitiveGaming {

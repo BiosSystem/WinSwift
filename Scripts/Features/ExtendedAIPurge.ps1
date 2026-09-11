@@ -3,10 +3,10 @@
     Extended AI and Copilot+ purge for Windows 11 24H2/25H2.
 .DESCRIPTION
     Targets new AI integrations added in the 24H2/25H2 update cycle that were
-    not present in earlier WinSwift AI purge routines: Phone Link deep disable,
+    not present in earlier Winnow AI purge routines: Phone Link deep disable,
     Sluggishness Telemetry tasks, Windows Ink AI suggestions, OneDrive silent
     sign-in suppression, and Copilot Actions permissions lockdown.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Disable-ExtendedAIPurge {

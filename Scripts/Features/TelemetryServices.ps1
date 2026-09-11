@@ -9,7 +9,7 @@
 
     All services have reversible undo functions. A restart is recommended after
     applying to ensure services are fully quiesced.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 $script:TelemetryServices = @(

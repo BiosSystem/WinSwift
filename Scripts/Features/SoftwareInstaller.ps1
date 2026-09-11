@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Winget-powered software installer for WinSwift.
+    Winget-powered software installer for Winnow.
 .DESCRIPTION
     Installs a curated list of popular software using Winget.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Install-Software {

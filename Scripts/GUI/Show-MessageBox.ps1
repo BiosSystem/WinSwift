@@ -5,7 +5,7 @@ function Show-MessageBox {
         [string]$Message,
         
         [Parameter(Mandatory=$false)]
-        [string]$Title = "WinSwift",
+        [string]$Title = "Winnow",
         
         [Parameter(Mandatory=$false)]
         [ValidateSet('OK', 'OKCancel', 'YesNo')]

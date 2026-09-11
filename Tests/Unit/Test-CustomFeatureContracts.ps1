@@ -1,6 +1,6 @@
 #Requires -Modules Pester
 
-Describe 'WinSwift custom feature execution contracts' {
+Describe 'Winnow custom feature execution contracts' {
     BeforeAll {
         . (Join-Path (Resolve-Path (Join-Path $PSScriptRoot '..\..')) 'Scripts\Features\InvokeChanges.ps1')
         function Enable-GamingMode { }

@@ -114,7 +114,7 @@ function ReplaceStartMenu {
     }
 
     $timestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-    $backupFileName = "WinSwift-StartBackup-$timestamp.bak"
+    $backupFileName = "Winnow-StartBackup-$timestamp.bak"
     $startMenuDir = Split-Path $startMenuBinFile -Parent
     $backupBinFile = Join-Path $startMenuDir $backupFileName
 
@@ -199,7 +199,7 @@ function GetStartMenuUserNameFromPath {
 
     .DESCRIPTION
     Resolves the LocalState folder for the specified scope and returns the
-    full path to the most recent WinSwift-StartBackup-*.bak file, or
+    full path to the most recent Winnow-StartBackup-*.bak file, or
     $null if no backup exists.
 
     For CurrentUser, uses $env:LOCALAPPDATA directly. For AllUsers, scans
@@ -223,7 +223,7 @@ function Get-StartMenuBackupPath {
 
     if ($Scope -eq 'CurrentUser') {
         $localStateDir = "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
-        $latestBackup = Get-ChildItem -Path (Join-Path $localStateDir 'WinSwift-StartBackup-*.bak') -ErrorAction SilentlyContinue |
+        $latestBackup = Get-ChildItem -Path (Join-Path $localStateDir 'Winnow-StartBackup-*.bak') -ErrorAction SilentlyContinue |
             Sort-Object Name -Descending |
             Select-Object -First 1
         if ($latestBackup) { return $latestBackup.FullName }
@@ -233,7 +233,7 @@ function Get-StartMenuBackupPath {
         $userPathString = GetUserDirectory -userName "*" -fileName "AppData\Local\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState"
         $usersStartMenuPaths = Get-ChildItem -Path $userPathString -ErrorAction SilentlyContinue
         foreach ($startMenuPath in $usersStartMenuPaths) {
-            $latestBackup = Get-ChildItem -Path (Join-Path $startMenuPath.FullName 'WinSwift-StartBackup-*.bak') -ErrorAction SilentlyContinue |
+            $latestBackup = Get-ChildItem -Path (Join-Path $startMenuPath.FullName 'Winnow-StartBackup-*.bak') -ErrorAction SilentlyContinue |
                 Sort-Object Name -Descending |
                 Select-Object -First 1
             if ($latestBackup) { return $latestBackup.FullName }
@@ -258,13 +258,13 @@ function Get-StartMenuBackupPath {
 
     .PARAMETER BackupFilePath
     Path to the backup file to restore from. If omitted, automatically
-    finds the latest WinSwift-StartBackup-*.bak file.
+    finds the latest Winnow-StartBackup-*.bak file.
 
     .EXAMPLE
     RestoreStartMenuFromBackup -StartMenuBinFile "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin"
 
     .EXAMPLE
-    RestoreStartMenuFromBackup -StartMenuBinFile "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin" -BackupFilePath "C:\Backups\WinSwift-StartBackup-20260101_120000.bak"
+    RestoreStartMenuFromBackup -StartMenuBinFile "$env:LOCALAPPDATA\Packages\Microsoft.Windows.StartMenuExperienceHost_cw5n1h2txyewy\LocalState\start2.bin" -BackupFilePath "C:\Backups\Winnow-StartBackup-20260101_120000.bak"
 #>
 function RestoreStartMenuFromBackup {
     param(
@@ -277,7 +277,7 @@ function RestoreStartMenuFromBackup {
     $backupBinFile = if ([string]::IsNullOrWhiteSpace($BackupFilePath)) {
         # Auto-detect latest backup in the same folder as the start2.bin
         $startMenuDir = Split-Path $StartMenuBinFile -Parent
-        $latestBackup = Get-ChildItem -Path (Join-Path $startMenuDir 'WinSwift-StartBackup-*.bak') -ErrorAction SilentlyContinue |
+        $latestBackup = Get-ChildItem -Path (Join-Path $startMenuDir 'Winnow-StartBackup-*.bak') -ErrorAction SilentlyContinue |
             Sort-Object Name -Descending |
             Select-Object -First 1
 
@@ -287,7 +287,7 @@ function RestoreStartMenuFromBackup {
         $BackupFilePath
     }
     $restoreTimestamp = Get-Date -Format 'yyyyMMdd_HHmmss'
-    $restoreBackupFileName = "WinSwift-StartRestore-$restoreTimestamp.bak"
+    $restoreBackupFileName = "Winnow-StartRestore-$restoreTimestamp.bak"
     $currentBinBackup = Join-Path (Split-Path $StartMenuBinFile -Parent) $restoreBackupFileName
 
     if ([string]::IsNullOrWhiteSpace($backupBinFile)) {
@@ -346,13 +346,13 @@ function RestoreStartMenuFromBackup {
 
     .PARAMETER BackupFilePath
     Path to the backup file to restore from. If omitted, automatically
-    finds the latest WinSwift-StartBackup-*.bak file.
+    finds the latest Winnow-StartBackup-*.bak file.
 
     .EXAMPLE
     RestoreStartMenu
 
     .EXAMPLE
-    RestoreStartMenu -BackupFilePath "C:\Backups\WinSwift-StartBackup-20260101_120000.bak"
+    RestoreStartMenu -BackupFilePath "C:\Backups\Winnow-StartBackup-20260101_120000.bak"
 #>
 function RestoreStartMenu {
     param(
@@ -380,14 +380,14 @@ function RestoreStartMenu {
 
     .PARAMETER BackupFilePath
     Path to the backup file to restore from. If omitted, automatically
-    finds the latest WinSwift-StartBackup-*.bak in each user's
+    finds the latest Winnow-StartBackup-*.bak in each user's
     LocalState folder.
 
     .EXAMPLE
     RestoreStartMenuForAllUsers
 
     .EXAMPLE
-    RestoreStartMenuForAllUsers -BackupFilePath "C:\Backups\WinSwift-StartBackup-20260101_120000.bak"
+    RestoreStartMenuForAllUsers -BackupFilePath "C:\Backups\Winnow-StartBackup-20260101_120000.bak"
 #>
 function RestoreStartMenuForAllUsers {
     param(

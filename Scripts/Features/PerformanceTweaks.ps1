@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Performance tweaks for WinSwift - SSD/RAM optimizations and system responsiveness.
+    Performance tweaks for Winnow - SSD/RAM optimizations and system responsiveness.
 .DESCRIPTION
     Applies performance-oriented registry and service tweaks.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Enable-PerformanceTweaks {

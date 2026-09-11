@@ -1,6 +1,6 @@
-# WinSwift integration tests
+# Winnow integration tests
 
-Unit tests exercise functions in isolation. These run `WinSwift.ps1` as a real
+Unit tests exercise functions in isolation. These run `Winnow.ps1` as a real
 process, which is the only way to cover startup guards, parameter binding,
 config loading, and exit codes together.
 
@@ -36,7 +36,7 @@ Adding the dry-run checks, on a machine you can throw away:
 .\Tests\Integration\Invoke-IntegrationTests.ps1 -Ephemeral
 ```
 
-The full suite runs in Windows Sandbox. Open `Sandbox\WinSwift-Tests.wsb`: it
+The full suite runs in Windows Sandbox. Open `Sandbox\Winnow-Tests.wsb`: it
 maps the repository read-only, maps `Sandbox\results` writable, installs Pester,
 and runs everything inside the sandbox. Edit both `HostFolder` paths in that file
 if the repository is not at the default path.
@@ -57,7 +57,7 @@ and `sandbox-transcript.log`. Nothing else survives the sandbox closing, console
 output included, so a run whose bootstrap fails is still diagnosable from the
 transcript and the summary.
 
-Requires Pester 5.7.1 or later. WinSwift refuses to run without elevation, so an
+Requires Pester 5.7.1 or later. Winnow refuses to run without elevation, so an
 unelevated session will skip most cases and say so.
 
 ## What is covered
@@ -99,7 +99,7 @@ discovers nothing, because an empty suite otherwise reports success.
 ## Known gaps
 
 **Undo used to be untestable, and is no longer.** Scenario 2 of Track 3 needed an
-apply/undo round trip, but undo was reachable only from the GUI: `WinSwift.ps1`
+apply/undo round trip, but undo was reachable only from the GUI: `Winnow.ps1`
 initialised `$script:UndoParams` empty and only `Show-MainWindow.ps1` ever
 populated it. `Invoke-UndoFeatures` and the per-feature `RegistryUndoKey`
 metadata existed, but nothing on the command line could select a feature for

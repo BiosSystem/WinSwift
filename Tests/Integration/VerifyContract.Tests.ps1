@@ -3,7 +3,7 @@
 .SYNOPSIS
     End-to-end contract for the -Verify exit codes and profile parsing.
 .DESCRIPTION
-    Runs WinSwift.ps1 as a real process. The -Verify path reads state and exits
+    Runs Winnow.ps1 as a real process. The -Verify path reads state and exits
     before anything is applied, so these cases cannot write to the host even if
     the verification engine regresses.
 
@@ -18,7 +18,7 @@ BeforeDiscovery {
     $script:IsElevated = Test-IsElevated
 }
 
-Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
+Describe 'Winnow -Verify contract' -Tag 'ReadOnly' {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
@@ -39,7 +39,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         # the end-to-end proof that an exemption never fails a run.
         $path = New-VerifyProfile -Name 'exempt-only' -Content @{ Switches = @('CreateRestorePoint') }
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $path)
 
         $result.TimedOut | Should -BeFalse
         $result.Stdout | Should -Match 'NotApplicable'
@@ -49,7 +49,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
     It 'exits 2 when a selected feature is unknown' -Skip:(-not $script:IsElevated) {
         $path = New-VerifyProfile -Name 'unknown-feature' -Content @{ Switches = @('NoSuchFeatureExists') }
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $path)
 
         $result.TimedOut | Should -BeFalse
         $result.ExitCode | Should -Be 2
@@ -58,7 +58,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
     It 'exits 2 when the profile selects nothing verifiable' -Skip:(-not $script:IsElevated) {
         $path = New-VerifyProfile -Name 'empty' -Content @{ Switches = @() }
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $path)
 
         $result.TimedOut | Should -BeFalse
         $result.ExitCode | Should -Be 2
@@ -67,7 +67,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
     It 'exits 2 when the profile path does not exist' -Skip:(-not $script:IsElevated) {
         $missing = Join-Path $script:profileDir 'does-not-exist.json'
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $missing)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $missing)
 
         $result.TimedOut | Should -BeFalse
         $result.ExitCode | Should -Be 2
@@ -77,10 +77,10 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         # A package name that cannot exist is necessarily absent, and absent is
         # the applied state for a removal feature. That makes this deterministic
         # while still proving the profile -> RemoveApps -> AppxAbsence path.
-        $fakeApp = 'WinSwift.IntegrationTest.NotAReal.Package'
+        $fakeApp = 'Winnow.IntegrationTest.NotAReal.Package'
         $path = New-VerifyProfile -Name 'apps' -Content @{ Switches = @(); Apps = @($fakeApp) }
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $path)
 
         $result.TimedOut | Should -BeFalse
         $result.Stdout | Should -Match ([regex]::Escape($fakeApp))
@@ -93,7 +93,7 @@ Describe 'WinSwift -Verify contract' -Tag 'ReadOnly' {
         $path = Join-Path $script:profileDir 'unelevated.json'
         @{ Switches = @('CreateRestorePoint') } | ConvertTo-Json | Set-Content -LiteralPath $path -Encoding utf8
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $path)
+        $result = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $path)
 
         $result.ExitCode | Should -Be 1
         $result.Stdout | Should -Not -Match 'desired-state verification'

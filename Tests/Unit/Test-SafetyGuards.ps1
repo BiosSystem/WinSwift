@@ -1,9 +1,9 @@
 #Requires -Modules Pester
 
-Describe 'WinSwift startup safety guards' {
+Describe 'Winnow startup safety guards' {
     BeforeAll {
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
-        $script:entryScript = Get-Content (Join-Path $repoRoot 'WinSwift.ps1') -Raw
+        $script:entryScript = Get-Content (Join-Path $repoRoot 'Winnow.ps1') -Raw
         $script:adminScript = Get-Content (Join-Path $repoRoot 'Scripts\Helpers\Ensure-Admin.ps1') -Raw
         $script:launcherScript = Get-Content (Join-Path $repoRoot 'Scripts\Get.ps1') -Raw
     }
@@ -58,7 +58,7 @@ Describe 'WinSwift startup safety guards' {
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
         $psi = New-Object System.Diagnostics.ProcessStartInfo
         $psi.FileName = 'powershell.exe'
-        $psi.Arguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -DryRun -Silent -CLI -DisableTelemetry' -f (Join-Path $repoRoot 'WinSwift.ps1')
+        $psi.Arguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -DryRun -Silent -CLI -DisableTelemetry' -f (Join-Path $repoRoot 'Winnow.ps1')
         $psi.RedirectStandardOutput = $true
         $psi.RedirectStandardError = $true
         $psi.RedirectStandardInput = $true

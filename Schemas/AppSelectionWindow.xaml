@@ -1,6 +1,6 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="WinSwift Application Selection" 
+        Title="Winnow Application Selection" 
         Width="450" Height="580" 
         ResizeMode="NoResize" 
         WindowStartupLocation="CenterScreen"
@@ -65,7 +65,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" 
-                                   Text="WinSwift Application Selection" 
+                                   Text="Winnow Application Selection" 
                                    Foreground="{DynamicResource AppFgColor}"
                                    VerticalAlignment="Center" 
                                    Margin="12,0,0,0"

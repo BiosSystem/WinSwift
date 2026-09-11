@@ -1,24 +1,24 @@
 # How to Contribute?
 
-We welcome contributions from the community. You can contribute to WinSwift by:
+We welcome contributions from the community. You can contribute to Winnow by:
 
-- Reporting issues and bugs [here](https://github.com/BiosSystem/WinSwift/issues/new?template=bug_report.yml)
-- Submitting feature requests [here](https://github.com/BiosSystem/WinSwift/issues/new?template=feature_request.yml)
-- Testing WinSwift
+- Reporting issues and bugs [here](https://github.com/BiosSystem/Winnow/issues/new?template=bug_report.yml)
+- Submitting feature requests [here](https://github.com/BiosSystem/Winnow/issues/new?template=feature_request.yml)
+- Testing Winnow
 - Creating a pull request
 - Improving the documentation
 
-# Testing WinSwift
+# Testing Winnow
 
-You can help us test the latest changes and additions to the script. If you encounter any issues, please report them [here](https://github.com/BiosSystem/WinSwift/issues/new?template=bug_report.yml).
+You can help us test the latest changes and additions to the script. If you encounter any issues, please report them [here](https://github.com/BiosSystem/Winnow/issues/new?template=bug_report.yml).
 
 > [!WARNING]
-> The prerelease version of WinSwift is meant for developers to test the script. Don't use this in production environments!
+> The prerelease version of Winnow is meant for developers to test the script. Don't use this in production environments!
 
-You can launch the prerelease version of WinSwift by running this command:
+You can launch the prerelease version of Winnow by running this command:
 
 ```ps1
-& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1"))) -Dev
+& ([scriptblock]::Create((irm "https://raw.githubusercontent.com/BiosSystem/Winnow/master/Winnow.ps1"))) -Dev
 ```
 
 # Contributing Code
@@ -32,8 +32,8 @@ You can launch the prerelease version of WinSwift by running this command:
 2. **Clone the repository** to your local machine:
 
    ```powershell
-   git clone https://github.com/YOUR-USERNAME/WinSwift.git
-   cd WinSwift
+   git clone https://github.com/YOUR-USERNAME/Winnow.git
+   cd Winnow
    ```
 
 3. **Create a new branch** for your contribution:
@@ -51,11 +51,11 @@ You can launch the prerelease version of WinSwift by running this command:
    Set-ExecutionPolicy Unrestricted -Scope Process -Force
    ```
 
-3. Navigate to your WinSwift directory
+3. Navigate to your Winnow directory
 4. Run the script:
 
    ```powershell
-   .\WinSwift.ps1
+   .\Winnow.ps1
    ```
 
 ## Implementation Guidelines
@@ -65,11 +65,11 @@ You can launch the prerelease version of WinSwift by running this command:
 Understanding the project structure is essential for contributing effectively:
 
 ```text
-WinSwift/
-├── WinSwift.ps1             # Main PowerShell script
+Winnow/
+├── Winnow.ps1             # Main PowerShell script
 ├── Run.bat                      # Batch launcher for the quick launch method
 ├── Scripts/                     # Additional PowerShell scripts and functions
-│   ├── Get.ps1                  # Script used for the quick launch method to automatically download and run WinSwift
+│   ├── Get.ps1                  # Script used for the quick launch method to automatically download and run Winnow
 │   ├── AppRemoval/              # App package removal logic
 │   ├── CLI/                     # Command-line interface helpers
 │   ├── Features/                # Feature apply/undo logic (e.g. InvokeChanges.ps1, ReplaceStartMenu.ps1)
@@ -116,7 +116,7 @@ WinSwift/
 
 Avoid these common mistakes when contributing:
 
-1. **Forgetting Get.ps1**: When adding a new command-line parameter, contributors often remember to add it to `WinSwift.ps1` but forget to add the same parameter to `Scripts/Get.ps1`. Both files **must** have matching parameters.
+1. **Forgetting Get.ps1**: When adding a new command-line parameter, contributors often remember to add it to `Winnow.ps1` but forget to add the same parameter to `Scripts/Get.ps1`. Both files **must** have matching parameters.
 
 2. **Missing Registry Files**: Always create an `Undo` registry file for reversibility, aswell as a `Sysprep` registry file for applying changes to other users and Sysprep mode.
 
@@ -144,7 +144,7 @@ Avoid these common mistakes when contributing:
 > [!NOTE]
 > The script automatically generates the app options for the GUI from the app information in the Apps.json file.
 
-To add a new app that can be removed via WinSwift:
+To add a new app that can be removed via Winnow:
 
 1. **Find the AppId**: To find the correct AppId for an app:
 
@@ -231,7 +231,7 @@ Add your feature to the `"Features"` array in `Config/Features.json`:
 
 **Field Descriptions**:
 
-- `FeatureId`: Unique identifier, this must match parameter name in the WinSwift.ps1 and Get.ps1 files.
+- `FeatureId`: Unique identifier, this must match parameter name in the Winnow.ps1 and Get.ps1 files.
 - `Label`: Short description shown in the UI and wiki documentation.
 - `ToolTip`: Detailed explanation of what the feature does, used for tooltips in the GUI.
 - `Category`: One of the predefined categories (see Categories array in Features.json), features without a category won't be loaded into the GUI.
@@ -248,7 +248,7 @@ Add your feature to the `"Features"` array in `Config/Features.json`:
 
 #### 3. Add Command-Line Parameter
 
-Add a corresponding parameter to both `WinSwift.ps1` AND `Scripts/Get.ps1`, the parameter name should match the FeatureId you have defined in `Features.json`. In most cases this will be a switch parameter, example:
+Add a corresponding parameter to both `Winnow.ps1` AND `Scripts/Get.ps1`, the parameter name should match the FeatureId you have defined in `Features.json`. In most cases this will be a switch parameter, example:
 
 ```powershell
 [switch]$YourFeatureId,
@@ -259,7 +259,7 @@ Add a corresponding parameter to both `WinSwift.ps1` AND `Scripts/Get.ps1`, the 
 > [!IMPORTANT]
 > The default preset is intentionally conservative. Features added to it should be thoroughly tested and widely beneficial. When in doubt, leave the feature out of the default preset.
 
-The default preset (`Config/DefaultSettings.json`) defines which features are automatically applied when users run WinSwift in "Default Mode" or with the `-RunDefaults` parameter. This preset should include features that are widely considered to improve the Windows experience without breaking functionality.
+The default preset (`Config/DefaultSettings.json`) defines which features are automatically applied when users run Winnow in "Default Mode" or with the `-RunDefaults` parameter. This preset should include features that are widely considered to improve the Windows experience without breaking functionality.
 
 **When to add a feature to the default preset:**
 
@@ -368,7 +368,7 @@ UI Groups allow features to be grouped together in the GUI with a combobox (drop
 
 3. **Create a Pull Request** on GitHub:
 
-   - Go to the original WinSwift repository
+   - Go to the original Winnow repository
    - Click "New Pull Request"
    - Select your fork and branch
    - Provide a clear description of your changes, include references to the registry keys used
@@ -380,7 +380,7 @@ UI Groups allow features to be grouped together in the GUI with a combobox (drop
 
 If you have questions about contributing, feel free to:
 
-- Open a [discussion](https://github.com/BiosSystem/WinSwift/discussions)
+- Open a [discussion](https://github.com/BiosSystem/Winnow/discussions)
 - Comment on an existing issue
 - Ask in your pull request
 

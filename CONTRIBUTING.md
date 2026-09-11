@@ -1,7 +1,7 @@
 
-# Contributing to WinSwift
+# Contributing to Winnow
 
-First off, thank you for considering contributing to WinSwift! It's people like you that make WinSwift such a great tool.
+First off, thank you for considering contributing to Winnow! It's people like you that make Winnow such a great tool.
 
 ## Where do I go from here?
 
@@ -25,8 +25,8 @@ Our repository uses a 3-branch strategy:
 
 ## Code Style
 
-WinSwift uses standard PowerShell conventions. 
-- Try to keep scripts modular by utilizing the `Scripts/` folder structure instead of adding everything into `WinSwift.ps1`.
+Winnow uses standard PowerShell conventions. 
+- Try to keep scripts modular by utilizing the `Scripts/` folder structure instead of adding everything into `Winnow.ps1`.
 - UI changes should be made carefully inside `Schemas/`.
 
 ## Golden Rules

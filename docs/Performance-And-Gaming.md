@@ -1,6 +1,6 @@
 # 🎮 Performance & Gaming Optimization
 
-For gamers and power users, WinSwift modifies the Windows Kernel scheduler and multimedia classes to prioritize foreground game performance.
+For gamers and power users, Winnow modifies the Windows Kernel scheduler and multimedia classes to prioritize foreground game performance.
 
 ## MMCSS Tuning
 The Multimedia Class Scheduler Service (MMCSS) throttles network traffic when multimedia apps are running. We remove this bottleneck:
@@ -15,7 +15,7 @@ By default, Windows uses a 15.6ms system timer. This means the CPU wakes up to p
 * Core Parking is disabled, ensuring all cores remain awake and ready for multi-threaded game engines, preventing latency spikes.
 
 ## Windows Defender Exclusions
-Real-time scanning causes massive disk I/O bottlenecks when loading game assets. WinSwift automatically adds exclusion paths for standard install directories:
+Real-time scanning causes massive disk I/O bottlenecks when loading game assets. Winnow automatically adds exclusion paths for standard install directories:
 * `C:\Program Files (x86)\Steam\steamapps\common`
 * `C:\Program Files\Epic Games`
 * `C:\GOG Games`

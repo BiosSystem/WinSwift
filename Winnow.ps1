@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    WinSwift - The Ultimate Windows Debloater
+    Winnow - The Ultimate Windows Debloater
 .DESCRIPTION
     Lightweight PowerShell script to remove bloatware, disable telemetry,
     purge AI/Copilot integrations, and reclaim your Windows experience.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 .VERSION
-    3.5.0
+    4.0.0
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param (
@@ -120,19 +120,19 @@ param (
     [switch]$ShowDriveLettersLast,
     [switch]$ShowNetworkDriveLettersFirst,
     [switch]$HideDriveLetters,
-    # --- WinSwift Extended Features (Bios-System) ---
+    # --- Winnow Extended Features (Bios-System) ---
     [switch]$EnableGamingMode,
     [switch]$EnablePerformanceTweaks,
     [switch]$DisableWindowsAds,
     [switch]$EnableExtendedAIPurge,
     [switch]$EnableSecurityHardening,
-    # --- WinSwift v2.2.0 Features (Bios-System) ---
+    # --- Winnow v2.2.0 Features (Bios-System) ---
     [switch]$EnableCompetitiveGaming,
     [switch]$DisableMemoryIntegrity,
     [switch]$DisableSettingsAds,
     [switch]$DisableWidgetsDeep,
     [switch]$SkipUpdateCheck,
-    # --- WinSwift v2.3.0 & v2.4.0 Features (Bios-System) ---
+    # --- Winnow v2.3.0 & v2.4.0 Features (Bios-System) ---
     [string]$Preset,
     [switch]$DryRun,
     [switch]$Verify,
@@ -141,20 +141,20 @@ param (
     [string[]]$SoftwareList,
     [switch]$GenerateUnattend,
     [string]$UnattendOutPath = "C:\autounattend.xml",
-    # --- WinSwift v3.0.0 Features (Bios-System) ---
+    # --- Winnow v3.0.0 Features (Bios-System) ---
     [switch]$EnableFirewallTelemetryBlock,
     [switch]$EnableUpdateWatchdog,
     [switch]$AddDefenderGamingExclusions
 )
 
 if ($PSVersionTable.PSEdition -eq 'Core') {
-    Write-Host "WinSwift requires Windows PowerShell 5.1, but it is running under PowerShell $($PSVersionTable.PSVersion)." -ForegroundColor Red
+    Write-Host "Winnow requires Windows PowerShell 5.1, but it is running under PowerShell $($PSVersionTable.PSVersion)." -ForegroundColor Red
     Write-Host "App removal and system restore points depend on modules that are unavailable in PowerShell 7." -ForegroundColor Red
-    Write-Host "Run WinSwift with powershell.exe." -ForegroundColor Yellow
+    Write-Host "Run Winnow with powershell.exe." -ForegroundColor Yellow
     exit 1
 }
 
-Set-Variable -Name 'WINSWIFT_VERSION' -Value '3.5.0' -Option Constant
+Set-Variable -Name 'WINNOW_VERSION' -Value '4.0.0' -Option Constant
 
 # Call Helper Scripts
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Ensure-Admin.ps1') -OriginalCommandPath $PSCommandPath -OriginalBoundParameters $PSBoundParameters -OriginalUnboundArguments $MyInvocation.UnboundArguments
@@ -173,9 +173,9 @@ if ($script:ElevationOutcome -ne 'Elevated') {
 
 . (Join-Path $PSScriptRoot 'Scripts\Helpers\Initialize-Environment.ps1')
 
-# Log script output to 'WinSwift.log' at the specified path
+# Log script output to 'Winnow.log' at the specified path
 if ($LogPath -and (Test-Path $LogPath)) {
-    Start-Transcript -Path (Join-Path $LogPath 'WinSwift.log') -Append -IncludeInvocationHeader -Force | Out-Null
+    Start-Transcript -Path (Join-Path $LogPath 'Winnow.log') -Append -IncludeInvocationHeader -Force | Out-Null
 }
 else {
     Start-Transcript -Path $script:DefaultLogPath -Append -IncludeInvocationHeader -Force | Out-Null
@@ -210,14 +210,14 @@ if (-not $WhatIfPreference) {
 try {
     $computerSystem = Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue
     if ($null -ne $computerSystem -and $computerSystem.PartOfDomain) {
-        Write-Warning "This machine is domain-joined. Group Policy may override changes made by WinSwift."
+        Write-Warning "This machine is domain-joined. Group Policy may override changes made by Winnow."
     }
 }
 catch { }
 
 # Check if script has all required files
 if (-not ((Test-Path $script:DefaultSettingsFilePath) -and (Test-Path $script:AppsListFilePath) -and (Test-Path $script:RegfilesPath) -and (Test-Path $script:AssetsPath) -and (Test-Path $script:AppSelectionSchema) -and (Test-Path $script:ApplyChangesWindowSchema) -and (Test-Path $script:SharedStylesSchema) -and (Test-Path $script:BubbleHintSchema) -and (Test-Path $script:RestoreBackupWindowSchema) -and (Test-Path $script:FeaturesFilePath))) {
-    Write-Error "WinSwift is unable to find required files, please ensure all script files are present"
+    Write-Error "Winnow is unable to find required files, please ensure all script files are present"
     Write-Output ""
     Write-Output "Press any key to exit..."
     $null = [System.Console]::ReadKey()
@@ -274,7 +274,7 @@ catch {
 
 # Show WinGet warning that requires user confirmation, Suppress confirmation if Silent parameter was passed
 if (-not $script:WingetInstalled -and -not $Silent) {
-    Write-Warning "WinGet is not installed or outdated, this may prevent WinSwift from removing certain apps"
+    Write-Warning "WinGet is not installed or outdated, this may prevent Winnow from removing certain apps"
     Write-Output ""
     Write-Output "Press any key to continue anyway..."
     $null = [System.Console]::ReadKey()
@@ -378,20 +378,20 @@ if (-not $script:WingetInstalled -and -not $Silent) {
 . "$PSScriptRoot/Scripts/Threading/DoEvents.ps1"
 . "$PSScriptRoot/Scripts/Threading/Invoke-NonBlocking.ps1"
 
-# WinSwift Extended Feature Modules (Bios-System)
+# Winnow Extended Feature Modules (Bios-System)
 . "$PSScriptRoot/Scripts/Features/GamingMode.ps1"
 . "$PSScriptRoot/Scripts/Features/PerformanceTweaks.ps1"
 . "$PSScriptRoot/Scripts/Features/SuppressWindowsAds.ps1"
 . "$PSScriptRoot/Scripts/Features/ExtendedAIPurge.ps1"
 . "$PSScriptRoot/Scripts/Features/SecurityHardening.ps1"
 
-# WinSwift v2.2.0 Feature Modules (Bios-System)
+# Winnow v2.2.0 Feature Modules (Bios-System)
 . "$PSScriptRoot/Scripts/Features/CompetitiveGaming.ps1"
 . "$PSScriptRoot/Scripts/Features/SettingsAds.ps1"
 . "$PSScriptRoot/Scripts/Features/WidgetsDeepDisable.ps1"
 . "$PSScriptRoot/Scripts/Features/AutoUpdateCheck.ps1"
 
-# WinSwift v2.3.0 & v2.4.0 Feature Modules (Bios-System)
+# Winnow v2.3.0 & v2.4.0 Feature Modules (Bios-System)
 . "$PSScriptRoot/Scripts/Features/SoftwareInstaller.ps1"
 . "$PSScriptRoot/Scripts/Features/UnattendGenerator.ps1"
 
@@ -451,7 +451,7 @@ if ($script:Params.ContainsKey('Undo')) {
 
 # Auto-update check (queries GitHub API, silent if offline)
 if (-not $script:Params.ContainsKey("SkipUpdateCheck")) {
-    Invoke-UpdateCheck -CurrentVersion $WINSWIFT_VERSION -Silent
+    Invoke-UpdateCheck -CurrentVersion $WINNOW_VERSION -Silent
 }
 
 # Check if the machine supports Modern Standby, this is used to determine if the DisableModernStandbyNetworking option can be used
@@ -503,7 +503,7 @@ foreach ($Param in $script:ControlParams) {
     }
 }
 
-# Hide progress bars for app removal, as they block WinSwift's output
+# Hide progress bars for app removal, as they block Winnow's output
 if (-not ($script:Params.ContainsKey("Verbose"))) {
     $ProgressPreference = 'SilentlyContinue'
 }
@@ -521,7 +521,7 @@ if ($script:Params.ContainsKey("Sysprep")) {
 
     # Exit script if run in Sysprep mode on Windows 10
     if ($WinVersion -lt 22000) {
-        Write-Error "WinSwift Sysprep mode is not supported on Windows 10"
+        Write-Error "Winnow Sysprep mode is not supported on Windows 10"
         AwaitKeyToExit
     }
 }
@@ -546,8 +546,8 @@ if ((Test-Path $script:SavedSettingsFilePath) -and ([String]::IsNullOrWhiteSpace
 if ($Verify -or $VerifyProfile) {
     try {
         $verificationProfilePath = if ($VerifyProfile) { $VerifyProfile } elseif ($Config) { $Config } else { '' }
-        $verificationInput = Get-WinSwiftVerificationInput -ProfilePath $verificationProfilePath -Parameters $script:Params
-        $verification = Invoke-WinSwiftVerification -FeatureIds $verificationInput.FeatureIds -AppIds $verificationInput.AppIds
+        $verificationInput = Get-WinnowVerificationInput -ProfilePath $verificationProfilePath -Parameters $script:Params
+        $verification = Invoke-WinnowVerification -FeatureIds $verificationInput.FeatureIds -AppIds $verificationInput.AppIds
         try { Stop-Transcript | Out-Null } catch { }
         if ($verification.FailedCount -gt 0 -or $verification.ErrorCount -gt 0) {
             exit 2
@@ -658,7 +658,7 @@ if ((($controlParamsCount -eq $script:Params.Keys.Count) -or ($script:Params.Key
 # (This also handles restore point creation if requested)
 Invoke-AllChanges
 
-# --- WinSwift Extended Features (Bios-System) ---
+# --- Winnow Extended Features (Bios-System) ---
 # These run outside the Features.json verify/rollback engine. Only run them when
 # the main apply completed cleanly: after a rollback, a skipped rollback, or a
 # user cancel, applying more (often invasive) changes would fight the recovery
@@ -677,7 +677,7 @@ else {
     if ($script:Params.ContainsKey("EnablePerformanceTweaks")) { Enable-PerformanceTweaks }
     if ($script:Params.ContainsKey("DisableWindowsAds"))      { Disable-WindowsAds }
 
-    # --- WinSwift v2.2.0 Features (Bios-System) ---
+    # --- Winnow v2.2.0 Features (Bios-System) ---
     if ($script:Params.ContainsKey("EnableCompetitiveGaming")) {
         Enable-CompetitiveGaming -DisableMemoryIntegrity:($script:Params.ContainsKey("DisableMemoryIntegrity"))
     }
@@ -691,7 +691,7 @@ else {
         $null = ForceRemoveEdge
     }
 
-    # --- WinSwift v2.3.0 & v2.4.0 Features (Bios-System) ---
+    # --- Winnow v2.3.0 & v2.4.0 Features (Bios-System) ---
     if ($script:Params.ContainsKey("InstallSoftware")) {
         Install-Software -SoftwareList $script:Params["SoftwareList"]
     }
@@ -699,7 +699,7 @@ else {
         Generate-UnattendXML -OutputPath $script:Params["UnattendOutPath"]
     }
 
-    # --- WinSwift v3.0.0 Features (Bios-System) ---
+    # --- Winnow v3.0.0 Features (Bios-System) ---
     if ($script:Params.ContainsKey("EnableUpdateWatchdog")) {
         Invoke-InstallUpdateWatchdog -WhatIf:$extendedWhatIf
     }

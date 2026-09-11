@@ -96,14 +96,14 @@ function Build-DynamicTweaks {
     }
 
     function GetWikiUrlForCategory($category) {
-        if (-not $category) { return 'https://github.com/BiosSystem/WinSwift/wiki/Features' }
+        if (-not $category) { return 'https://github.com/BiosSystem/Winnow/wiki/Features' }
 
         $slug = $category.ToLowerInvariant()
         $slug = $slug -replace '&', ''
         $slug = $slug -replace '[^a-z0-9\s-]', ''
         $slug = $slug -replace '\s', '-'
 
-        return "https://github.com/BiosSystem/WinSwift/wiki/Features#$slug"
+        return "https://github.com/BiosSystem/Winnow/wiki/Features#$slug"
     }
 
     function GetOrCreateCategoryCard($categoryObj) {
@@ -291,7 +291,7 @@ function Build-DynamicTweaks {
                         if ($soleFeature.ToolTip -or $soleFeature.DisableWhenApplied -eq $true) {
                             $tooltipText = $soleFeature.ToolTip
                             if ($soleFeature.DisableWhenApplied -eq $true) {
-                                $tooltipText = "This tweak is already applied and cannot be undone automatically. Visit the WinSwift wiki for instructions on how to manually revert this change."
+                                $tooltipText = "This tweak is already applied and cannot be undone automatically. Visit the Winnow wiki for instructions on how to manually revert this change."
                             }
                             $tipBlock = New-Object System.Windows.Controls.TextBlock
                             $tipBlock.Text = $tooltipText
@@ -335,7 +335,7 @@ function Build-DynamicTweaks {
                 if ($feature.ToolTip -or $feature.DisableWhenApplied -eq $true) {
                     $tooltipText = $feature.ToolTip
                     if ($feature.DisableWhenApplied -eq $true) {
-                        $tooltipText = "This tweak is already applied and cannot be undone automatically. Visit the WinSwift wiki for instructions on how to manually revert this change."
+                        $tooltipText = "This tweak is already applied and cannot be undone automatically. Visit the Winnow wiki for instructions on how to manually revert this change."
                     }
 
                     $tipBlock = New-Object System.Windows.Controls.TextBlock

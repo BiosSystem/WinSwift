@@ -23,11 +23,11 @@ BeforeDiscovery {
         ((Get-Content -LiteralPath $invokeChanges -Raw) -match 'Restore-RegistryBackupState')
 }
 
-Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:RollbackImplemented) {
+Describe 'Winnow automatic rollback' -Tag 'Mutating' -Skip:(-not $script:RollbackImplemented) {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
-        $script:repoRoot = Get-WinSwiftRepoRoot
+        $script:repoRoot = Get-WinnowRepoRoot
         . (Join-Path $script:repoRoot 'Scripts\Helpers\Get-RegFileOperations.ps1')
 
         $script:watchedRegFile = Join-Path $script:repoRoot 'Regfiles\Disable_Telemetry.reg'
@@ -36,7 +36,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
             Copies the repository and breaks one feature's .reg file, then runs
             the copy. Returns the process result.
         #>
-        function Invoke-WinSwiftWithBrokenFeature {
+        function Invoke-WinnowWithBrokenFeature {
             param(
                 [Parameter(Mandatory)][string]$BreakRegFile,
                 [string[]]$Arguments
@@ -55,7 +55,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
             # Invoke-AllChanges entirely.
             Remove-Item -LiteralPath $target -Force
 
-            $entry = Join-Path $sandboxRoot 'WinSwift.ps1'
+            $entry = Join-Path $sandboxRoot 'Winnow.ps1'
             $quoted = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ('"{0}"' -f $entry)) + $Arguments
 
             $psi = New-Object System.Diagnostics.ProcessStartInfo
@@ -86,7 +86,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
             $before = Get-RegFileValueSnapshot -RegFilePath $script:watchedRegFile
             $before.Count | Should -BeGreaterThan 0 -Because 'the test is meaningless without values to watch'
 
-            $result = Invoke-WinSwiftWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
+            $result = Invoke-WinnowWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
                 -Arguments @('-Silent', '-CLI', '-DisableTelemetry', '-DisableCopilot')
 
             $result.Stdout | Should -Match 'Rolling back registry changes'
@@ -101,7 +101,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
         }
 
         It 'records the rollback in the run summary' {
-            $summary = Get-ChildItem -Path $env:TEMP -Filter 'WinSwift_RunSummary_*.json' -ErrorAction SilentlyContinue |
+            $summary = Get-ChildItem -Path $env:TEMP -Filter 'Winnow_RunSummary_*.json' -ErrorAction SilentlyContinue |
                 Sort-Object LastWriteTime -Descending | Select-Object -First 1
 
             $summary | Should -Not -BeNullOrEmpty
@@ -115,7 +115,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
         }
 
         It 'does not run undo work after a failed apply' {
-            $result = Invoke-WinSwiftWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
+            $result = Invoke-WinnowWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
                 -Arguments @('-Silent', '-CLI', '-DisableTelemetry', '-DisableCopilot')
 
             $result.Stdout | Should -Match 'Rolling back registry changes'
@@ -127,7 +127,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
         It 'leaves the changes in place under -NoAutoRollback' {
             $before = Get-RegFileValueSnapshot -RegFilePath $script:watchedRegFile
 
-            $result = Invoke-WinSwiftWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
+            $result = Invoke-WinnowWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
                 -Arguments @('-Silent', '-CLI', '-DisableTelemetry', '-DisableCopilot', '-NoAutoRollback')
 
             $result.Stdout | Should -Match 'Rollback skipped because -NoAutoRollback'
@@ -142,7 +142,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
         }
 
         It 'warns at run start when -SkipRegistryBackup removes the safety net' {
-            $result = Invoke-WinSwiftWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
+            $result = Invoke-WinnowWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
                 -Arguments @('-Silent', '-CLI', '-DisableTelemetry', '-DisableCopilot', '-SkipRegistryBackup')
 
             $result.Stdout | Should -Match '-SkipRegistryBackup disables automatic rollback'
@@ -158,9 +158,9 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
             # recovery that did not happen while the apps stay gone.
             $before = Get-RegFileValueSnapshot -RegFilePath $script:watchedRegFile
 
-            $result = Invoke-WinSwiftProcess -Arguments @(
+            $result = Invoke-WinnowProcess -Arguments @(
                 '-Silent', '-CLI', '-DisableTelemetry',
-                '-RemoveApps', '-Apps', 'WinSwift.IntegrationTest.NotAReal.Package'
+                '-RemoveApps', '-Apps', 'Winnow.IntegrationTest.NotAReal.Package'
             ) -TimeoutSeconds 300
 
             $result.Stdout | Should -Not -Match 'Rolling back registry changes'
@@ -174,7 +174,7 @@ Describe 'WinSwift automatic rollback' -Tag 'Mutating' -Skip:(-not $script:Rollb
     Context 'dry runs' {
 
         It 'never restores anything under -DryRun' {
-            $result = Invoke-WinSwiftWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
+            $result = Invoke-WinnowWithBrokenFeature -BreakRegFile 'Disable_Copilot.reg' `
                 -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry', '-DisableCopilot')
 
             $result.Stdout | Should -Not -Match 'Rolling back registry changes'

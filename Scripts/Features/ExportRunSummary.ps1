@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Generates a JSON run summary after a WinSwift apply or undo operation.
+    Generates a JSON run summary after a Winnow apply or undo operation.
 .DESCRIPTION
     Collects the operation results, system metadata, and elapsed time, then
     writes a timestamped JSON file to %TEMP%. The GUI surfaces this via a
     "View Last Report" button in the completion modal.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Export-RunSummary {
@@ -34,13 +34,13 @@ function Export-RunSummary {
         [datetime]$StartTime,
 
         [Parameter(Mandatory)]
-        [string]$WinSwiftVersion
+        [string]$WinnowVersion
     )
 
     $endTime   = Get-Date
     $elapsed   = [math]::Round(($endTime - $StartTime).TotalSeconds, 1)
     $timestamp = $StartTime.ToString('yyyyMMdd_HHmmss')
-    $outPath   = Join-Path $env:TEMP "WinSwift_RunSummary_$timestamp.json"
+    $outPath   = Join-Path $env:TEMP "Winnow_RunSummary_$timestamp.json"
 
     # Collect Windows build info
     $winBuild = try {
@@ -72,7 +72,7 @@ function Export-RunSummary {
     }
 
     $summary = [ordered]@{
-        WinSwiftVersion      = $WinSwiftVersion
+        WinnowVersion      = $WinnowVersion
         GeneratedAt          = $endTime.ToString('o')
         DurationSeconds      = $elapsed
         WindowsVersion       = $winVersion

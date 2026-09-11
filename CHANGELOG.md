@@ -1,8 +1,15 @@
 # Changelog
 
-Document all notable WinSwift changes in this file.
+Document all notable Winnow changes in this file. Releases before 4.0.0 were published under the project's former name, WinSwift.
 
 Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [4.0.0] - 2026-09-11
+
+### Changed
+
+- Renamed the project from WinSwift to Winnow. The repository, the entry script (`Winnow.ps1`), the standalone build (`Winnow-Standalone.ps1`), the `WINNOW_VERSION` constant, the GUI title bar and About dialog, the installer one-liner, and all documentation now use the new name. The old `BiosSystem/WinSwift` repository URL redirects to `BiosSystem/Winnow`, and the release assets are now `Winnow-Standalone.ps1` and `Winnow-v4.0.0.zip`.
+- Rebrand only. No feature behaviour changed; the 3.5.0 functionality carries over unchanged. The major version reflects that the repository, entry-point, and asset names moved, which is a breaking change for anything referencing the old paths.
 
 ## [3.5.0] - 2026-09-09
 

@@ -320,7 +320,7 @@ function Invoke-ApplyFeatures {
             & $script:ApplyProgressCallback $step $TotalSteps $displayName
         }
 
-        Invoke-WinSwiftFeature -FeatureId $featureId
+        Invoke-WinnowFeature -FeatureId $featureId
         $step++
     }
 }
@@ -360,7 +360,7 @@ function Invoke-UndoFeatures {
             & $script:ApplyProgressCallback $step $TotalSteps $undoText
         }
 
-        Undo-WinSwiftFeature -FeatureId $featureId
+        Undo-WinnowFeature -FeatureId $featureId
         $step++
     }
 }
@@ -384,7 +384,7 @@ function Invoke-AllChanges {
     # Guard: prevent running as SYSTEM account without explicit target user
     $isSystem = ([Security.Principal.WindowsIdentity]::GetCurrent().User.Value -eq 'S-1-5-18')
     if ($isSystem -and -not $script:Params.ContainsKey("User") -and -not $script:Params.ContainsKey("Sysprep")) {
-        throw "WinSwift is running as the SYSTEM account. Use the '-User' or '-Sysprep' parameter to target a specific user."
+        throw "Winnow is running as the SYSTEM account. Use the '-User' or '-Sysprep' parameter to target a specific user."
     }
 
     $script:RegistryImportFailures = 0
@@ -470,7 +470,7 @@ function Invoke-AllChanges {
                 $script:RunRegistryBackupPath = New-RegistrySettingsBackup -ActionableKeys $applyIds -ExtraFeatures $undoSyntheticFeatures
                 if ($applyIds -contains 'RemoveApps') {
                     Write-Host "  [INFO] Backing up Component-Based Servicing hive (HKLM\COMPONENTS)..."
-                    reg export HKLM\COMPONENTS "$env:TEMP\WinSwift_CBS_Backup.reg" /y | Out-Null
+                    reg export HKLM\COMPONENTS "$env:TEMP\Winnow_CBS_Backup.reg" /y | Out-Null
                 }
             }
             catch {
@@ -620,7 +620,7 @@ function Invoke-AllChanges {
             -AppVerificationUnavailable $script:AppRemovalVerificationUnavailable `
             -FeatureErrors     @() `
             -StartTime         $script:RunStartTime `
-            -WinSwiftVersion   $version
+            -WinnowVersion   $version
     }
 }
 

@@ -1,4 +1,4 @@
-# WinSwift v3.4.0 Plan - Recoverability and Proof
+# Winnow v3.4.0 Plan - Recoverability and Proof
 
 ## 1. Context
 
@@ -10,7 +10,7 @@ The last three releases each added one half of a safety story and stopped:
 | v3.3.0 | Desired-state verification with registry read-back and Appx checks | 10 of 112 features cannot be verified at all |
 | v3.3.0 | Static validation and Pester unit coverage | `Tests/Integration/` is empty; nothing exercises a real apply |
 
-WinSwift can now take a backup and can prove whether a change landed. It still cannot
+Winnow can now take a backup and can prove whether a change landed. It still cannot
 *undo a failed run on its own*, and the proof does not cover the features most likely to
 fail. v3.4.0 closes that loop.
 
@@ -157,7 +157,7 @@ section was verified directly, both triggered and clean.
 
 The initial count of ten unverifiable features was measured from `Features.json` metadata
 alone, and that overstated the gap. Three of the ten were already verified at runtime by a
-hardcoded FeatureId list inside `Test-WinSwiftFeature`:
+hardcoded FeatureId list inside `Test-WinnowFeature`:
 
 ```powershell
 if ($FeatureId -in @('RemoveApps', 'RemoveGamingApps', 'RemoveHPApps')) { ... }
@@ -181,10 +181,10 @@ Real new verification work was five features, not ten. Two are exemptions rather
 
 ### 4.2 What was built
 
-- **Metadata-driven routing.** The hardcoded FeatureId list is gone. `Test-WinSwiftFeature`
+- **Metadata-driven routing.** The hardcoded FeatureId list is gone. `Test-WinnowFeature`
   now dispatches on the declared `VerificationAdapter`, so `Features.json` is the single
   source of truth for how every feature is verified.
-- **`AppxAbsence`** - resolves the app list through the existing `Get-WinSwiftFeatureAppIds`
+- **`AppxAbsence`** - resolves the app list through the existing `Get-WinnowFeatureAppIds`
   and checks installed *and* provisioned state. Provisioned state matters: a package can be
   uninstalled per-user while still provisioned and due to return on the next servicing pass.
 - **`EdgeRemoved`** - checks the Edge uninstall key in the 32-bit registry view, plus the
@@ -269,7 +269,7 @@ exists specifically for the packages 24H2 is most aggressive about reinstalling.
 
 Deferred so they are not relitigated mid-release:
 
-- **Localization.** Upstream PRs #764 and #643 and issue #499 all want it. The WinSwift GUI
+- **Localization.** Upstream PRs #764 and #643 and issue #499 all want it. The Winnow GUI
   has diverged from upstream and its strings are hardcoded, so neither PR ports cleanly.
   This is its own release track.
 - **Preset library.** Only `gaming-rig.json` exists. Cheap and user-visible, but it is
