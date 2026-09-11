@@ -1,27 +1,25 @@
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Share+Tech+Mono&weight=bold&size=34&duration=3000&pause=1000&color=00FF72&center=true&vCenter=true&width=600&lines=Winnow;The+Ultimate+Windows+Debloater;Powered+by+BiosSystem" alt="Winnow Title" />
+  <img src="Assets/Images/winnow-banner.svg" alt="Winnow — keep the grain, lose the bloat" width="100%" />
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/BiosSystem/Winnow?color=00ff72&style=flat-square" alt="Version">
+  <img src="https://img.shields.io/github/actions/workflow/status/BiosSystem/Winnow/test.yml?branch=master&style=flat-square&label=tests" alt="Tests">
   <img src="https://img.shields.io/badge/PowerShell-5.1+-blue?style=flat-square&logo=powershell" alt="PowerShell">
+  <img src="https://img.shields.io/badge/Windows-11-0078D6?style=flat-square&logo=windows11" alt="Windows 11">
   <img src="https://img.shields.io/github/license/BiosSystem/Winnow?style=flat-square" alt="License">
   <img src="https://img.shields.io/github/stars/BiosSystem/Winnow?style=flat-square&color=00ff72" alt="Stars">
 </p>
 
-<p align="center">
-  <img src="Assets/Images/winnow-hero-banner.png" alt="Winnow Optimization Engine" width="100%" />
-</p>
-
-> **Notice:** Winnow is a rebranded fork of the open-source project [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat). Preserve all original credits and upstream attribution.
-
 ---
 
-## 🚀 The Ultimate Windows Optimization Engine
+## What Winnow does
 
-Winnow is a lightweight, highly modular PowerShell engine engineered to instantly declutter, customize, and harden Windows 11 without requiring any installation or permanent background services. 
+Winnow is an open-source PowerShell tool that strips bloat, telemetry, and clutter from Windows 11 while keeping what you actually use. It runs from a single file or the repository, with no install and no background services.
 
-Whether you are provisioning enterprise workstations, configuring a dedicated competitive gaming rig, or simply reclaiming your privacy from invasive telemetry, Winnow executes rapid, surgical strikes on OS bloatware.
+Unlike fire-and-forget debloat scripts, every change is checked and reversible. Winnow backs up the registry before it runs, rolls back automatically if an apply fails, verifies the machine actually reached the requested state, and ships reusable presets and localization. It works on a home PC, a gaming rig, or a fleet of provisioned workstations.
+
+> Winnow is an independent project and is not affiliated with or endorsed by Microsoft. It is a rebranded fork of [Raphire/Win11Debloat](https://github.com/Raphire/Win11Debloat); see [CREDITS](CREDITS.md).
 
 ---
 
