@@ -19,11 +19,11 @@ BeforeDiscovery {
     $script:IsElevated = Test-IsElevated
 }
 
-Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
+Describe 'Winnow -DryRun safety' -Tag 'DryRun' {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
-        $repoRoot = Get-WinSwiftRepoRoot
+        $repoRoot = Get-WinnowRepoRoot
         . (Join-Path $repoRoot 'Scripts\Helpers\Get-RegFileOperations.ps1')
 
         $script:regFile = Join-Path $repoRoot 'Regfiles\Disable_Telemetry.reg'
@@ -37,7 +37,7 @@ Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
         $before = Get-RegFileValueSnapshot -RegFilePath $script:regFile
         $before.Count | Should -BeGreaterThan 0 -Because 'the test is meaningless without values to watch'
 
-        $result = Invoke-WinSwiftProcess -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry')
+        $result = Invoke-WinnowProcess -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry')
 
         $result.TimedOut | Should -BeFalse
         $result.Stdout | Should -Match '\[WhatIf\]' -Because 'the run must actually reach the apply pipeline'
@@ -49,7 +49,7 @@ Describe 'WinSwift -DryRun safety' -Tag 'DryRun' {
     }
 
     It 'announces the registry backup without creating one' -Skip:(-not $script:IsElevated) {
-        $result = Invoke-WinSwiftProcess -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry')
+        $result = Invoke-WinnowProcess -Arguments @('-DryRun', '-Silent', '-CLI', '-DisableTelemetry')
 
         $result.TimedOut | Should -BeFalse
         $result.Stdout | Should -Match '\[WhatIf\] Create registry backup'

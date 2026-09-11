@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Security hardening preset for WinSwift.
+    Security hardening preset for Winnow.
 .DESCRIPTION
     Disables insecure legacy protocols (SMBv1, TLS 1.0/1.1), blocks common attack
     ports, disables RDP inbound, disables AutoRun on all drives, and enables DNS
     over HTTPS. All changes are reversible.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Enable-SecurityHardening {

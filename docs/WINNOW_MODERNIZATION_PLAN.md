@@ -1,7 +1,7 @@
-# WinSwift Modernization Plan (Windows 11 23H2/24H2)
+# Winnow Modernization Plan (Windows 11 23H2/24H2)
 
 ## 1. Feature Gap Analysis
-Following a read-only audit of the current `WinSwift` scripts (including `ExtendedAIPurge.ps1`, `RemoveApps.ps1`, and `Apps.json`), we have identified critical gaps in our coverage of modern Windows 11 features:
+Following a read-only audit of the current `Winnow` scripts (including `ExtendedAIPurge.ps1`, `RemoveApps.ps1`, and `Apps.json`), we have identified critical gaps in our coverage of modern Windows 11 features:
 - **Missing AI Feature Toggles**: Paint Co-Creator AI, Windows Studio Effects AI, Auto SR (Super Resolution) analytics, Live Captions, and Voice Access background services are not explicitly disabled.
 - **Missing Start Menu Overrides**: `BingSearchEnabled` is absent, leaving the Start Menu vulnerable to web search injection.
 - **Aggressive Appx Persistence**: Copilot components, Dev Home, and the new Microsoft Teams are mapped in `Apps.json` but require deeper, aggressive registry pruning to prevent automatic re-installation via Windows Update.
@@ -23,7 +23,7 @@ Following a read-only audit of the current `WinSwift` scripts (including `Extend
 - **Actions**:
   - Implement a secondary aggressive DISM fallback in `Remove-AppxApp` for packages like `Microsoft.Windows.AI.Copilot.Provider` and `Microsoft.Windows.DevHome`.
   - Disable Windows Backup cloud sync nags.
-  - **Safety Enforcement**: Hardcode a prerequisite check in `WinSwift.ps1` to ensure `CreateSystemRestorePoint.ps1` and `BackupRegistryState.ps1` execute successfully *before* any Phase 2 aggressive app removal runs. If the backup fails, the execution will abort.
+  - **Safety Enforcement**: Hardcode a prerequisite check in `Winnow.ps1` to ensure `CreateSystemRestorePoint.ps1` and `BackupRegistryState.ps1` execute successfully *before* any Phase 2 aggressive app removal runs. If the backup fails, the execution will abort.
 
 ## 3. Safety Fallback Architecture
 To prevent irreversible damage during the v3.2.0 aggressive Appx purge:
@@ -34,4 +34,4 @@ To prevent irreversible damage during the v3.2.0 aggressive Appx purge:
 ## 4. Successor Plan
 
 This document covers the v3.1.0 and v3.2.0 release tracks and is retained as a record of
-those decisions. The current roadmap is [WINSWIFT_V3.4.0_PLAN.md](WINSWIFT_V3.4.0_PLAN.md).
+those decisions. The current roadmap is [WINNOW_V3.4.0_PLAN.md](WINNOW_V3.4.0_PLAN.md).

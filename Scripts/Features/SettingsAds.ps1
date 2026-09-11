@@ -4,7 +4,7 @@
 .DESCRIPTION
     Kills Microsoft promotional content injected into the Settings app,
     notification toasts, and personalization nags added in the 25H2 update cycle.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Disable-SettingsAds {

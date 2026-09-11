@@ -17,11 +17,11 @@ BeforeDiscovery {
     $script:IsElevated = Test-IsElevated
 }
 
-Describe 'WinSwift apply round trip' -Tag 'Mutating' {
+Describe 'Winnow apply round trip' -Tag 'Mutating' {
 
     BeforeAll {
         . (Join-Path $PSScriptRoot 'IntegrationCommon.ps1')
-        $repoRoot = Get-WinSwiftRepoRoot
+        $repoRoot = Get-WinnowRepoRoot
         . (Join-Path $repoRoot 'Scripts\Helpers\Get-RegFileOperations.ps1')
 
         $script:regFile = Join-Path $repoRoot 'Regfiles\Disable_Telemetry.reg'
@@ -31,10 +31,10 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
     }
 
     It 'applies a registry-backed feature and reports it compliant' -Skip:(-not $script:IsElevated) {
-        $apply = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-DisableTelemetry') -TimeoutSeconds 300
+        $apply = Invoke-WinnowProcess -Arguments @('-Silent', '-CLI', '-DisableTelemetry') -TimeoutSeconds 300
         $apply.TimedOut | Should -BeFalse
 
-        $verify = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
+        $verify = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
         $verify.TimedOut | Should -BeFalse
         $verify.Stdout | Should -Match 'Compliant\] DisableTelemetry'
         $verify.ExitCode | Should -Be 0
@@ -71,14 +71,14 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
         # The assertion is on the verification verdict rather than on the exact
         # pre-apply values: an undo .reg restores the Windows default state,
         # which is not necessarily what this machine had beforehand.
-        $applied = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
+        $applied = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
         $applied.Stdout | Should -Match 'Compliant\] DisableTelemetry' -Because 'the previous test applied it'
 
-        $undo = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'DisableTelemetry') -TimeoutSeconds 300
+        $undo = Invoke-WinnowProcess -Arguments @('-Silent', '-CLI', '-Undo', 'DisableTelemetry') -TimeoutSeconds 300
         $undo.TimedOut | Should -BeFalse
         $undo.Stdout | Should -Not -Match 'completed without making any changes' -Because '-Undo names real work'
 
-        $after = Invoke-WinSwiftProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
+        $after = Invoke-WinnowProcess -Arguments @('-Verify', '-VerifyProfile', $script:profilePath)
         $after.Stdout | Should -Match 'NonCompliant\] DisableTelemetry'
         $after.ExitCode | Should -Be 2
     }
@@ -86,14 +86,14 @@ Describe 'WinSwift apply round trip' -Tag 'Mutating' {
     It 'rejects a feature that cannot be undone' -Skip:(-not $script:IsElevated) {
         # CreateRestorePoint is an action with no undo path. Accepting it would
         # report success while doing nothing.
-        $result = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'CreateRestorePoint')
+        $result = Invoke-WinnowProcess -Arguments @('-Silent', '-CLI', '-Undo', 'CreateRestorePoint')
 
         $result.ExitCode | Should -Not -Be 0
         $result.Stderr | Should -Match 'cannot be undone'
     }
 
     It 'rejects an unknown feature passed to -Undo' -Skip:(-not $script:IsElevated) {
-        $result = Invoke-WinSwiftProcess -Arguments @('-Silent', '-CLI', '-Undo', 'NoSuchFeatureExists')
+        $result = Invoke-WinnowProcess -Arguments @('-Silent', '-CLI', '-Undo', 'NoSuchFeatureExists')
 
         $result.ExitCode | Should -Not -Be 0
         $result.Stderr | Should -Match 'Unknown feature'

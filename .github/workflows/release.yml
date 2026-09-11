@@ -28,21 +28,21 @@ jobs:
       - name: Build standalone script
         shell: pwsh
         run: |
-          .\build.ps1 -OutputFile "WinSwift-Standalone.ps1"
+          .\build.ps1 -OutputFile "Winnow-Standalone.ps1"
           Write-Host "Standalone script built successfully."
 
       - name: Create release ZIP
         shell: pwsh
         run: |
           $ver = "${{ steps.version.outputs.VERSION }}"
-          $zipName = "WinSwift-v$ver.zip"
+          $zipName = "Winnow-v$ver.zip"
           $items = @(
             "Assets",
             "Config",
             "Regfiles",
             "Schemas",
             "Scripts",
-            "WinSwift.ps1",
+            "Winnow.ps1",
             "Run.bat",
             "README.md",
             "CHANGELOG.md",
@@ -76,12 +76,12 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.version.outputs.TAG }}
-          name: WinSwift v${{ steps.version.outputs.VERSION }}
+          name: Winnow v${{ steps.version.outputs.VERSION }}
           body_path: release_notes.md
           draft: false
           prerelease: false
           files: |
-            WinSwift-v${{ steps.version.outputs.VERSION }}.zip
-            WinSwift-Standalone.ps1
+            Winnow-v${{ steps.version.outputs.VERSION }}.zip
+            Winnow-Standalone.ps1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

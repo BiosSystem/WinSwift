@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Runs the WinSwift integration suite with a tag filter chosen by risk.
+    Runs the Winnow integration suite with a tag filter chosen by risk.
 
 .DESCRIPTION
-    Integration tests run WinSwift.ps1 as a real process, so they are gated by
+    Integration tests run Winnow.ps1 as a real process, so they are gated by
     what they can do to the machine running them:
 
       ReadOnly   The -Verify path. Reads state and exits before applying
@@ -65,11 +65,11 @@ $isElevated = ([Security.Principal.WindowsPrincipal] `
 ).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 
 Write-Host ''
-Write-Host 'WinSwift integration suite' -ForegroundColor Cyan
+Write-Host 'Winnow integration suite' -ForegroundColor Cyan
 Write-Host ("  tags     : {0}" -f ($tags -join ', '))
 Write-Host ("  elevated : {0}" -f $isElevated)
 if (-not $isElevated) {
-    Write-Host '  WinSwift refuses to run without elevation, so most cases will skip.' -ForegroundColor Yellow
+    Write-Host '  Winnow refuses to run without elevation, so most cases will skip.' -ForegroundColor Yellow
 }
 if ($Mutating) {
     Write-Host '  MUTATING: this will change the registry of this machine.' -ForegroundColor Red

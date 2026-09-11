@@ -33,7 +33,7 @@ function New-RegistrySettingsBackup {
         New-Item -ItemType Directory -Path $backupDirectory -Force | Out-Null
     }
 
-    $backupFileName = 'WinSwift-RegistryBackup-{0}.json' -f $timestamp.ToString('yyyyMMdd_HHmmss')
+    $backupFileName = 'Winnow-RegistryBackup-{0}.json' -f $timestamp.ToString('yyyyMMdd_HHmmss')
     $backupFilePath = Join-Path $backupDirectory $backupFileName
 
     $backupConfig = Get-RegistryBackupPayload -SelectedFeatures $selectedFeatures -UndoFeatures $undoFeatures -CreatedAt $timestamp
@@ -131,7 +131,7 @@ function Get-RegistryBackupPayload {
         Version = '1.0'
         BackupType = 'RegistryState'
         CreatedAt = $CreatedAt.ToString('o')
-        CreatedBy = 'WinSwift'
+        CreatedBy = 'Winnow'
         Target = (Get-RegistryBackupTargetDescription)
         ComputerName = $env:COMPUTERNAME
         SelectedFeatures = @($selectedFeatureIds)

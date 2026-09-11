@@ -123,7 +123,7 @@ jobs:
       - name: Build and parse standalone script
         shell: powershell
         run: |
-          $outputFile = Join-Path $env:RUNNER_TEMP 'WinSwift-Standalone.ps1'
+          $outputFile = Join-Path $env:RUNNER_TEMP 'Winnow-Standalone.ps1'
           .\build.ps1 -OutputFile $outputFile
           $tokens = $null
           $parseErrors = $null

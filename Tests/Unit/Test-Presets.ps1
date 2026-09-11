@@ -4,7 +4,7 @@
     Unit tests for the preset library and its loader.
 #>
 
-Describe 'WinSwift presets' {
+Describe 'Winnow presets' {
 
     BeforeAll {
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
@@ -119,7 +119,7 @@ Describe 'WinSwift presets' {
         }
 
         It 'accepts switches dispatched outside Features.json' {
-            # Six switches are handled by explicit blocks in WinSwift.ps1.
+            # Six switches are handled by explicit blocks in Winnow.ps1.
             # gaming-rig.json has always relied on them being valid.
             Set-Preset -Switches @('EnableCompetitiveGaming', 'DisableWidgetsDeep')
 

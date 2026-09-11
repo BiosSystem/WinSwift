@@ -126,7 +126,7 @@
                             Style="{DynamicResource ModalTitleStyle}"/>
                     
                     <TextBlock x:Name="ApplyCompletionMessage" 
-                            Text="Please note that some changes will only take effect after a reboot. Thanks for using WinSwift!"
+                            Text="Please note that some changes will only take effect after a reboot. Thanks for using Winnow!"
                             TextWrapping="Wrap"
                             Style="{DynamicResource ModalSubtextStyle}"/>
                 </StackPanel>

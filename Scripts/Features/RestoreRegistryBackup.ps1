@@ -26,7 +26,7 @@ function Load-RegistryBackupFromFile {
 
     try {
         # -Encoding UTF8 is required. SaveToFile writes these with a BOM, so a
-        # WinSwift backup happens to read correctly without it, but a file
+        # Winnow backup happens to read correctly without it, but a file
         # produced anywhere else has no BOM and Windows PowerShell 5.1 would
         # fall back to the ANSI codepage and mangle every non-ASCII value.
         # Registry data holds such values, an accented profile path for one.

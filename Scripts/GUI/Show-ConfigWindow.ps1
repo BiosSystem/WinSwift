@@ -412,7 +412,7 @@ function Export-Configuration {
     $saveDialog.Title = 'Export Configuration'
     $saveDialog.Filter = 'JSON files (*.json)|*.json|All files (*.*)|*.*'
     $saveDialog.DefaultExt = '.json'
-    $saveDialog.FileName = "WinSwift-Config-$(Get-Date -Format 'yyyyMMdd').json"
+    $saveDialog.FileName = "Winnow-Config-$(Get-Date -Format 'yyyyMMdd').json"
 
     if ($saveDialog.ShowDialog($Owner) -ne $true) {
         Write-Host 'Export save dialog canceled.'

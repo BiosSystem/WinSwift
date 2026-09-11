@@ -1,3 +1,12 @@
+## [v4.0.0] - 2026-09-11
+### Artifacts
+- **Release Package**: Winnow-v4.0.0.zip
+- **Standalone**: Winnow-Standalone.ps1
+- Both built and published by the release workflow on tag push. Checksums are on the release page.
+### Changed
+- Renamed the project from WinSwift to Winnow: repository, `Winnow.ps1` entry point, `Winnow-Standalone.ps1`, the `WINNOW_VERSION` constant, the GUI branding (title bar, About dialog, ASCII header), the installer one-liner, and all documentation. The old `BiosSystem/WinSwift` repository URL redirects to the new one.
+- Rebrand only; the 3.5.0 feature behaviour is unchanged. Releases at v3.5.0 and earlier were published as WinSwift and keep their original asset names.
+
 ## [v3.5.0] - 2026-09-09
 ### Artifacts
 - **Release Package**: WinSwift-v3.5.0.zip

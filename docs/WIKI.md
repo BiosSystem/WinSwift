@@ -1,12 +1,12 @@
-# WinSwift Technical Wiki
+# Winnow Technical Wiki
 
-Technical documentation for **WinSwift**. This wiki covers the internal architecture, core features, deployment methods, and security practices of the WinSwift engine.
+Technical documentation for **Winnow**. This wiki covers the internal architecture, core features, deployment methods, and security practices of the Winnow engine.
 
 ## 🏗️ Architecture
 
-WinSwift operates on a modular, PowerShell-driven architecture designed to ensure safe, traceable, and revertible system modifications without requiring external dependencies or installations.
+Winnow operates on a modular, PowerShell-driven architecture designed to ensure safe, traceable, and revertible system modifications without requiring external dependencies or installations.
 
-### Core Engine (`WinSwift.ps1`)
+### Core Engine (`Winnow.ps1`)
 The main script acts as the orchestrator. It manages:
 - **Initialization:** Privilege elevation (UAC), strict error handling, and parameter parsing.
 - **State Backup:** Snapshotting registry states before making destructive changes.
@@ -14,7 +14,7 @@ The main script acts as the orchestrator. It manages:
 
 ### Execution Flow
 1. **User Execution:** The user triggers the script (locally or via web request).
-2. **Elevation Check:** WinSwift verifies administrator privileges, prompting UAC if necessary.
+2. **Elevation Check:** Winnow verifies administrator privileges, prompting UAC if necessary.
 3. **Parameter Processing:** Command-line switches and parameters are parsed to configure the run (e.g., Dry-Run mode, specific module inclusion).
 4. **Targeted Operations:** The core engine dispatches tasks to specific modules:
    - *Telemetry & Privacy*
@@ -22,11 +22,11 @@ The main script acts as the orchestrator. It manages:
    - *UI/UX Modifications*
    - *AI/Copilot Purge*
 5. **Rollback on Failure:** If the apply phase fails, the registry backup taken before the run is restored automatically and undo work is skipped. Exit code `3` reports a clean rollback, `4` a rollback that itself failed.
-6. **Completion & Summary:** The script outputs a detailed summary of all modified keys, services, and packages, and writes it to `%TEMP%\WinSwift_RunSummary_<timestamp>.json`.
+6. **Completion & Summary:** The script outputs a detailed summary of all modified keys, services, and packages, and writes it to `%TEMP%\Winnow_RunSummary_<timestamp>.json`.
 
 ## ✨ Features
 
-WinSwift is divided into multiple targeted functionality groups:
+Winnow is divided into multiple targeted functionality groups:
 
 ### App Removal & Bloatware
 - Cleans the Start Menu by removing OEM and pre-installed bloatware (e.g., TikTok, Candy Crush).
@@ -57,33 +57,33 @@ WinSwift is divided into multiple targeted functionality groups:
 
 ## 🚀 Deployment
 
-WinSwift is designed for flexible deployment across varying IT environments.
+Winnow is designed for flexible deployment across varying IT environments.
 
 ### 1. Web Execution (Quick Method)
 Execute directly from the repository. Best for quick, one-off system setups.
 ```powershell
 $f = New-TemporaryFile | Rename-Item -NewName { $_.Name + '.ps1' } -PassThru
-irm https://raw.githubusercontent.com/BiosSystem/WinSwift/master/WinSwift.ps1 -OutFile $f
+irm https://raw.githubusercontent.com/BiosSystem/Winnow/master/Winnow.ps1 -OutFile $f
 & $f
 Remove-Item $f -Force
 ```
 
 ### 2. Standalone Build
-For environments without internet access, use the standalone compiled script (`WinSwift-Standalone.ps1`), which bundles all modules and assets into a single portable file.
+For environments without internet access, use the standalone compiled script (`Winnow-Standalone.ps1`), which bundles all modules and assets into a single portable file.
 
 ### 3. Enterprise Deployment
-System Administrators can deploy WinSwift using management tools (e.g., Intune, SCCM). Use advanced parameters to execute silently:
+System Administrators can deploy Winnow using management tools (e.g., Intune, SCCM). Use advanced parameters to execute silently:
 ```powershell
-.\WinSwift.ps1 -Silent -AcceptEULA -ApplyTelemetryFixes
+.\Winnow.ps1 -Silent -AcceptEULA -ApplyTelemetryFixes
 ```
 
 ## 🛡️ Security
 
-WinSwift implements strict security guidelines to protect the host system:
+Winnow implements strict security guidelines to protect the host system:
 
 - **State Reversion:** Modifications are reversible. Pass `-Undo <FeatureId>` to revert individual features from the command line, or use the GUI. A failed apply rolls itself back from the pre-run backup.
 - **Protocol Hardening:** Closes common attack vectors by disabling outdated protocols (SMBv1, TLS 1.0) and blocking AutoRun and Windows Script Host.
-- **Code Integrity:** All components are written in standard PowerShell. WinSwift strictly avoids downloading compiled binary executables (`.exe`) from untrusted third parties.
+- **Code Integrity:** All components are written in standard PowerShell. Winnow strictly avoids downloading compiled binary executables (`.exe`) from untrusted third parties.
 - **Open Source Transparency:** The entire codebase is open-source, allowing for full security audits before deployment.
 
 ---

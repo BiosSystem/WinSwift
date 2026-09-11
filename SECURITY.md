@@ -1,6 +1,6 @@
-# Security Policy for WinSwift
+# Security Policy for Winnow
 
-WinSwift is a modular Windows 11 optimization and debloating toolkit. Because WinSwift modifies Windows system configurations, security and OS stability are paramount.
+Winnow is a modular Windows 11 optimization and debloating toolkit. Because Winnow modifies Windows system configurations, security and OS stability are paramount.
 
 ---
 
@@ -23,7 +23,7 @@ Report vulnerabilities to `security@bios-system.net`. Do not open public GitHub 
 ## Security Principles & Hardening
 
 ### 1. Non-Destructive GPO / Policy Suppression
-- WinSwift uses Group Policy and registry configurations to disable telemetry, Copilot, Recall, and background services. It **never deletes system binaries** (`explorer.exe`, `SearchHost.exe`), ensuring cumulative Windows Updates and anti-cheat drivers (Vanguard, EAC, BattlEye, FACEIT) remain 100 percent operational.
+- Winnow uses Group Policy and registry configurations to disable telemetry, Copilot, Recall, and background services. It **never deletes system binaries** (`explorer.exe`, `SearchHost.exe`), ensuring cumulative Windows Updates and anti-cheat drivers (Vanguard, EAC, BattlEye, FACEIT) remain 100 percent operational.
 
 ### 2. UAC Elevation & Win32 Argument Quoting
 - Re-elevation processes rigorously escape paths, script parameters, and user flags to prevent command injection via crafted folder names or CLI arguments.

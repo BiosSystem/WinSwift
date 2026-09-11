@@ -84,8 +84,8 @@ function Show-MainWindow {
         $menuBtn.ContextMenu.IsOpen = $true
     })
 
-    $menuDocumentation.Add_Click({ Start-Process "https://github.com/BiosSystem/WinSwift/wiki" })
-    $menuReportBug.Add_Click({ Start-Process "https://github.com/BiosSystem/WinSwift/issues" })
+    $menuDocumentation.Add_Click({ Start-Process "https://github.com/BiosSystem/Winnow/wiki" })
+    $menuReportBug.Add_Click({ Start-Process "https://github.com/BiosSystem/Winnow/issues" })
 
     $menuLogs.Add_Click({
         $logsFolder = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) 'Logs'

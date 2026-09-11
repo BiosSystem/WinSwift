@@ -1,10 +1,10 @@
-# Shared helpers for the WinSwift integration suite.
+# Shared helpers for the Winnow integration suite.
 #
-# Unit tests exercise functions in isolation. These tests run WinSwift.ps1 as a
+# Unit tests exercise functions in isolation. These tests run Winnow.ps1 as a
 # real process, which is the only way to cover startup guards, parameter
 # binding, config loading, and exit codes together.
 
-function Get-WinSwiftRepoRoot {
+function Get-WinnowRepoRoot {
     return (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 }
 
@@ -16,7 +16,7 @@ function Test-IsElevated {
 
 <#
     .SYNOPSIS
-    Runs WinSwift.ps1 as a child process and captures its result.
+    Runs Winnow.ps1 as a child process and captures its result.
 
     .DESCRIPTION
     stdin is redirected and closed so the run can never block on a prompt. A
@@ -24,19 +24,19 @@ function Test-IsElevated {
     by TimeoutSeconds and reports TimedOut rather than stalling the suite.
 
     .PARAMETER Arguments
-    Arguments passed through to WinSwift.ps1.
+    Arguments passed through to Winnow.ps1.
 
     .PARAMETER TimeoutSeconds
     How long to wait before killing the process. Defaults to 120.
 #>
-function Invoke-WinSwiftProcess {
+function Invoke-WinnowProcess {
     param(
         [Parameter(Mandatory)]
         [string[]]$Arguments,
         [int]$TimeoutSeconds = 120
     )
 
-    $entryScript = Join-Path (Get-WinSwiftRepoRoot) 'WinSwift.ps1'
+    $entryScript = Join-Path (Get-WinnowRepoRoot) 'Winnow.ps1'
 
     $quoted = @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ('"{0}"' -f $entryScript))
     foreach ($argument in $Arguments) {

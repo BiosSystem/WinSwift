@@ -697,9 +697,9 @@
       "ApplyUndoText": "Setting All Apps view to Category"
     },
     "EnableGamingMode": {
-      "Label": "Enable the WinSwift gaming profile",
-      "ToolTip": "Apply the WinSwift gaming power, input, Game DVR, startup, GPU scheduling, network, and maintenance settings.",
-      "ApplyText": "Enabling the WinSwift gaming profile"
+      "Label": "Enable the Winnow gaming profile",
+      "ToolTip": "Apply the Winnow gaming power, input, Game DVR, startup, GPU scheduling, network, and maintenance settings.",
+      "ApplyText": "Enabling the Winnow gaming profile"
     },
     "EnableExtendedAIPurge": {
       "Label": "Apply the extended Windows AI purge",
@@ -707,16 +707,16 @@
       "ApplyText": "Applying the extended Windows AI purge"
     },
     "EnableSecurityHardening": {
-      "Label": "Apply the WinSwift security hardening profile",
+      "Label": "Apply the Winnow security hardening profile",
       "ToolTip": "Disable SMBv1, Remote Desktop, AutoRun, TLS 1.0 and 1.1, Windows Script Host, and block selected inbound legacy ports.",
-      "ApplyText": "Applying the WinSwift security hardening profile"
+      "ApplyText": "Applying the Winnow security hardening profile"
     },
     "EnableFirewallTelemetryBlock": {
       "Label": "Block Microsoft telemetry endpoints",
-      "ToolTip": "Block the WinSwift telemetry domain list with outbound firewall rules or marked HOSTS file fallback entries.",
+      "ToolTip": "Block the Winnow telemetry domain list with outbound firewall rules or marked HOSTS file fallback entries.",
       "ApplyText": "Blocking Microsoft telemetry endpoints",
-      "UndoLabel": "Remove WinSwift telemetry endpoint blocks",
-      "ApplyUndoText": "Removing WinSwift telemetry endpoint blocks"
+      "UndoLabel": "Remove Winnow telemetry endpoint blocks",
+      "ApplyUndoText": "Removing Winnow telemetry endpoint blocks"
     }
   }
 }

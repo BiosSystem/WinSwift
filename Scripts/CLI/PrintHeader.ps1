@@ -4,7 +4,7 @@ function PrintHeader {
         $title
     )
 
-    $fullTitle = " WinSwift Script - $title"
+    $fullTitle = " Winnow Script - $title"
 
     if ($script:Params.ContainsKey("Sysprep")) {
         $fullTitle = "$fullTitle (Sysprep mode)"

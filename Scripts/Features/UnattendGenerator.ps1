@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-    Unattended XML generator for offline OOBE bypass and WinSwift integration.
+    Unattended XML generator for offline OOBE bypass and Winnow integration.
 .DESCRIPTION
     Generates an autounattend.xml file that skips the Microsoft Account
     requirement, disables OOBE telemetry prompts, and optionally pre-seeds
-    WinSwift to run on first boot with a saved configuration.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Winnow to run on first boot with a saved configuration.
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Generate-UnattendXML {
@@ -13,8 +13,8 @@ function Generate-UnattendXML {
     param(
         [string]$OutputPath = "C:\autounattend.xml",
 
-        # If provided, embed a WinSwift first-boot run command using this config path
-        [string]$WinSwiftConfigPath = "",
+        # If provided, embed a Winnow first-boot run command using this config path
+        [string]$WinnowConfigPath = "",
 
         # Local admin account to create (leave empty to skip)
         [string]$LocalAdminName = "",
@@ -43,12 +43,12 @@ function Generate-UnattendXML {
 "@
     } else { "" }
 
-    $winSwiftFirstBoot = if (-not [string]::IsNullOrWhiteSpace($WinSwiftConfigPath)) {
+    $winSwiftFirstBoot = if (-not [string]::IsNullOrWhiteSpace($WinnowConfigPath)) {
         @"
                 <RunSynchronousCommand wcm:action="add">
                     <Order>2</Order>
-                    <Path>powershell.exe -NonInteractive -ExecutionPolicy Bypass -File "C:\WinSwift\WinSwift-Standalone.ps1" -Config "$WinSwiftConfigPath"</Path>
-                    <Description>Apply WinSwift configuration on first boot</Description>
+                    <Path>powershell.exe -NonInteractive -ExecutionPolicy Bypass -File "C:\Winnow\Winnow-Standalone.ps1" -Config "$WinnowConfigPath"</Path>
+                    <Description>Apply Winnow configuration on first boot</Description>
                 </RunSynchronousCommand>
 "@
     } else { "" }
@@ -116,8 +116,8 @@ $localAdminXml
             $xmlContent | Out-File -FilePath $OutputPath -Encoding UTF8 -Force
             Write-Host "  [OK] Generated autounattend.xml at: $OutputPath" -ForegroundColor Green
             Write-Host "  To use: Place this file at the root of your Windows 11 installation USB." -ForegroundColor Yellow
-            if (-not [string]::IsNullOrWhiteSpace($WinSwiftConfigPath)) {
-                Write-Host "  WinSwift first-boot run is embedded. Place WinSwift-Standalone.ps1 at C:\WinSwift\ before running setup." -ForegroundColor DarkGray
+            if (-not [string]::IsNullOrWhiteSpace($WinnowConfigPath)) {
+                Write-Host "  Winnow first-boot run is embedded. Place Winnow-Standalone.ps1 at C:\Winnow\ before running setup." -ForegroundColor DarkGray
             }
         } catch {
             Write-Host "  [WARN] Failed to generate XML: $_" -ForegroundColor Yellow
@@ -132,19 +132,19 @@ function Show-UnattendGeneratorPrompt {
     param()
 
     Write-Host ""
-    Write-Host "=== WinSwift Unattend XML Generator ===" -ForegroundColor Cyan
+    Write-Host "=== Winnow Unattend XML Generator ===" -ForegroundColor Cyan
     Write-Host "Generates an autounattend.xml for automated Windows 11 setup." -ForegroundColor DarkGray
     Write-Host ""
 
     $outputPath = Read-Host "Output path [default: C:\autounattend.xml]"
     if ([string]::IsNullOrWhiteSpace($outputPath)) { $outputPath = "C:\autounattend.xml" }
 
-    $configPath = Read-Host "WinSwift config path to embed for first-boot (leave blank to skip)"
+    $configPath = Read-Host "Winnow config path to embed for first-boot (leave blank to skip)"
     $adminName  = Read-Host "Local admin account name to create (leave blank to skip)"
     $pcName     = Read-Host "Computer name (leave blank for random)"
 
     Generate-UnattendXML -OutputPath $outputPath `
-        -WinSwiftConfigPath $configPath `
+        -WinnowConfigPath $configPath `
         -LocalAdminName $adminName `
         -ComputerName $pcName
 }

@@ -1,12 +1,12 @@
 # Define script-level variables & paths
-# Mirrors the WINSWIFT_VERSION constant in WinSwift.ps1. The literal is only
+# Mirrors the WINNOW_VERSION constant in Winnow.ps1. The literal is only
 # used when this file is dot-sourced on its own, as the tests do.
-$script:Version = if (Get-Variable -Name WINSWIFT_VERSION -Scope Global -ErrorAction SilentlyContinue) {
-    $global:WINSWIFT_VERSION
-} elseif ($WINSWIFT_VERSION) {
-    $WINSWIFT_VERSION
+$script:Version = if (Get-Variable -Name WINNOW_VERSION -Scope Global -ErrorAction SilentlyContinue) {
+    $global:WINNOW_VERSION
+} elseif ($WINNOW_VERSION) {
+    $WINNOW_VERSION
 } else {
-    "3.5.0"
+    "4.0.0"
 }
 $script:AppVersion = $script:Version
 $rootDir = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -21,7 +21,7 @@ $script:FeaturesFilePath = Join-Path $configPath 'Features.json'
 $script:LanguagesPath = Join-Path $configPath 'Languages'
 $script:PresetsPath = Join-Path $configPath 'Presets'
 $script:SavedSettingsFilePath = Join-Path $configPath 'LastUsedSettings.json'
-$script:DefaultLogPath = Join-Path $logsPath 'WinSwift.log'
+$script:DefaultLogPath = Join-Path $logsPath 'Winnow.log'
 $script:RegfilesPath = Join-Path $rootDir 'Regfiles'
 $script:RegistryBackupsPath = Join-Path $rootDir 'Backups'
 $script:AssetsPath = Join-Path $rootDir 'Assets'
@@ -61,7 +61,7 @@ $script:RunRollbackReason = $null
 
 # Check if current powershell environment is limited by security policies
 if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {
-    Write-Error "WinSwift is unable to run on your system, powershell execution is restricted by security policies"
+    Write-Error "Winnow is unable to run on your system, powershell execution is restricted by security policies"
     Write-Output "Press any key to exit..."
     $null = [System.Console]::ReadKey()
     Exit 1
@@ -94,7 +94,7 @@ Write-Host "                   " -NoNewline; Write-Host "  |  " -ForegroundColor
 Write-Host "                   " -NoNewline; Write-Host "    (" -ForegroundColor Yellow -NoNewline; Write-Host "'''" -ForegroundColor Red -NoNewline; Write-Host ") " -ForegroundColor Yellow -NoNewline; Write-Host "   *  *" -ForegroundColor DarkYellow
 Write-Host "                   " -NoNewline; Write-Host "    ( " -ForegroundColor DarkYellow -NoNewline; Write-Host "'" -ForegroundColor Red -NoNewline; Write-Host " )   " -ForegroundColor DarkYellow -NoNewline; Write-Host "*" -ForegroundColor Yellow
 Write-Host ""
-Write-Host "             WinSwift is launching..." -ForegroundColor White
+Write-Host "             Winnow is launching..." -ForegroundColor White
 Write-Host "                Keep this window open" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host ""

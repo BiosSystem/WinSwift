@@ -2,7 +2,7 @@
 .SYNOPSIS
     Bootstraps and runs the mutating integration suite inside Windows Sandbox.
 .DESCRIPTION
-    Launched by WinSwift-Tests.wsb. Installs Pester, copies the repository out
+    Launched by Winnow-Tests.wsb. Installs Pester, copies the repository out
     of the read-only mapped folder so the tests can write alongside it, runs the
     full suite, and writes the results to the mapped output folder.
 
@@ -13,7 +13,7 @@
 #>
 $ErrorActionPreference = 'Stop'
 
-$resultRoot = 'C:\WinSwift-Results'
+$resultRoot = 'C:\Winnow-Results'
 $transcript = $null
 
 if (Test-Path -LiteralPath $resultRoot) {
@@ -21,20 +21,20 @@ if (Test-Path -LiteralPath $resultRoot) {
     try { Start-Transcript -Path $transcript -Force | Out-Null } catch { }
 }
 
-Write-Host 'WinSwift integration suite, Windows Sandbox' -ForegroundColor Cyan
+Write-Host 'Winnow integration suite, Windows Sandbox' -ForegroundColor Cyan
 Write-Host ''
 
 $exitCode = 1
 try {
     if (-not (Test-Path -LiteralPath $resultRoot)) {
-        throw "The results folder is not mapped at $resultRoot. Check the second MappedFolder in WinSwift-Tests.wsb, and that its HostFolder exists on the host."
+        throw "The results folder is not mapped at $resultRoot. Check the second MappedFolder in Winnow-Tests.wsb, and that its HostFolder exists on the host."
     }
 
-    $source = 'C:\WinSwift'
-    $working = 'C:\WinSwift-Run'
+    $source = 'C:\Winnow'
+    $working = 'C:\Winnow-Run'
 
     if (-not (Test-Path -LiteralPath $source)) {
-        throw "The repository is not mapped at $source. Check HostFolder in WinSwift-Tests.wsb."
+        throw "The repository is not mapped at $source. Check HostFolder in Winnow-Tests.wsb."
     }
 
     # The mapped folder is read-only by design. Tests need a writable tree, and

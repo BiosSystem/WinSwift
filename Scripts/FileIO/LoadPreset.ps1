@@ -5,7 +5,7 @@
 # phase without a word, so a single typo used to produce a run that applied
 # nothing and still reported success.
 
-# Six switches are dispatched by explicit blocks in WinSwift.ps1 rather than
+# Six switches are dispatched by explicit blocks in Winnow.ps1 rather than
 # through Features.json. They are valid in a preset even though they are not
 # feature entries, and gaming-rig.json has always relied on that.
 $script:PresetExtraSwitches = @(

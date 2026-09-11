@@ -1,4 +1,4 @@
-Describe 'WinSwift desired-state verification' {
+Describe 'Winnow desired-state verification' {
     BeforeAll {
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..')
         function Test-FeatureApplied { return $false }
@@ -67,7 +67,7 @@ Describe 'WinSwift desired-state verification' {
     It 'reports a compliant registry-backed feature' {
         Mock Test-FeatureApplied { $true }
 
-        $result = Test-WinSwiftFeature -FeatureId 'DisableTelemetry'
+        $result = Test-WinnowFeature -FeatureId 'DisableTelemetry'
 
         $result.Status | Should -Be 'Compliant'
         $result.DesiredState | Should -Be 'Applied'
@@ -76,7 +76,7 @@ Describe 'WinSwift desired-state verification' {
     It 'routes apply operations through the feature contract' {
         Mock Invoke-FeatureApply { }
 
-        Invoke-WinSwiftFeature -FeatureId 'DisableTelemetry'
+        Invoke-WinnowFeature -FeatureId 'DisableTelemetry'
 
         Should -Invoke Invoke-FeatureApply -Times 1 -ParameterFilter { $FeatureId -eq 'DisableTelemetry' }
     }
@@ -84,7 +84,7 @@ Describe 'WinSwift desired-state verification' {
     It 'routes undo operations through the feature contract' {
         Mock Invoke-FeatureUndo { }
 
-        Undo-WinSwiftFeature -FeatureId 'DisableTelemetry'
+        Undo-WinnowFeature -FeatureId 'DisableTelemetry'
 
         Should -Invoke Invoke-FeatureUndo -Times 1 -ParameterFilter { $FeatureId -eq 'DisableTelemetry' }
     }
@@ -92,21 +92,21 @@ Describe 'WinSwift desired-state verification' {
     It 'reports a noncompliant registry-backed feature' {
         Mock Test-FeatureApplied { $false }
 
-        $result = Test-WinSwiftFeature -FeatureId 'DisableTelemetry'
+        $result = Test-WinnowFeature -FeatureId 'DisableTelemetry'
 
         $result.Status | Should -Be 'NonCompliant'
     }
 
     It 'reports unknown feature metadata as unsupported' {
-        $result = Test-WinSwiftFeature -FeatureId 'UnknownFeature'
+        $result = Test-WinnowFeature -FeatureId 'UnknownFeature'
 
         $result.Status | Should -Be 'Unsupported'
     }
 
     It 'verifies each requested Appx target' {
-        Mock Test-WinSwiftAppRemoved { param($AppId) return $AppId -eq 'Removed.App' }
+        Mock Test-WinnowAppRemoved { param($AppId) return $AppId -eq 'Removed.App' }
 
-        $results = @(Test-WinSwiftFeature -FeatureId 'RemoveApps' -AppIds @('Removed.App', 'Present.App'))
+        $results = @(Test-WinnowFeature -FeatureId 'RemoveApps' -AppIds @('Removed.App', 'Present.App'))
 
         $results.Count | Should -Be 2
         ($results | Where-Object Target -eq 'Removed.App').Status | Should -Be 'Compliant'
@@ -120,7 +120,7 @@ Describe 'WinSwift desired-state verification' {
             Apps = @('Microsoft.TestApp')
         } | ConvertTo-Json | Set-Content -LiteralPath $profilePath
 
-        $input = Get-WinSwiftVerificationInput -ProfilePath $profilePath -Parameters @{}
+        $input = Get-WinnowVerificationInput -ProfilePath $profilePath -Parameters @{}
 
         $input.FeatureIds | Should -Contain 'DisableTelemetry'
         $input.FeatureIds | Should -Contain 'RemoveApps'
@@ -128,7 +128,7 @@ Describe 'WinSwift desired-state verification' {
     }
 
     It 'dispatches every release custom verification adapter' {
-        Mock Test-WinSwiftCustomFeatureState { $true }
+        Mock Test-WinnowCustomFeatureState { $true }
 
         $featureIds = @(
             'EnableGamingMode',
@@ -137,41 +137,41 @@ Describe 'WinSwift desired-state verification' {
             'EnableFirewallTelemetryBlock'
         )
         foreach ($featureId in $featureIds) {
-            $result = Test-WinSwiftFeature -FeatureId $featureId
+            $result = Test-WinnowFeature -FeatureId $featureId
             $result.Status | Should -Be 'Compliant'
         }
 
-        Should -Invoke Test-WinSwiftCustomFeatureState -Times 4
+        Should -Invoke Test-WinnowCustomFeatureState -Times 4
     }
 
     It 'reports custom feature drift as noncompliant' {
-        Mock Test-WinSwiftCustomFeatureState { $false }
+        Mock Test-WinnowCustomFeatureState { $false }
 
-        $result = Test-WinSwiftFeature -FeatureId 'EnableSecurityHardening'
+        $result = Test-WinnowFeature -FeatureId 'EnableSecurityHardening'
 
         $result.Status | Should -Be 'NonCompliant'
     }
 
     It 'routes the start layout and Edge removal adapters' {
-        Mock Test-WinSwiftCustomFeatureState { $true }
+        Mock Test-WinnowCustomFeatureState { $true }
 
         foreach ($featureId in @('ClearStart', 'ForceRemoveEdge')) {
-            $result = Test-WinSwiftFeature -FeatureId $featureId
+            $result = Test-WinnowFeature -FeatureId $featureId
             $result.Status | Should -Be 'Compliant'
         }
 
-        Should -Invoke Test-WinSwiftCustomFeatureState -Times 2
+        Should -Invoke Test-WinnowCustomFeatureState -Times 2
     }
 
     It 'reports entries with no persistent desired state as NotApplicable' {
         # Apps is a value-carrying parameter, so there is nothing to read back.
-        $result = Test-WinSwiftFeature -FeatureId 'Apps'
+        $result = Test-WinnowFeature -FeatureId 'Apps'
 
         $result.Status | Should -Be 'NotApplicable'
     }
 
     It 'never counts NotApplicable as a failure or an error' {
-        $summary = Invoke-WinSwiftVerification -FeatureIds @('Apps')
+        $summary = Invoke-WinnowVerification -FeatureIds @('Apps')
 
         $summary.FailedCount | Should -Be 0
         $summary.ErrorCount | Should -Be 0
@@ -179,7 +179,7 @@ Describe 'WinSwift desired-state verification' {
     }
 
     It 'still reports a feature with no verification story as Unsupported' {
-        $result = Test-WinSwiftFeature -FeatureId 'UnroutableFeature'
+        $result = Test-WinnowFeature -FeatureId 'UnroutableFeature'
 
         $result.Status | Should -Be 'Unsupported'
     }
@@ -191,7 +191,7 @@ Describe 'WinSwift desired-state verification' {
             VerificationAdapter = 'NoSuchAdapter'
         }
 
-        $result = Test-WinSwiftFeature -FeatureId 'BadAdapter'
+        $result = Test-WinnowFeature -FeatureId 'BadAdapter'
 
         $result.Status | Should -Be 'Error'
         $result.Details | Should -Match 'NoSuchAdapter'

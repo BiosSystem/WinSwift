@@ -1,6 +1,6 @@
 # 🤖 The AI Purge (24H2/25H2)
 
-Microsoft's aggressive integration of Generative AI into Windows 11 (24H2 and later) introduces new services that consume RAM and index local activity. WinSwift aggressively roots these out.
+Microsoft's aggressive integration of Generative AI into Windows 11 (24H2 and later) introduces new services that consume RAM and index local activity. Winnow aggressively roots these out.
 
 ## Windows Recall & Snapshots
 Windows Recall takes screenshots of your activity. We neutralize it by setting:

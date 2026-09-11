@@ -7,7 +7,7 @@
     writing a permanent HOSTS file entry as defense-in-depth. Covers original telemetry
     endpoints plus new 24H2/25H2 AI inference and data pipeline routes.
 #>
-function Get-WinSwiftTelemetryDomains {
+function Get-WinnowTelemetryDomains {
     return @(
         'vortex.data.microsoft.com',
         'settings-win.data.microsoft.com',
@@ -31,11 +31,11 @@ function Invoke-BlockTelemetryFirewall {
         [switch]$WhatIf
     )
 
-    $telemetryDomains = @(Get-WinSwiftTelemetryDomains)
+    $telemetryDomains = @(Get-WinnowTelemetryDomains)
 
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-    $hostsMarkerStart = "# WinSwift-TelemetryBlock-Start"
-    $hostsMarkerEnd   = "# WinSwift-TelemetryBlock-End"
+    $hostsMarkerStart = "# Winnow-TelemetryBlock-Start"
+    $hostsMarkerEnd   = "# Winnow-TelemetryBlock-End"
 
     Write-Host ""
     Write-Host "[*] Blocking telemetry endpoints via Windows Defender Firewall + HOSTS file..." -ForegroundColor Cyan
@@ -52,7 +52,7 @@ function Invoke-BlockTelemetryFirewall {
 
     try {
         foreach ($domain in $telemetryDomains) {
-            $ruleName = "WinSwift_BlockTelemetry_$domain"
+            $ruleName = "Winnow_BlockTelemetry_$domain"
 
             # Remove any existing rule first
             $existing = Get-NetFirewallRule -DisplayName $ruleName -ErrorAction SilentlyContinue
@@ -82,7 +82,7 @@ function Invoke-BlockTelemetryFirewall {
         if ($hostsEntries.Count -gt 0) {
             $currentHosts = Get-Content -Path $hostsPath -Raw -ErrorAction SilentlyContinue
 
-            # Strip any previous WinSwift block
+            # Strip any previous Winnow block
             $currentHosts = $currentHosts -replace "(?s)$hostsMarkerStart.*?$hostsMarkerEnd`r?`n?", ""
 
             $block = "`r`n$hostsMarkerStart`r`n" + ($hostsEntries -join "`r`n") + "`r`n$hostsMarkerEnd`r`n"
@@ -103,19 +103,19 @@ function Invoke-UnblockTelemetryFirewall {
     )
 
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-    $hostsMarkerStart = "# WinSwift-TelemetryBlock-Start"
-    $hostsMarkerEnd   = "# WinSwift-TelemetryBlock-End"
+    $hostsMarkerStart = "# Winnow-TelemetryBlock-Start"
+    $hostsMarkerEnd   = "# Winnow-TelemetryBlock-End"
 
     Write-Host ""
-    Write-Host "[*] Removing WinSwift telemetry blocks..." -ForegroundColor Cyan
+    Write-Host "[*] Removing Winnow telemetry blocks..." -ForegroundColor Cyan
 
     if ($WhatIf) {
-        Write-Host "  [WhatIf] Would remove all WinSwift_BlockTelemetry_ firewall rules and HOSTS entries" -ForegroundColor Yellow
+        Write-Host "  [WhatIf] Would remove all Winnow_BlockTelemetry_ firewall rules and HOSTS entries" -ForegroundColor Yellow
         return
     }
 
     # Remove firewall rules
-    $rules = Get-NetFirewallRule -DisplayName "WinSwift_BlockTelemetry_*" -ErrorAction SilentlyContinue
+    $rules = Get-NetFirewallRule -DisplayName "Winnow_BlockTelemetry_*" -ErrorAction SilentlyContinue
     foreach ($rule in $rules) {
         Remove-NetFirewallRule -DisplayName $rule.DisplayName -ErrorAction SilentlyContinue
         Write-Host "  [-] Removed firewall rule: $($rule.DisplayName)" -ForegroundColor DarkGray
@@ -126,7 +126,7 @@ function Invoke-UnblockTelemetryFirewall {
         $currentHosts = Get-Content -Path $hostsPath -Raw -ErrorAction SilentlyContinue
         $cleaned = $currentHosts -replace "(?s)$hostsMarkerStart.*?$hostsMarkerEnd`r?`n?", ""
         $cleaned | Set-Content -Path $hostsPath -Encoding ASCII -Force -ErrorAction SilentlyContinue
-        Write-Host "  [-] Removed WinSwift HOSTS block" -ForegroundColor DarkGray
+        Write-Host "  [-] Removed Winnow HOSTS block" -ForegroundColor DarkGray
     }
 
     Write-Host "  [+] Telemetry blocks removed." -ForegroundColor Green

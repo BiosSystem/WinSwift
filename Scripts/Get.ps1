@@ -120,7 +120,7 @@ param (
 
 # Show error if current powershell environment does not have LanguageMode set to FullLanguage 
 if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {
-   Write-Host "Error: WinSwift is unable to run on your system. PowerShell execution is restricted by security policies" -ForegroundColor Red
+   Write-Host "Error: Winnow is unable to run on your system. PowerShell execution is restricted by security policies" -ForegroundColor Red
    Write-Output ""
    Write-Output "Press enter to exit..."
    Read-Host | Out-Null
@@ -129,21 +129,21 @@ if ($ExecutionContext.SessionState.LanguageMode -ne "FullLanguage") {
 
 Clear-Host
 Write-Output "-------------------------------------------------------------------------------------------"
-Write-Output " WinSwift Script"
+Write-Output " Winnow Script"
 Write-Output "-------------------------------------------------------------------------------------------"
 
 $tempRootPath = $env:TEMP
-$tempWorkPath = Join-Path $tempRootPath 'WinSwift'
-$tempArchivePath = Join-Path $tempRootPath 'WinSwift.zip'
+$tempWorkPath = Join-Path $tempRootPath 'Winnow'
+$tempArchivePath = Join-Path $tempRootPath 'Winnow.zip'
 
-Write-Output "> Downloading WinSwift..."
+Write-Output "> Downloading Winnow..."
 
-# Download WinSwift from GitHub as a zip archive.
+# Download Winnow from GitHub as a zip archive.
 try {
     if ($Dev) {
-        $sourceUri = "https://github.com/BiosSystem/WinSwift/archive/refs/heads/master.zip"
+        $sourceUri = "https://github.com/BiosSystem/Winnow/archive/refs/heads/master.zip"
     } else {
-        $sourceUri = (Invoke-RestMethod https://api.github.com/repos/BiosSystem/WinSwift/releases/latest).zipball_url
+        $sourceUri = (Invoke-RestMethod https://api.github.com/repos/BiosSystem/Winnow/releases/latest).zipball_url
     }
     Invoke-RestMethod $sourceUri -OutFile $tempArchivePath
 }
@@ -185,14 +185,14 @@ if (Test-Path "$configDir") {
 Write-Output ""
 Write-Output "> Unpacking..."
 
-# Unzip archive to WinSwift folder
+# Unzip archive to Winnow folder
 Expand-Archive $tempArchivePath $tempWorkPath
 
 # Remove archive
 Remove-Item $tempArchivePath
 
 # Move files
-Get-ChildItem -Path (Join-Path $tempWorkPath '*WinSwift-*') -Recurse | Move-Item -Destination $tempWorkPath
+Get-ChildItem -Path (Join-Path $tempWorkPath '*Winnow-*') -Recurse | Move-Item -Destination $tempWorkPath
 
 # Add existing config files back to Config folder
 if (Test-Path "$backupDir") {
@@ -233,7 +233,7 @@ foreach ($boundParameter in $PSBoundParameters.GetEnumerator() | Where-Object { 
 }
 
 Write-Output ""
-Write-Output "> Launching WinSwift..."
+Write-Output "> Launching Winnow..."
 
 # Minimize the powershell window when no parameters are provided
 if ($arguments.Count -eq 0) {
@@ -249,8 +249,8 @@ if ($PSVersionTable.PSVersion.Major -ge 7) {
     $env:PSModulePath = $NewPSModulePath -join ';'
 }
 
-# Run WinSwift script with the provided arguments
-$debloatScriptPath = Join-Path $tempWorkPath 'WinSwift.ps1'
+# Run Winnow script with the provided arguments
+$debloatScriptPath = Join-Path $tempWorkPath 'Winnow.ps1'
 $launchArguments = @(
     '-NoProfile'
     '-ExecutionPolicy'
@@ -264,7 +264,7 @@ try {
     $debloatProcess = Start-Process powershell.exe -WindowStyle $windowStyle -PassThru -ArgumentList $launchArguments -Verb RunAs -ErrorAction Stop
 }
 catch {
-    Write-Host "Error: Unable to launch WinSwift with administrator privileges. $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "Error: Unable to launch Winnow with administrator privileges. $($_.Exception.Message)" -ForegroundColor Red
     $debloatProcess = $null
 }
 
@@ -279,7 +279,7 @@ if (Test-Path $tempWorkPath) {
     Write-Output ""
     Write-Output "> Cleaning up..."
 
-    # Cleanup, remove WinSwift directory
+    # Cleanup, remove Winnow directory
     Get-ChildItem -Path $tempWorkPath -Exclude Config,Logs,Backups | Remove-Item -Recurse -Force
 }
 

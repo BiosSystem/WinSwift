@@ -19,7 +19,7 @@ Describe 'Features.json' {
         $tokens = $null
         $errors = $null
         $entryAst = [System.Management.Automation.Language.Parser]::ParseFile(
-            (Join-Path $repoRoot 'WinSwift.ps1'),
+            (Join-Path $repoRoot 'Winnow.ps1'),
             [ref]$tokens,
             [ref]$errors
         )
@@ -38,7 +38,7 @@ Describe 'Features.json' {
 
     It 'exposes every feature through a direct CLI parameter' {
         $missing = @($script:features.FeatureId | Where-Object { $_ -notin $script:entryParameterNames })
-        $missing | Should -BeNullOrEmpty -Because "Missing WinSwift.ps1 parameters: $($missing -join ', ')"
+        $missing | Should -BeNullOrEmpty -Because "Missing Winnow.ps1 parameters: $($missing -join ', ')"
     }
 
     It 'every entry has a non-empty FeatureId' {

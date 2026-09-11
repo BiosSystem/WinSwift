@@ -79,7 +79,7 @@ Describe 'Registry files' {
 
         It 'reads backups as UTF8 rather than the ANSI codepage' {
             # Registry data can hold non-ASCII, an accented profile path for one.
-            # SaveToFile writes a BOM so WinSwift's own backups would read either
+            # SaveToFile writes a BOM so Winnow's own backups would read either
             # way, but a backup produced elsewhere has none.
             $script:restoreSource | Should -Match 'Get-Content -LiteralPath \$FilePath -Raw -Encoding UTF8'
         }

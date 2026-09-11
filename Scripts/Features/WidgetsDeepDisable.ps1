@@ -5,7 +5,7 @@
     Removes all Widgets infrastructure including the data collection service,
     the web experience host package, and the hover-activation trigger.
     In 25H2, Widgets no longer opens on hover but continues to collect data.
-    Created by Bios-System | https://github.com/BiosSystem/WinSwift
+    Created by Bios-System | https://github.com/BiosSystem/Winnow
 #>
 
 function Disable-WidgetsDeep {

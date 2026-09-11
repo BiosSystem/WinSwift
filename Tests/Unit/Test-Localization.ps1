@@ -4,7 +4,7 @@
     Unit tests for the language catalogue loader and text resolution.
 #>
 
-Describe 'WinSwift localization' {
+Describe 'Winnow localization' {
 
     BeforeAll {
         $repoRoot = Resolve-Path (Join-Path $PSScriptRoot '..\..') | Select-Object -ExpandProperty Path
@@ -86,33 +86,33 @@ Describe 'WinSwift localization' {
         It 'returns the translated string when one exists' {
             $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
 
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' | Should -Be 'Desactivar telemetria'
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' | Should -Be 'Desactivar telemetria'
         }
 
         It 'falls back to en-US for a key the language does not translate' {
             $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
 
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' | Should -Be 'English tip'
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' | Should -Be 'English tip'
         }
 
         It 'falls back to Features.json for a feature in no catalogue' {
             $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
 
-            Get-WinSwiftFeatureText -FeatureId 'NotInAnyCatalogue' -Key 'Label' | Should -Be 'json only'
+            Get-WinnowFeatureText -FeatureId 'NotInAnyCatalogue' -Key 'Label' | Should -Be 'json only'
         }
 
         It 'resolves from Features.json when no catalogue loaded at all' {
             $script:Language = $null
 
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' | Should -Be 'json label'
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' | Should -Be 'json label'
         }
 
         It 'returns the English category name when untranslated' {
             $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
 
-            Get-WinSwiftCategoryText -Category 'Gaming' | Should -Be 'Juegos'
-            Get-WinSwiftCategoryText -Category 'AI' | Should -Be 'AI'
-            Get-WinSwiftCategoryText -Category 'Unknown Category' | Should -Be 'Unknown Category'
+            Get-WinnowCategoryText -Category 'Gaming' | Should -Be 'Juegos'
+            Get-WinnowCategoryText -Category 'AI' | Should -Be 'AI'
+            Get-WinnowCategoryText -Category 'Unknown Category' | Should -Be 'Unknown Category'
         }
     }
 
@@ -226,9 +226,9 @@ Describe 'WinSwift localization' {
             $script:Features = @{}
             $script:Language = Import-LanguageFile -LanguageCode 'es-ES'
 
-            Get-WinSwiftCategoryText -Category 'Start Menu & Search' |
+            Get-WinnowCategoryText -Category 'Start Menu & Search' |
                 Should -Be ('Men' + [char]0xFA + ' Inicio y b' + [char]0xFA + 'squeda')
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
                 Should -BeLike ('*telemetr' + [char]0xED + 'a*')
         }
 
@@ -260,26 +260,26 @@ Describe 'WinSwift localization' {
         }
 
         It 'translates a feature that has an entry' {
-            Get-WinSwiftFeatureText -FeatureId 'DisableCopilot' -Key 'Label' |
+            Get-WinnowFeatureText -FeatureId 'DisableCopilot' -Key 'Label' |
                 Should -Be 'Desactivar Microsoft Copilot'
         }
 
         It 'falls back per key, not per feature' {
             # DisableTelemetry is translated but carries no ToolTip.
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'Label' |
                 Should -BeLike ('Desactivar telemetr' + [char]0xED + 'a*')
-            Get-WinSwiftFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' |
+            Get-WinnowFeatureText -FeatureId 'DisableTelemetry' -Key 'ToolTip' |
                 Should -BeLike 'This setting disables telemetry*'
         }
 
         It 'falls back entirely for an untranslated feature' {
-            Get-WinSwiftFeatureText -FeatureId 'DisableWidgets' -Key 'Label' |
+            Get-WinnowFeatureText -FeatureId 'DisableWidgets' -Key 'Label' |
                 Should -Be 'Disable widgets on the taskbar & lock screen'
         }
 
         It 'translates every category' {
-            Get-WinSwiftCategoryText -Category 'Gaming' | Should -Be 'Juegos'
-            Get-WinSwiftCategoryText -Category 'Privacy & Suggested Content' |
+            Get-WinnowCategoryText -Category 'Gaming' | Should -Be 'Juegos'
+            Get-WinnowCategoryText -Category 'Privacy & Suggested Content' |
                 Should -Be 'Privacidad y contenido sugerido'
         }
 

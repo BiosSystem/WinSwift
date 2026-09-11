@@ -1,12 +1,12 @@
 param (
     [string]$SourceFolder = "$PSScriptRoot",
-    [string]$OutputFile = "$PSScriptRoot\WinSwift-Standalone.ps1"
+    [string]$OutputFile = "$PSScriptRoot\Winnow-Standalone.ps1"
 )
 
-Write-Host "Building WinSwift Standalone..." -ForegroundColor Cyan
+Write-Host "Building Winnow Standalone..." -ForegroundColor Cyan
 
 # 1. Zip the required files
-$TempZip = "$env:TEMP\WinSwift_Build.zip"
+$TempZip = "$env:TEMP\Winnow_Build.zip"
 if (Test-Path $TempZip) { Remove-Item $TempZip -Force }
 
 $IncludeItems = @(
@@ -15,7 +15,7 @@ $IncludeItems = @(
     "Regfiles",
     "Schemas",
     "Scripts",
-    "WinSwift.ps1",
+    "Winnow.ps1",
     "Run.bat"
 )
 
@@ -34,9 +34,9 @@ Write-Host "Generating Standalone Wrapper..."
 $WrapperCode = @"
 <#
 .SYNOPSIS
-    WinSwift Standalone Executable
+    Winnow Standalone Executable
 .DESCRIPTION
-    This script extracts the WinSwift payload to a temporary directory and executes it.
+    This script extracts the Winnow payload to a temporary directory and executes it.
 #>
 
 `$VerbosePreference = 'SilentlyContinue'
@@ -54,7 +54,7 @@ function Format-StandaloneArg {
 `$Payload = "$Base64String"
 
 # Extraction Path
-`$ExtractPath = Join-Path `$env:TEMP "WinSwift_Run_`$([Guid]::NewGuid().ToString().Substring(0,8))"
+`$ExtractPath = Join-Path `$env:TEMP "Winnow_Run_`$([Guid]::NewGuid().ToString().Substring(0,8))"
 if (-not (Test-Path `$ExtractPath)) {
     New-Item -ItemType Directory -Path `$ExtractPath -Force | Out-Null
 }
@@ -70,21 +70,21 @@ try {
     Expand-Archive -Path `$ZipPath -DestinationPath `$ExtractPath -Force
     
     # Run the real script
-    `$ScriptPath = Join-Path `$ExtractPath "WinSwift.ps1"
+    `$ScriptPath = Join-Path `$ExtractPath "Winnow.ps1"
     
     if (Test-Path `$ScriptPath) {
         `$ArgsList = @("-ExecutionPolicy", "Bypass", "-NoProfile", "-File", (Format-StandaloneArg `$ScriptPath))
         foreach (`$argument in `$args) {
             `$ArgsList += (Format-StandaloneArg ([string]`$argument))
         }
-        Write-Host "Launching WinSwift..." -ForegroundColor Cyan
+        Write-Host "Launching Winnow..." -ForegroundColor Cyan
         `$process = Start-Process -FilePath "powershell.exe" -ArgumentList `$ArgsList -NoNewWindow -Wait -PassThru
         `$processExitCode = `$process.ExitCode
     } else {
-        Write-Error "Failed to locate WinSwift.ps1 in extracted payload."
+        Write-Error "Failed to locate Winnow.ps1 in extracted payload."
     }
 } catch {
-    Write-Error "An error occurred while launching WinSwift: `$_"
+    Write-Error "An error occurred while launching Winnow: `$_"
 } finally {
     # Cleanup
     if (Test-Path `$ExtractPath) {
