@@ -7,9 +7,14 @@
     survive: everything else inside the sandbox is destroyed when the window
     closes, including the console output.
 
-    Both HostFolder paths must already exist or the sandbox refuses to start.
-    Update them if the repository does not live at this path, then open this
-    file to start the run.
+    The two HostFolder paths below are the maintainer's local example and are
+    almost certainly wrong for your machine. They are absolute and machine
+    specific, so if you cloned this repository you MUST edit both to point at
+    your own clone: the read-only map to the repository root, and the writable
+    map to its Tests\Integration\Sandbox\results folder. Note the folder may be
+    named after the old project name (WinSwift) if you cloned before the rename;
+    use wherever it actually lives. Both paths must already exist or the sandbox
+    refuses to start. Then open this file to start the run.
   -->
   <MappedFolders>
     <MappedFolder>
