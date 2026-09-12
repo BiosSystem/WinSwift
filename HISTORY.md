@@ -1,3 +1,15 @@
+## [v4.0.1] - 2026-09-13
+### Artifacts
+- **Release Package**: Winnow-v4.0.1.zip
+- **Standalone**: Winnow-Standalone.ps1
+- Both built and published by the release workflow on tag push. Checksums are on the release page.
+### Fixed
+- The three app-list JSON loaders now read UTF-8, not the OS ANSI codepage (latent on ASCII `Apps.json`, guards against a future accented app name).
+### Changed
+- README banner and header refresh (branding/docs only).
+### Note
+- Sync release: 4.0.0 was tagged before the banner cleanup and the loader fix merged, so this brings the published artifact in line with `master`. No functional change from 4.0.0 beyond the encoding fix.
+
 ## [v4.0.0] - 2026-09-11
 ### Artifacts
 - **Release Package**: Winnow-v4.0.0.zip

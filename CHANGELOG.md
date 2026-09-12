@@ -4,6 +4,18 @@ Document all notable Winnow changes in this file. Releases before 4.0.0 were pub
 
 Follow [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] - 2026-09-13
+
+### Fixed
+
+- Read the three app-list JSON loaders (`LoadAppPresetsFromJson`, `LoadAppsDetailsFromJson`, `LoadAppsFromFile`) as UTF-8 instead of the OS ANSI codepage, matching the main JSON loader. Latent today because `Apps.json` is ASCII, but it prevents an accented app name from being corrupted later.
+
+### Changed
+
+- Replaced the generic hero image with an SVG wordmark banner and refreshed the README header (tests and Windows 11 badges, differentiators-first intro, no marketing filler). Documentation and branding only.
+
+This patch brings the released artifact in line with `master`; 4.0.0 was tagged before these two changes merged. No behaviour change from 4.0.0 beyond the encoding fix above.
+
 ## [4.0.0] - 2026-09-11
 
 ### Changed
