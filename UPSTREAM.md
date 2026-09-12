@@ -4,13 +4,35 @@
 
 - Upstream repository: `Raphire/Win11Debloat`
 - Upstream branch: `master`
-- Reviewed commit: `6012b02` (upstream `master` head at review time)
-- Reviewed date: 2026-09-05
-- Previous baseline: `fff1fcd0b21f6a2130baf0e5e9e790b2eec3f1c3` (2026-08-23)
-- Winnow release line: `3.5.0`
+- Reviewed commit: `3202466` (upstream `master` head at review time)
+- Reviewed date: 2026-09-12
+- Previous baseline: `6012b02` (2026-09-05)
+- Winnow release line: `4.0.0`
 - Upstream changelog review: July 11 2026 upstream release (dropped CustomAppsList format, retired legacy CLI app removal, fixed Copilot removal, dropped sunset apps)
 
 ## Upstream Review Log
+
+### 2026-09-12 review: `6012b02` to `3202466`
+
+One upstream commit: `3202466` "Add localization framework for the GUI (en-US baseline) (#764)".
+Winnow already built its own localization framework in the 3.5.0 release (`Config/Languages`,
+`Scripts/FileIO/LoadLanguageFile.ps1`), so the feature itself is not ported. Every
+non-localization file in the commit was diffed to check for a bundled fix:
+
+- The only real bug fix is `Import-JsonFile.ps1` gaining `-Encoding UTF8` on its
+  `Get-Content -Raw`. Winnow already has this in `LoadJsonFile.ps1`. Nothing to port.
+- `Show-MessageBox.ps1` gained a native-dialog fallback that guards upstream's XAML-marker
+  localization mechanism; Winnow localizes through `LoadLanguageFile.ps1` instead, so the
+  failure mode does not exist here.
+- Everything else is string literals swapped for `Get-Translation` calls plus a whole-body
+  reindentation of `Show-RestoreBackupDialog.ps1`; control flow is byte-for-byte unchanged.
+
+Verdict: nothing to port. Winnow is not missing any bug or fix from `3202466`.
+
+While reconciling, hardened three JSON loaders that still read without `-Encoding UTF8`
+(`LoadAppPresetsFromJson`, `LoadAppsDetailsFromJson`, `LoadAppsFromFile`) — a latent codepage
+risk on `Apps.json`, not an upstream item. `Test-ConfigConsistency` remains absent and stays on
+the deferred `ef8811d` backlog.
 
 ### 2026-09-05 review: `fff1fcd` to `6012b02`
 
