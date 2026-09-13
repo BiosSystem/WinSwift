@@ -31,8 +31,8 @@ Verdict: nothing to port. Winnow is not missing any bug or fix from `3202466`.
 
 While reconciling, hardened three JSON loaders that still read without `-Encoding UTF8`
 (`LoadAppPresetsFromJson`, `LoadAppsDetailsFromJson`, `LoadAppsFromFile`) — a latent codepage
-risk on `Apps.json`, not an upstream item. `Test-ConfigConsistency` remains absent and stays on
-the deferred `ef8811d` backlog.
+risk on `Apps.json`, not an upstream item. `Test-ConfigConsistency` was absent at the time of
+this review; it was ported on 2026-09-13 (see the note under Deferred).
 
 ### 2026-09-05 review: `fff1fcd` to `6012b02`
 
@@ -90,8 +90,14 @@ scheduled, tracked here so the decision is not relitigated:
 
 `RemoveApps.ps1`, `ImportRegistryFile.ps1`, `InvokeChanges.ps1`,
 `CreateSystemRestorePoint.ps1`, `ReplaceStartMenu.ps1`, `StoreSearchSuggestions.ps1`,
-`TelemetryScheduledTasks.ps1`, `WindowsOptionalFeatures.ps1`, the GUI call sites, and the
-new upstream `Test-ConfigConsistency.ps1` helper.
+`TelemetryScheduledTasks.ps1`, `WindowsOptionalFeatures.ps1`, and the GUI call sites.
+
+`Test-ConfigConsistency.ps1` was ported on 2026-09-13, no longer deferred. It was not
+cherry-picked: upstream's version returns `Get-Translation` message keys, which Winnow has no
+equivalent for, so it was re-implemented with plain-English messages against Winnow's config
+format (the shared Apps/Tweaks/Deployment import shape, which matches upstream). It is wired
+into both import paths (`ImportConfigToParams` and the GUI `Import-Configuration`) and covered
+by `Tests/Unit/Test-ConfigConsistency.ps1`.
 
 ## Integrated Safety Changes
 
