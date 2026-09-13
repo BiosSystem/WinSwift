@@ -105,7 +105,7 @@ populated it. `Invoke-UndoFeatures` and the per-feature `RegistryUndoKey`
 metadata existed, but nothing on the command line could select a feature for
 undo, so unattended deployments could apply changes and never revert them.
 
-The `-Undo` parameter closes that. It accepts the 87 of 112 features that declare
+The `-Undo` parameter closes that. It accepts the 89 of 114 features that declare
 a `RegistryUndoKey` or have a case in `Invoke-FeatureUndo`, and rejects the rest
 rather than reporting success while doing nothing.
 

@@ -8,9 +8,9 @@ Winnow is a modular Windows 11 optimization and debloating toolkit. Because Winn
 
 | Version | Supported | Status |
 |---|---|---|
-| `3.4.x` | Yes | Active production release supporting Windows 11 23H2, 24H2, and 25H2 |
-| `3.3.x` | No | Superseded. Contains an elevation guard that did not stop a non-elevated run, fixed in 3.4.0 |
-| `< 3.3.0` | No | Legacy baseline |
+| `4.0.x` | Yes | Active production release for Windows 11 (24H2, 25H2). Current Winnow line |
+| `3.x` | No | Superseded by 4.0. Published under the former name, WinSwift; 3.3.x and earlier also carried the elevation-guard bug fixed in 3.4.0 |
+| `< 3.0` | No | Legacy baseline |
 
 ---
 
