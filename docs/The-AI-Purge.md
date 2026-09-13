@@ -1,4 +1,4 @@
-# 🤖 The AI Purge (24H2/25H2)
+# 🧹 The AI Purge (24H2/25H2)
 
 Microsoft's aggressive integration of Generative AI into Windows 11 (24H2 and later) introduces new services that consume RAM and index local activity. Winnow aggressively roots these out.
 

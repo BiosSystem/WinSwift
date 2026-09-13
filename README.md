@@ -27,7 +27,7 @@ Unlike fire-and-forget debloat scripts, every change is checked and reversible. 
 
 Stock Windows 11 ships with default scheduling intervals, background telemetry pipelines, and continuous recording hooks that introduce input lag, frame pacing jitter, and 1% low drops in competitive titles (Valorant, CS2, Apex Legends, Call of Duty, Fortnite).
 
-Winnow provides a dedicated, non-destructive low-latency optimization stack designed to eliminate OS-level microstutters while maintaining 100% compatibility with kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates.
+Winnow provides a dedicated, non-destructive low-latency optimization stack designed to reduce OS-level microstutters. It modifies no anti-cheat or security components, so kernel anti-cheats (Vanguard, EAC, BattlEye, FACEIT) and official Windows Updates keep working.
 
 <p align="center">
   <img src="Assets/Images/winnow-gaming-hud.png" alt="Winnow Esports Low Latency HUD" width="100%" />
@@ -52,7 +52,7 @@ Winnow provides a dedicated, non-destructive low-latency optimization stack desi
 
 | Feature / Criteria | Winnow | Stripped Custom ISOs (AtlasOS, ReviOS, Tiny11) | Generic Script Suites (Chris Titus, Sophia) |
 |---|---|---|---|
-| **Anti-Cheat Compatibility** | **100% Compatible** (Vanguard, EAC, BattlEye, FACEIT) | Often broken due to stripped security modules | Mixed (some scripts break Hyper-V / VBS dependencies) |
+| **Anti-Cheat Compatibility** | **Compatible** - modifies no anti-cheat or security modules (Vanguard, EAC, BattlEye, FACEIT) | Often broken due to stripped security modules | Mixed (some scripts break Hyper-V / VBS dependencies) |
 | **Windows Update Support** | **Full Support** (Standard cumulative updates work normally) | Broken or permanently disabled | Supported |
 | **Execution Architecture** | Native PowerShell 5.1 in-memory execution | Modified ISO reinstall required (data wipe) | External package managers and third-party CLIs |
 | **Rollback & Safety** | Pre-run snapshot, automatic rollback on a failed apply, and per-feature `-Undo` | Impossible without full OS reinstallation | Manual registry inspection required |
