@@ -9,7 +9,7 @@ We believe in open-source transparency - no "black box" registry hacking. Below 
 1. [⚙️ Execution Architecture](Execution-Architecture.md)
    *Learn how the Winnow engine elevates privileges, parses `Features.json`, and safely applies changes using the `$WhatIf` dry-run system.*
 
-2. [🤖 The AI Purge (24H2/25H2)](The-AI-Purge.md)
+2. [🧹 The AI Purge (24H2/25H2)](The-AI-Purge.md)
    *A breakdown of the registry keys and services targeted to neutralize Windows Recall, Copilot, and the WSAIFabricSvc.*
 
 3. [🕵️ Telemetry & Privacy Hardening](Telemetry-And-Privacy.md)
@@ -19,4 +19,4 @@ We believe in open-source transparency - no "black box" registry hacking. Below 
    *Understand MMCSS tuning (`NetworkThrottlingIndex`), 0.5ms Timer Resolutions, CPU core parking, and Windows Defender real-time exclusions.*
 
 ---
-*Winnow - The Ultimate Windows Debloater*
+*Winnow - keep the grain, lose the bloat.*
